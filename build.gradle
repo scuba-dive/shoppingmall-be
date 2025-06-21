@@ -24,7 +24,8 @@ repositories {
 }
 
 dependencies {
-	// 웹, JPA, 보안, 검증
+    implementation 'org.springframework.boot:spring-boot-starter'
+    // 웹, JPA, 보안, 검증
 	// Spring MVC, REST API, 내장 톰캣 서버 포함
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	// Spring Data JPA + Hibernate 포함. DB 연동과 ORM 처리
