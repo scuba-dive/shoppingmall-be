@@ -11,10 +11,12 @@ import io.groom.scubadive.shoppingmall.product.domain.Product;
 import io.groom.scubadive.shoppingmall.product.domain.ProductOption;
 import io.groom.scubadive.shoppingmall.product.domain.ProductOptionStatus;
 import io.groom.scubadive.shoppingmall.product.dto.request.ProductSaveRequest;
+import io.groom.scubadive.shoppingmall.product.dto.request.ProductStockUpdateRequest;
 import io.groom.scubadive.shoppingmall.product.dto.request.ProductUpdateRequest;
 import io.groom.scubadive.shoppingmall.product.dto.response.ProductSaveResponse;
 import io.groom.scubadive.shoppingmall.product.dto.response.ProductUpdateResponse;
 import io.groom.scubadive.shoppingmall.product.dto.response.ProductWithOptionPageResponse;
+import io.groom.scubadive.shoppingmall.product.repository.ProductOptionRepository;
 import io.groom.scubadive.shoppingmall.product.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -34,6 +36,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 @Transactional
 public class ProductService {
     private final ProductRepository productRepository;
+    private final ProductOptionRepository productOptionRepository;
     private final CategoryRepository categoryRepository;
     private final ProductUtil productUtil;
 
@@ -88,8 +91,22 @@ public class ProductService {
         return ApiResponseDto.of(200, "상품이 성공적으로 삭제되었습니다.", null);
     }
 
+    public ApiResponseDto<Void> updateStockByOptionId(Long id, ProductStockUpdateRequest request) {
+        ProductOption productOption = findProductOptionById(id);
+
+        productOption.updateStock(request.stock());
+
+        return ApiResponseDto.of(200, "재고 수량이 변경되었습니다.", null);
+    }
+
     private Product findProductById(Long id) {
         return productRepository.findById(id).orElseThrow(
+                () -> new GlobalException(ErrorCode.PRODUCT_NOT_FOUND)
+        );
+    }
+
+    private ProductOption findProductOptionById(Long id) {
+        return productOptionRepository.findById(id).orElseThrow(
                 () -> new GlobalException(ErrorCode.PRODUCT_NOT_FOUND)
         );
     }

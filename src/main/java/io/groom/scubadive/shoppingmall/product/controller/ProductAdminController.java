@@ -4,6 +4,7 @@ import io.groom.scubadive.shoppingmall.global.dto.ApiResponseDto;
 import io.groom.scubadive.shoppingmall.product.domain.Product;
 import io.groom.scubadive.shoppingmall.product.domain.ProductOption;
 import io.groom.scubadive.shoppingmall.product.dto.request.ProductSaveRequest;
+import io.groom.scubadive.shoppingmall.product.dto.request.ProductStockUpdateRequest;
 import io.groom.scubadive.shoppingmall.product.dto.request.ProductUpdateRequest;
 import io.groom.scubadive.shoppingmall.product.dto.response.ProductSaveResponse;
 import io.groom.scubadive.shoppingmall.product.dto.response.ProductUpdateResponse;
@@ -77,7 +78,7 @@ public class ProductAdminController {
      * @return
      */
     @PatchMapping("/{id}/stock")
-    public ApiResponseDto<Void> updateStock(@PathVariable Long id) {
-        return null;
+    public ApiResponseDto<Void> updateStock(@PathVariable Long id, @RequestBody ProductStockUpdateRequest request) {
+        return productService.updateStockByOptionId(id, request);
     }
 }

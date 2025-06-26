@@ -48,4 +48,8 @@ public class ProductOption extends BaseTimeEntity {
     public void setProduct(Product product) {
         this.product = product;
     }
+
+    public void updateStock(Long stock) {
+        this.stock = stock;
+    }
 }
