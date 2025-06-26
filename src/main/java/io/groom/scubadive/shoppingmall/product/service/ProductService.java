@@ -11,7 +11,9 @@ import io.groom.scubadive.shoppingmall.product.domain.Product;
 import io.groom.scubadive.shoppingmall.product.domain.ProductOption;
 import io.groom.scubadive.shoppingmall.product.domain.ProductOptionStatus;
 import io.groom.scubadive.shoppingmall.product.dto.request.ProductSaveRequest;
+import io.groom.scubadive.shoppingmall.product.dto.request.ProductUpdateRequest;
 import io.groom.scubadive.shoppingmall.product.dto.response.ProductSaveResponse;
+import io.groom.scubadive.shoppingmall.product.dto.response.ProductUpdateResponse;
 import io.groom.scubadive.shoppingmall.product.dto.response.ProductWithOptionPageResponse;
 import io.groom.scubadive.shoppingmall.product.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
@@ -69,9 +71,26 @@ public class ProductService {
         return ApiResponseDto.of(200, "성공적으로 조회했습니다.", ProductWithOptionPageResponse.from(productOptionPageable));
     }
 
+    public ApiResponseDto<ProductUpdateResponse> updateProductById(Long id, ProductUpdateRequest request) {
+        Product product = findProductById(id);
+
+        product.updateDescription(request.description());
+        product.updatePrice(request.price());
+        productRepository.flush();
+
+        return ApiResponseDto.of(200, "상품이 성공적으로 수정되었습니다.", ProductUpdateResponse.from(product));
+    }
+
 
     public ApiResponseDto<Void> deleteProductById(Long id) {
-        productRepository.deleteById(id);
+        Product product = findProductById(id);
+        productRepository.deleteById(product.getId());
         return ApiResponseDto.of(200, "상품이 성공적으로 삭제되었습니다.", null);
+    }
+
+    private Product findProductById(Long id) {
+        return productRepository.findById(id).orElseThrow(
+                () -> new GlobalException(ErrorCode.PRODUCT_NOT_FOUND)
+        );
     }
 }

@@ -70,4 +70,12 @@ public class Product extends BaseTimeEntity {
     public void addOptions(List<ProductOption> productOptions) {
         productOptions.forEach(this::addOption);
     }
+
+    public void updateDescription(String description) {
+        this.description = description;
+    }
+
+    public void updatePrice(Long price) {
+        this.price = price;
+    }
 }

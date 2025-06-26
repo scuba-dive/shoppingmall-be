@@ -4,7 +4,9 @@ import io.groom.scubadive.shoppingmall.global.dto.ApiResponseDto;
 import io.groom.scubadive.shoppingmall.product.domain.Product;
 import io.groom.scubadive.shoppingmall.product.domain.ProductOption;
 import io.groom.scubadive.shoppingmall.product.dto.request.ProductSaveRequest;
+import io.groom.scubadive.shoppingmall.product.dto.request.ProductUpdateRequest;
 import io.groom.scubadive.shoppingmall.product.dto.response.ProductSaveResponse;
+import io.groom.scubadive.shoppingmall.product.dto.response.ProductUpdateResponse;
 import io.groom.scubadive.shoppingmall.product.dto.response.ProductWithOptionPageResponse;
 import io.groom.scubadive.shoppingmall.product.service.ProductService;
 import lombok.RequiredArgsConstructor;
@@ -41,12 +43,12 @@ public class ProductAdminController {
     /**
      * 상품 수정
      * @param id
-     * @param product
+     * @param request
      * @return
      */
     @PatchMapping("/{id}")
-    public ApiResponseDto<Void> updateProduct(@PathVariable Long id, @RequestBody Product product) {
-        return null;
+    public ApiResponseDto<ProductUpdateResponse> updateProduct(@PathVariable Long id, @RequestBody ProductUpdateRequest request) {
+        return productService.updateProductById(id, request);
     }
 
     /**
