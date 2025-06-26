@@ -2,6 +2,8 @@ package io.groom.scubadive.shoppingmall.product.controller;
 
 import io.groom.scubadive.shoppingmall.global.dto.ApiResponseDto;
 import io.groom.scubadive.shoppingmall.product.domain.Product;
+import io.groom.scubadive.shoppingmall.product.dto.request.ProductSaveRequest;
+import io.groom.scubadive.shoppingmall.product.dto.response.ProductSaveResponse;
 import io.groom.scubadive.shoppingmall.product.service.ProductService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -34,12 +36,12 @@ public class ProductAdminController {
 
     /**
      * 상품 추가
-     * @param product
+     * @param
      * @return
      */
     @PostMapping()
-    public ApiResponseDto<Void> createProduct(@RequestBody Product product) {
-        return null;
+    public ApiResponseDto<ProductSaveResponse> createProduct(@RequestBody ProductSaveRequest request) {
+        return productService.createProduct(request);
     }
 
     /**

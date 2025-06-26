@@ -1,14 +1,14 @@
 package io.groom.scubadive.shoppingmall.product.domain;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.groom.scubadive.shoppingmall.common.domain.BaseTimeEntity;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Getter
 public class ProductOption extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -43,5 +43,9 @@ public class ProductOption extends BaseTimeEntity {
                 .status(status)
                 .product(product)
                 .build();
+    }
+
+    public void setProduct(Product product) {
+        this.product = product;
     }
 }
