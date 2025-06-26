@@ -2,7 +2,7 @@ package io.groom.scubadive.shoppingmall.product.domain;
 
 
 import io.groom.scubadive.shoppingmall.category.domain.Category;
-import io.groom.scubadive.shoppingmall.common.domain.BaseTimeEntity;
+import io.groom.scubadive.shoppingmall.global.util.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.*;
 

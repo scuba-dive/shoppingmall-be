@@ -1,6 +1,6 @@
 package io.groom.scubadive.shoppingmall.category.domain;
 
-import io.groom.scubadive.shoppingmall.common.domain.BaseTimeEntity;
+import io.groom.scubadive.shoppingmall.global.util.BaseTimeEntity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;

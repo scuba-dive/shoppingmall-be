@@ -1,8 +1,7 @@
 package io.groom.scubadive.shoppingmall.product.domain;
 
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import io.groom.scubadive.shoppingmall.common.domain.BaseTimeEntity;
+import io.groom.scubadive.shoppingmall.global.util.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
