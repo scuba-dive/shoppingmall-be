@@ -11,8 +11,11 @@ import io.groom.scubadive.shoppingmall.product.domain.ProductOption;
 import io.groom.scubadive.shoppingmall.product.domain.ProductOptionStatus;
 import io.groom.scubadive.shoppingmall.product.dto.request.ProductSaveRequest;
 import io.groom.scubadive.shoppingmall.product.dto.response.ProductSaveResponse;
+import io.groom.scubadive.shoppingmall.product.dto.response.ProductWithOptionPageResponse;
 import io.groom.scubadive.shoppingmall.product.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -54,6 +57,13 @@ public class ProductService {
         productRepository.flush();
 
         return ApiResponseDto.of(201, "상품이 성공적으로 등록되었습니다.", ProductSaveResponse.from(product));
+    }
+
+
+    public ApiResponseDto<ProductWithOptionPageResponse> getProductsByPageable(Pageable pageable) {
+        Page<ProductOption> productOptionPageable = productRepository.findProductOptionPageable(pageable);
+
+        return ApiResponseDto.of(200, "성공적으로 조회했습니다.", ProductWithOptionPageResponse.from(productOptionPageable));
     }
 
     private Integer getRandomNumber() {

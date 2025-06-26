@@ -2,10 +2,14 @@ package io.groom.scubadive.shoppingmall.product.controller;
 
 import io.groom.scubadive.shoppingmall.global.dto.ApiResponseDto;
 import io.groom.scubadive.shoppingmall.product.domain.Product;
+import io.groom.scubadive.shoppingmall.product.domain.ProductOption;
 import io.groom.scubadive.shoppingmall.product.dto.request.ProductSaveRequest;
 import io.groom.scubadive.shoppingmall.product.dto.response.ProductSaveResponse;
+import io.groom.scubadive.shoppingmall.product.dto.response.ProductWithOptionPageResponse;
 import io.groom.scubadive.shoppingmall.product.service.ProductService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -20,8 +24,8 @@ public class ProductAdminController {
      * @return
      */
     @GetMapping()
-    public ApiResponseDto<Void> getProducts() {
-        return null;
+    public ApiResponseDto<ProductWithOptionPageResponse> getProducts(Pageable pageable) {
+        return productService.getProductsByPageable(pageable);
     }
 
     /**

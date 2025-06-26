@@ -7,7 +7,7 @@ import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 
-public interface ProductRepository extends JpaRepository<Product, Long> {
+public interface ProductRepository extends JpaRepository<Product, Long>, ProductRepositoryCustom {
 
     @Query("select count(po) from ProductOption po join po.product p where p.category.id = :categoryId")
     Long countOptionsByCategoryId(@Param("categoryId") Long categoryId);
