@@ -1,9 +1,8 @@
 package io.groom.scubadive.shoppingmall.product.controller;
 
 import io.groom.scubadive.shoppingmall.global.dto.ApiResponseDto;
-import io.groom.scubadive.shoppingmall.product.domain.Product;
-import io.groom.scubadive.shoppingmall.product.domain.ProductOption;
 import io.groom.scubadive.shoppingmall.product.dto.request.ProductSaveRequest;
+import io.groom.scubadive.shoppingmall.product.dto.request.ProductStatusUpdateRequest;
 import io.groom.scubadive.shoppingmall.product.dto.request.ProductStockUpdateRequest;
 import io.groom.scubadive.shoppingmall.product.dto.request.ProductUpdateRequest;
 import io.groom.scubadive.shoppingmall.product.dto.response.ProductSaveResponse;
@@ -11,7 +10,6 @@ import io.groom.scubadive.shoppingmall.product.dto.response.ProductUpdateRespons
 import io.groom.scubadive.shoppingmall.product.dto.response.ProductWithOptionPageResponse;
 import io.groom.scubadive.shoppingmall.product.service.ProductService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 
@@ -68,8 +66,8 @@ public class ProductAdminController {
      * @return
      */
     @PatchMapping("/{id}/status")
-    public ApiResponseDto<Void> updateStatus(@PathVariable Long id) {
-        return null;
+    public ApiResponseDto<Void> updateStatus(@PathVariable Long id, @RequestBody ProductStatusUpdateRequest request) {
+        return productService.updateStatusByOptionId(id, request);
     }
 
     /**

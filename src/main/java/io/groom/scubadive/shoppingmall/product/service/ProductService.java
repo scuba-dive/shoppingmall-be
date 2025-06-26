@@ -11,6 +11,7 @@ import io.groom.scubadive.shoppingmall.product.domain.Product;
 import io.groom.scubadive.shoppingmall.product.domain.ProductOption;
 import io.groom.scubadive.shoppingmall.product.domain.ProductOptionStatus;
 import io.groom.scubadive.shoppingmall.product.dto.request.ProductSaveRequest;
+import io.groom.scubadive.shoppingmall.product.dto.request.ProductStatusUpdateRequest;
 import io.groom.scubadive.shoppingmall.product.dto.request.ProductStockUpdateRequest;
 import io.groom.scubadive.shoppingmall.product.dto.request.ProductUpdateRequest;
 import io.groom.scubadive.shoppingmall.product.dto.response.ProductSaveResponse;
@@ -97,6 +98,15 @@ public class ProductService {
         productOption.updateStock(request.stock());
 
         return ApiResponseDto.of(200, "재고 수량이 변경되었습니다.", null);
+    }
+
+    public ApiResponseDto<Void> updateStatusByOptionId(Long id, ProductStatusUpdateRequest request) {
+        ProductOption productOption = findProductOptionById(id);
+
+        productOption.updateStatus(request.status());
+
+        return ApiResponseDto.of(200, "상품 상태가 변경되었습니다.", null);
+
     }
 
     private Product findProductById(Long id) {

@@ -52,4 +52,8 @@ public class ProductOption extends BaseTimeEntity {
     public void updateStock(Long stock) {
         this.stock = stock;
     }
+
+    public void updateStatus(ProductOptionStatus status) {
+        this.status = status;
+    }
 }
