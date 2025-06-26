@@ -1,4 +1,4 @@
-package io.groom.scubadive.shoppingmall.memeber.domain.enums;
+package io.groom.scubadive.shoppingmall.member.domain.enums;
 
 public enum UserStatus {
     ACTIVE, DORMANT_AUTO, DORMANT_MANUAL

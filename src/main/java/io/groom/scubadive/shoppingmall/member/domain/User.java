@@ -1,9 +1,9 @@
-package io.groom.scubadive.shoppingmall.memeber.domain;
+package io.groom.scubadive.shoppingmall.member.domain;
 
 import io.groom.scubadive.shoppingmall.global.util.BaseTimeEntity;
-import io.groom.scubadive.shoppingmall.memeber.domain.enums.Grade;
-import io.groom.scubadive.shoppingmall.memeber.domain.enums.Role;
-import io.groom.scubadive.shoppingmall.memeber.domain.enums.UserStatus;
+import io.groom.scubadive.shoppingmall.member.domain.enums.Grade;
+import io.groom.scubadive.shoppingmall.member.domain.enums.Role;
+import io.groom.scubadive.shoppingmall.member.domain.enums.UserStatus;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -65,5 +65,9 @@ public class User extends BaseTimeEntity {
 
     public void updateLastLoginTime() {
         this.lastLoginAt = LocalDateTime.now();
+    }
+
+    public void changeStatus(UserStatus status) {
+        this.status = status;
     }
 }
