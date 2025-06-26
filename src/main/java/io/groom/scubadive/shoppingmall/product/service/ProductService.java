@@ -6,6 +6,7 @@ import io.groom.scubadive.shoppingmall.category.repository.CategoryRepository;
 import io.groom.scubadive.shoppingmall.global.dto.ApiResponseDto;
 import io.groom.scubadive.shoppingmall.global.exception.ErrorCode;
 import io.groom.scubadive.shoppingmall.global.exception.GlobalException;
+import io.groom.scubadive.shoppingmall.global.util.ProductUtil;
 import io.groom.scubadive.shoppingmall.product.domain.Product;
 import io.groom.scubadive.shoppingmall.product.domain.ProductOption;
 import io.groom.scubadive.shoppingmall.product.domain.ProductOptionStatus;
@@ -32,13 +33,15 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class ProductService {
     private final ProductRepository productRepository;
     private final CategoryRepository categoryRepository;
+    private final ProductUtil productUtil;
 
     public ApiResponseDto<ProductSaveResponse> createProduct(ProductSaveRequest request) {
         Category category = categoryRepository.findById(request.categoryId()).orElseThrow(
                 () -> new GlobalException(ErrorCode.CATEGORY_NOT_FOUND)
         );
 
-        Product product = Product.createProduct(request.name(), request.description(), request.price(), getRandomNumber().longValue(), generateRandomRating(), category);
+
+        Product product = Product.createProduct(request.name(), request.description(), request.price(), productUtil.getRandomNumber().longValue(), productUtil.generateRandomRating(), category);
         productRepository.save(product);
 
         // 해당 카테고리 안에 상품이 얼마나 있는지 확인.
@@ -47,7 +50,7 @@ public class ProductService {
         AtomicInteger skuCount = new AtomicInteger(count.byteValue() + 1);
         List<ProductOption> options = request.options().stream().map(productOptionRequest -> {
 
-            String sku = generateSku(category.getName(), productOptionRequest.color(), skuCount.getAndIncrement());
+            String sku = productUtil.generateSku(category.getName(), productOptionRequest.color(), skuCount.getAndIncrement());
 
             return ProductOption.createProductOption(productOptionRequest.color(), sku, productOptionRequest.stock().longValue(), ProductOptionStatus.ACTIVE, product);
         }).toList();
@@ -70,35 +73,5 @@ public class ProductService {
     public ApiResponseDto<Void> deleteProductById(Long id) {
         productRepository.deleteById(id);
         return ApiResponseDto.of(200, "상품이 성공적으로 삭제되었습니다.", null);
-    }
-
-    private Integer getRandomNumber() {
-        return new Random().nextInt(1000) + 1; // 1 ~ 1000
-    }
-
-    private BigDecimal generateRandomRating() {
-        double random = ThreadLocalRandom.current().nextDouble(0.0, 100.0); // 원하는 범위 지정
-        return BigDecimal.valueOf(random).setScale(2, RoundingMode.HALF_UP); // 소수점 둘째자리까지
-    }
-
-    private String generateSku(String categoryName, String color, int index) {
-        return String.format("%s-%s-%03d",
-                categoryName.toUpperCase(),
-                colorToCode(color),
-                index
-        );
-    }
-
-    private String colorToCode(String color) {
-        return switch (color) {
-            case "빨간색" -> "RED";
-            case "주황색" -> "ORANGE";
-            case "노란색" -> "YELLOW";
-            case "초록색" -> "GREEN";
-            case "파란색" -> "BLUE";
-            case "남색" -> "NAVY";
-            case "보라색" -> "PURPLE";
-            default -> "GEN";
-        };
     }
 }
