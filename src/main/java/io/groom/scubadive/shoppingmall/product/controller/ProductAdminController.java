@@ -29,16 +29,6 @@ public class ProductAdminController {
     }
 
     /**
-     * 상품 단일 조회
-     * @param id
-     * @return
-     */
-    @GetMapping("/{id}")
-    public ApiResponseDto<Void> getProduct(@PathVariable Long id) {
-        return null;
-    }
-
-    /**
      * 상품 추가
      * @param
      * @return
@@ -66,7 +56,7 @@ public class ProductAdminController {
      */
     @DeleteMapping("/{id}")
     public ApiResponseDto<Void> deleteProduct(@PathVariable Long id) {
-        return null;
+        return productService.deleteProductById(id);
     }
 
     /**

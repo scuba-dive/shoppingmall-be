@@ -66,6 +66,12 @@ public class ProductService {
         return ApiResponseDto.of(200, "성공적으로 조회했습니다.", ProductWithOptionPageResponse.from(productOptionPageable));
     }
 
+
+    public ApiResponseDto<Void> deleteProductById(Long id) {
+        productRepository.deleteById(id);
+        return ApiResponseDto.of(200, "상품이 성공적으로 삭제되었습니다.", null);
+    }
+
     private Integer getRandomNumber() {
         return new Random().nextInt(1000) + 1; // 1 ~ 1000
     }
