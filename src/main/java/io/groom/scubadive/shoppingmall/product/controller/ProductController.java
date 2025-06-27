@@ -2,6 +2,7 @@ package io.groom.scubadive.shoppingmall.product.controller;
 
 import io.groom.scubadive.shoppingmall.global.dto.ApiResponseDto;
 import io.groom.scubadive.shoppingmall.product.domain.Product;
+import io.groom.scubadive.shoppingmall.product.dto.response.ProductDetailUserResponse;
 import io.groom.scubadive.shoppingmall.product.dto.response.ProductUserPageResponse;
 import io.groom.scubadive.shoppingmall.product.service.ProductService;
 import lombok.RequiredArgsConstructor;
@@ -36,8 +37,8 @@ public class ProductController {
      * @return
      */
     @GetMapping("/{id}")
-    public ApiResponseDto<Void> getProduct(@PathVariable Long id) {
-        return null;
+    public ApiResponseDto<ProductDetailUserResponse> getProduct(@PathVariable Long id) {
+        return productService.findProductDetailUserById(id);
     }
 
 }

@@ -14,10 +14,7 @@ import io.groom.scubadive.shoppingmall.product.dto.request.ProductSaveRequest;
 import io.groom.scubadive.shoppingmall.product.dto.request.ProductStatusUpdateRequest;
 import io.groom.scubadive.shoppingmall.product.dto.request.ProductStockUpdateRequest;
 import io.groom.scubadive.shoppingmall.product.dto.request.ProductUpdateRequest;
-import io.groom.scubadive.shoppingmall.product.dto.response.ProductSaveResponse;
-import io.groom.scubadive.shoppingmall.product.dto.response.ProductUpdateResponse;
-import io.groom.scubadive.shoppingmall.product.dto.response.ProductUserPageResponse;
-import io.groom.scubadive.shoppingmall.product.dto.response.ProductWithOptionPageResponse;
+import io.groom.scubadive.shoppingmall.product.dto.response.*;
 import io.groom.scubadive.shoppingmall.product.repository.ProductOptionRepository;
 import io.groom.scubadive.shoppingmall.product.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
@@ -115,6 +112,14 @@ public class ProductService {
 
         return ApiResponseDto.of(200, "상품 상태가 변경되었습니다.", null);
 
+    }
+
+    public ApiResponseDto<ProductDetailUserResponse> findProductDetailUserById(Long id) {
+        Product product = productRepository.findWithOptionsById(id).orElseThrow(
+                () -> new GlobalException(ErrorCode.PRODUCT_NOT_FOUND)
+        );
+
+        return ApiResponseDto.of(200, "상품 정보를 성공적으로 불러왔습니다.", ProductDetailUserResponse.from(product));
     }
 
     private Product findProductById(Long id) {
