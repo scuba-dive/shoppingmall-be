@@ -14,7 +14,7 @@ public record ProductDetailUserResponse(
         CategoryResponse category,
         BigDecimal rating,
         Long reviewCount,
-        List<ProductOptionResponse> options
+        List<ProductOptionWithImagesResponse> options
 ) {
     public static ProductDetailUserResponse from(Product product) {
         return new ProductDetailUserResponse(
@@ -25,7 +25,7 @@ public record ProductDetailUserResponse(
                 CategoryResponse.from(product.getCategory()),
                 product.getRating(),
                 product.getReviewCount(),
-                product.getOptions().stream().map(ProductOptionResponse::from).toList()
+                product.getOptions().stream().map(ProductOptionWithImagesResponse::from).toList()
         );
     }
 }

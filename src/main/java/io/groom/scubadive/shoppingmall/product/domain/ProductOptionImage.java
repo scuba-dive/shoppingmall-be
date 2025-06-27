@@ -28,6 +28,10 @@ public class ProductOptionImage extends BaseTimeEntity {
         this.productOption = productOption;
     }
 
+    public String getImageUrl() {
+        return "https://cdn.scubadive.com" + imagePath;
+    }
+
 
     @Builder(access = AccessLevel.PROTECTED)
     public ProductOptionImage(ProductOption productOption, String imagePath, String bucket) {
