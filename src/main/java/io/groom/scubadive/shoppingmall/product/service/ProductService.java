@@ -16,6 +16,7 @@ import io.groom.scubadive.shoppingmall.product.dto.request.ProductStockUpdateReq
 import io.groom.scubadive.shoppingmall.product.dto.request.ProductUpdateRequest;
 import io.groom.scubadive.shoppingmall.product.dto.response.ProductSaveResponse;
 import io.groom.scubadive.shoppingmall.product.dto.response.ProductUpdateResponse;
+import io.groom.scubadive.shoppingmall.product.dto.response.ProductUserPageResponse;
 import io.groom.scubadive.shoppingmall.product.dto.response.ProductWithOptionPageResponse;
 import io.groom.scubadive.shoppingmall.product.repository.ProductOptionRepository;
 import io.groom.scubadive.shoppingmall.product.repository.ProductRepository;
@@ -74,6 +75,13 @@ public class ProductService {
 
         return ApiResponseDto.of(200, "성공적으로 조회했습니다.", ProductWithOptionPageResponse.from(productOptionPageable));
     }
+
+    public ApiResponseDto<ProductUserPageResponse> getProductUsersByPageable(Pageable pageable) {
+        Page<Product> productsPageable = productRepository.findProductsPageable(pageable);
+
+        return ApiResponseDto.of(200, "상품 목록을 성공적으로 불러왔습니다", ProductUserPageResponse.from(productsPageable));
+    }
+
 
     public ApiResponseDto<ProductUpdateResponse> updateProductById(Long id, ProductUpdateRequest request) {
         Product product = findProductById(id);

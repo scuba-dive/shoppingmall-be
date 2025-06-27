@@ -24,6 +24,10 @@ public class ProductOptionImage extends BaseTimeEntity {
     private String imagePath;
     private String bucket;
 
+    public void addProductOption(ProductOption productOption) {
+        this.productOption = productOption;
+    }
+
 
     @Builder(access = AccessLevel.PROTECTED)
     public ProductOptionImage(ProductOption productOption, String imagePath, String bucket) {
