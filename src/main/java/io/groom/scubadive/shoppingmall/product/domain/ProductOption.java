@@ -5,6 +5,9 @@ import io.groom.scubadive.shoppingmall.global.util.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
@@ -24,6 +27,9 @@ public class ProductOption extends BaseTimeEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_id")
     private Product product;
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "productOption")
+    private List<ProductOptionImage> productOptionImages = new ArrayList<>();
 
     @Builder(access = AccessLevel.PRIVATE)
     public ProductOption(String color, String sku, Long stock, ProductOptionStatus status, Product product) {
@@ -55,4 +61,11 @@ public class ProductOption extends BaseTimeEntity {
     public void updateStatus(ProductOptionStatus status) {
         this.status = status;
     }
+
+    public void addProductOptionImage(ProductOptionImage productOptionImage) {
+        this.productOptionImages.add(productOptionImage);
+        productOptionImage.addProductOption(this);
+    }
+
+
 }

@@ -8,6 +8,6 @@ public record CategoryResponse(
 ) {
 
     public static CategoryResponse from(Category category) {
-        return new CategoryResponse(category.getId(), category.getName());
+        return new CategoryResponse(category.getId(), category.getKoreanName());
     }
 }

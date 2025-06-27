@@ -1,5 +1,6 @@
 package io.groom.scubadive.shoppingmall.product.repository;
 
+import io.groom.scubadive.shoppingmall.product.domain.Product;
 import io.groom.scubadive.shoppingmall.product.domain.ProductOption;
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
@@ -23,8 +24,7 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
     public Page<ProductOption> findProductOptionPageable(Pageable pageable) {
         String baseQuery =
                 "select po from ProductOption po " +
-                "join po.product p";
-        String orderByClause = createOrderByClause(pageable);
+                "join fetch po.product p";
 
         String finalQuery = baseQuery + " " + createOrderByClause(pageable);
 
@@ -40,6 +40,23 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
         return new PageImpl<>(content, pageable, total);
     }
 
+    @Override
+    public Page<Product> findProductsPageable(Pageable pageable) {
+        String baseQuery = "select p from Product p " +
+                "join fetch p.options po " +
+                "left join po.productOptionImages poi";
+
+        String finalQuery = baseQuery + " " + createOrderByClause(pageable);
+
+        List<Product> content = em.createQuery(finalQuery, Product.class)
+                .setFirstResult((int) pageable.getOffset())
+                .setMaxResults(pageable.getPageSize())
+                .getResultList();
+
+        Long total = em.createQuery("select count(p) from Product p", Long.class).getSingleResult();
+
+        return new PageImpl<>(content, pageable, total);
+    };
 
 
     private String createOrderByClause(Pageable pageable) {
