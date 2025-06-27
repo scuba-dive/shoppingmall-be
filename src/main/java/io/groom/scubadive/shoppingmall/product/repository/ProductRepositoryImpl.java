@@ -56,7 +56,32 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
         Long total = em.createQuery("select count(p) from Product p", Long.class).getSingleResult();
 
         return new PageImpl<>(content, pageable, total);
-    };
+    }
+
+    @Override
+    public Page<Product> findProductsByCategoryId(Long categoryId, Pageable pageable) {
+        String baseQuery = "select p from Product p " +
+                "join fetch p.options po " +
+                "left join po.productOptionImages poi " +
+                "where p.category.id = :categoryId";
+
+        String finalQuery = baseQuery + " " + createOrderByClause(pageable);
+
+        List<Product> content = em.createQuery(finalQuery, Product.class)
+                .setParameter("categoryId", categoryId)
+                .setFirstResult((int) pageable.getOffset())
+                .setMaxResults(pageable.getPageSize())
+                .getResultList();
+
+        Long total = em.createQuery("select count(p) from Product p " +
+                "where p.category.id = :categoryId", Long.class)
+                .setParameter("categoryId", categoryId)
+                .getSingleResult();
+
+        return new PageImpl<>(content, pageable, total);
+    }
+
+    ;
 
 
     private String createOrderByClause(Pageable pageable) {

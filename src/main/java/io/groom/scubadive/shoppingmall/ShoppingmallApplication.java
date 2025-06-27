@@ -23,6 +23,7 @@ public class ShoppingmallApplication {
 		return args -> {
 			if (categoryRepository.count() == 0) {
 				categoryRepository.save(Category.createCategory("CHAIR", "의자"));
+				categoryRepository.save(Category.createCategory("TABLE", "책상"));
 			}
 		};
 	}
