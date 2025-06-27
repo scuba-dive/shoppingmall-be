@@ -1,4 +1,4 @@
-package io.groom.scubadive.shoppingmall.memeber.domain;
+package io.groom.scubadive.shoppingmall.member.domain;
 
 import io.groom.scubadive.shoppingmall.global.util.BaseTimeEntity;
 import jakarta.persistence.*;
@@ -14,18 +14,13 @@ public class UserImage extends BaseTimeEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false, unique = true)
-    private User user;
-
     @Column(columnDefinition = "TEXT")
     private String imagePath;
 
     @Column(length = 100)
     private String bucket;
 
-    public UserImage(User user, String imagePath, String bucket) {
-        this.user = user;
+    public UserImage(String imagePath, String bucket) {
         this.imagePath = imagePath;
         this.bucket = bucket;
     }

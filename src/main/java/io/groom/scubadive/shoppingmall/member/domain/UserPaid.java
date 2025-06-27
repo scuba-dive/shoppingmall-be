@@ -1,4 +1,4 @@
-package io.groom.scubadive.shoppingmall.memeber.domain;
+package io.groom.scubadive.shoppingmall.member.domain;
 
 import io.groom.scubadive.shoppingmall.global.util.BaseTimeEntity;
 import jakarta.persistence.*;

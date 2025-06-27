@@ -49,6 +49,10 @@ public class User extends BaseTimeEntity {
 
     private LocalDateTime lastLoginAt;
 
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_image_id")
+    private UserImage userImage;
+
 
     public User(String username, String nickname, String email, String password, String phoneNumber, String address) {
         this.username = username;
@@ -69,5 +73,9 @@ public class User extends BaseTimeEntity {
 
     public void changeStatus(UserStatus status) {
         this.status = status;
+    }
+
+    public void setUserImage(UserImage userImage) {
+        this.userImage = userImage;
     }
 }
