@@ -24,7 +24,7 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
     public Page<ProductOption> findProductOptionPageable(Pageable pageable) {
         String baseQuery =
                 "select po from ProductOption po " +
-                "join po.product p";
+                "join fetch po.product p";
 
         String finalQuery = baseQuery + " " + createOrderByClause(pageable);
 
@@ -43,7 +43,7 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
     @Override
     public Page<Product> findProductsPageable(Pageable pageable) {
         String baseQuery = "select p from Product p " +
-                "join p.options po " +
+                "join fetch p.options po " +
                 "left join po.productOptionImages poi";
 
         String finalQuery = baseQuery + " " + createOrderByClause(pageable);
