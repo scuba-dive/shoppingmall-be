@@ -32,6 +32,7 @@ public class UserPaid extends BaseTimeEntity {
         this.amount = 0L;
     }
 
+
     public void addPayment(long paymentAmount) {
         this.amount += paymentAmount;
         this.count += 1;
