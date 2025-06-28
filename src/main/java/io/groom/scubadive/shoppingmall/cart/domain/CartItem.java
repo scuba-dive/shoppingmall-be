@@ -1,5 +1,6 @@
 package io.groom.scubadive.shoppingmall.cart.domain;
 
+import io.groom.scubadive.shoppingmall.global.util.BaseTimeEntity;
 import io.groom.scubadive.shoppingmall.product.domain.ProductOption;
 import jakarta.persistence.*;
 import lombok.*;
@@ -7,7 +8,7 @@ import lombok.*;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class CartItem {
+public class CartItem extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

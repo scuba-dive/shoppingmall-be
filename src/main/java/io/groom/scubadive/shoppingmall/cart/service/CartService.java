@@ -24,7 +24,8 @@ public class CartService {
     private final ProductOptionRepository productOptionRepository;
 
     @Transactional
-    public void addItem(User user, CartItemRequest request) {
+// CartService.java (수정된 부분)
+    public CartItemResponse addItem(User user, CartItemRequest request) {
         Cart cart = cartRepository.findByUserId(user.getId())
                 .orElseGet(() -> cartRepository.save(new Cart(user)));
 
@@ -33,27 +34,69 @@ public class CartService {
 
         CartItem item = new CartItem(cart, option, request.getQuantity());
         cartItemRepository.save(item);
+
+        Long price = option.getProduct().getPrice();
+        int quantity = item.getQuantity();
+
+        return CartItemResponse.builder()
+                .cartItemId(item.getId())
+                .productId(option.getProduct().getId())
+                .productOptionId(option.getId())
+                .productName(option.getProduct().getName())
+                .color(option.getColor())
+                .price(price)
+                .quantity(quantity)
+                .totalPrice(price * quantity)
+                .createdAt(item.getCreatedAt())
+                .updatedAt(item.getUpdatedAt())
+                .build();
+    }
+
+    public CartItemResponse updateItem(Long cartItemId, CartUpdateRequest request) {
+        CartItem item = cartItemRepository.findById(cartItemId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 장바구니 항목을 찾을 수 없습니다."));
+
+        item.changeQuantity(request.getQuantity());
+
+        Long price = item.getProductOption().getProduct().getPrice();
+        int quantity = item.getQuantity();
+
+        return CartItemResponse.builder()
+                .cartItemId(item.getId())
+                .productId(item.getProductOption().getProduct().getId())
+                .productOptionId(item.getProductOption().getId())
+                .productName(item.getProductOption().getProduct().getName())
+                .color(item.getProductOption().getColor())
+                .price(price)
+                .quantity(quantity)
+                .totalPrice(price * quantity)
+                .createdAt(item.getCreatedAt())
+                .updatedAt(item.getUpdatedAt())
+                .build();
     }
 
     public List<CartItemResponse> getItems(User user) {
         Cart cart = cartRepository.findByUserId(user.getId())
                 .orElseThrow(() -> new IllegalStateException("장바구니가 없습니다."));
 
-        return cart.getItems().stream().map(item -> CartItemResponse.builder()
-                .cartItemId(item.getId())
-                .productName(item.getProductOption().getProduct().getName())
-                .color(item.getProductOption().getColor())
-                .price(item.getProductOption().getProduct().getPrice())
-                .quantity(item.getQuantity())
-                .build()).collect(Collectors.toList());
+        return cart.getItems().stream().map(item -> {
+            Long price = item.getProductOption().getProduct().getPrice();
+            int quantity = item.getQuantity();
+            return CartItemResponse.builder()
+                    .cartItemId(item.getId())
+                    .productId(item.getProductOption().getProduct().getId())
+                    .productOptionId(item.getProductOption().getId())
+                    .productName(item.getProductOption().getProduct().getName())
+                    .color(item.getProductOption().getColor())
+                    .price(price)
+                    .quantity(quantity)
+                    .totalPrice(price * quantity)
+                    .createdAt(item.getCreatedAt())
+                    .updatedAt(item.getUpdatedAt())
+                    .build();
+        }).collect(Collectors.toList());
     }
 
-    @Transactional
-    public void updateItem(Long cartItemId, CartUpdateRequest request) {
-        CartItem item = cartItemRepository.findById(cartItemId)
-                .orElseThrow(() -> new IllegalArgumentException("항목을 찾을 수 없습니다."));
-        item.changeQuantity(request.getQuantity());
-    }
 
     @Transactional
     public void deleteItem(Long cartItemId) {
