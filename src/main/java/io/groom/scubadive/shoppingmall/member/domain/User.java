@@ -69,6 +69,7 @@ public class User extends BaseTimeEntity {
         this.status = UserStatus.ACTIVE;
         this.grade = Grade.BRONZE;
         this.role = Role.USER;
+        this.lastLoginAt = LocalDateTime.now(); // 최초 가입 시 현재 시각으로 초기화 (3개월 이상 미접속 시 휴면 전환 정책 null 방지)
     }
 
 
