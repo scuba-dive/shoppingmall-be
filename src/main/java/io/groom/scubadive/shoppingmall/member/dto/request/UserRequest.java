@@ -1,2 +1,4 @@
-package io.groom.scubadive.shoppingmall.member.dto.request;public class UserRequest {
+package io.groom.scubadive.shoppingmall.member.dto.request;
+
+public class UserRequest {
 }

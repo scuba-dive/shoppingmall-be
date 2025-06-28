@@ -4,6 +4,7 @@ import io.groom.scubadive.shoppingmall.global.util.BaseTimeEntity;
 import io.groom.scubadive.shoppingmall.member.domain.enums.Grade;
 import io.groom.scubadive.shoppingmall.member.domain.enums.Role;
 import io.groom.scubadive.shoppingmall.member.domain.enums.UserStatus;
+import io.swagger.v3.oas.annotations.info.Contact;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -69,6 +70,7 @@ public class User extends BaseTimeEntity {
         this.grade = Grade.BRONZE;
         this.role = Role.USER;
     }
+
 
 
     public void updateLastLoginAt() {
