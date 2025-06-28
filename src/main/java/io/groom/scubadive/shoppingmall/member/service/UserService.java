@@ -27,6 +27,11 @@ public class UserService {
             throw new GlobalException(ErrorCode.EMAIL_ALREADY_EXISTS);
         }
 
+        if (!dto.getPassword().equals(dto.getPasswordCheck())) {
+            throw new GlobalException(ErrorCode.PASSWORDS_DO_NOT_MATCH);
+        }
+
+
         // 닉네임 자동 생성 및 중복 방지
         String nickname = generateUniqueNickname();
 
