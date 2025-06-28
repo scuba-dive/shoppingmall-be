@@ -56,14 +56,17 @@ public class OrderService {
     public OrderListResponse getUserOrders(User user, int page, int size) {
         Page<Order> orders = orderRepository.findAllByUserId(user.getId(), PageRequest.of(page, size));
         return OrderListResponse.builder()
-                .currentPage(page)
+                .page(page)
                 .totalPages(orders.getTotalPages())
+                .totalElements(orders.getTotalElements())
                 .orders(orders.getContent().stream().map(o -> OrderListResponse.OrderSummary.builder()
                         .orderId(o.getId())
                         .orderNumber(o.getOrderNumber())
-                        .username(o.getUser().getUsername())
+                        .orderedAt(o.getCreatedAt())
+                        .totalCount(o.getTotalCount())
                         .totalPrice(o.getTotalPrice())
-                        .status(o.getStatus().name())
+                        .orderStatus(o.getOrderStatus().name())
+                        .userName(o.getUser().getUsername())
                         .build()).collect(Collectors.toList()))
                 .build();
     }
@@ -71,14 +74,17 @@ public class OrderService {
     public OrderListResponse getAllOrders(int page, int size) {
         Page<Order> orders = orderRepository.findAll(PageRequest.of(page, size));
         return OrderListResponse.builder()
-                .currentPage(page)
+                .page(page)
                 .totalPages(orders.getTotalPages())
+                .totalElements(orders.getTotalElements())
                 .orders(orders.getContent().stream().map(o -> OrderListResponse.OrderSummary.builder()
                         .orderId(o.getId())
                         .orderNumber(o.getOrderNumber())
-                        .username(o.getUser().getUsername())
+                        .orderedAt(o.getCreatedAt())
+                        .totalCount(o.getTotalCount())
                         .totalPrice(o.getTotalPrice())
-                        .status(o.getStatus().name())
+                        .orderStatus(o.getOrderStatus().name())
+                        .userName(o.getUser().getUsername())
                         .build()).collect(Collectors.toList()))
                 .build();
     }
@@ -93,16 +99,20 @@ public class OrderService {
         return OrderResponse.builder()
                 .orderId(order.getId())
                 .orderNumber(order.getOrderNumber())
-                .orderDate(order.getCreatedAt())
-                .totalCount(order.getTotalCount())
+                .orderedAt(order.getCreatedAt())
+                .userName(order.getUser().getUsername())
+                .phoneNumber(order.getUser().getPhoneNumber())
+                .address(order.getUser().getAddress())
+                .orderStatus(order.getOrderStatus().name())
                 .totalPrice(order.getTotalPrice())
-                .status(order.getStatus())
-                .items(order.getItems().stream().map(i -> OrderResponse.OrderItemDto.builder()
+                .totalCount(order.getTotalCount())
+                .orderItems(order.getItems().stream().map(i -> OrderResponse.OrderItemDto.builder()
                         .productName(i.getProductOption().getProduct().getName())
-                        .color(i.getProductOption().getColor())
+                        .option(i.getProductOption().getColor())
                         .quantity(i.getQuantity())
                         .price(i.getProductOption().getProduct().getPrice())
-                        .build()).collect(Collectors.toList()))
+                        .totalPrice(i.getProductOption().getProduct().getPrice() * i.getQuantity())
+                        .build()).toList())
                 .build();
     }
 }

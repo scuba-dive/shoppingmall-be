@@ -28,17 +28,17 @@ public class Order extends BaseTimeEntity {
     private Long totalPrice;
 
     @Enumerated(EnumType.STRING)
-    private OrderStatus status;
+    private OrderStatus orderStatus;
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<OrderItem> items = new ArrayList<>();
 
-    public Order(User user, String orderNumber, int totalCount, Long totalPrice, OrderStatus status) {
+    public Order(User user, String orderNumber, int totalCount, Long totalPrice, OrderStatus orderStatus) {
         this.user = user;
         this.orderNumber = orderNumber;
         this.totalCount = totalCount;
         this.totalPrice = totalPrice;
-        this.status = status;
+        this.orderStatus = orderStatus;
     }
 
     public void addItem(OrderItem item) {
@@ -47,6 +47,6 @@ public class Order extends BaseTimeEntity {
     }
 
     public void changeStatus(OrderStatus status) {
-        this.status = status;
+        this.orderStatus = status;
     }
 }

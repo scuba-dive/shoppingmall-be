@@ -1,6 +1,5 @@
 package io.groom.scubadive.shoppingmall.order.dto.response;
 
-import io.groom.scubadive.shoppingmall.order.domain.OrderStatus;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -14,22 +13,13 @@ public class OrderResponse {
     private String orderNumber;
     private LocalDateTime orderedAt;
     private String userName;
-    private ShippingAddress shippingAddress;
+    private String phoneNumber;
+    private String address;
     private String orderStatus;
     private String paymentMethod;
-    private Long totalAmount;
+    private Long totalPrice;
     private int totalCount;
     private List<OrderItemDto> orderItems;
-
-    @Getter
-    @Builder
-    public static class ShippingAddress {
-        private String recipient;
-        private String phone;
-        private String zipcode;
-        private String address1;
-        private String address2;
-    }
 
     @Getter
     @Builder
