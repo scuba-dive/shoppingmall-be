@@ -1,4 +1,4 @@
-package io.groom.scubadive.shoppingmall.member.domain;
+package io.groom.scubadive.shoppingmall.global.securirty;
 
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
@@ -14,28 +14,20 @@ import java.util.Date;
 @RequiredArgsConstructor
 public class JwtTokenProvider {
 
-    @Value("${jwt.secret}")
-    private String secret;
-
-    @Value("${jwt.access-token-expiration}")
-    private long accessTokenExpirationSeconds;
-
-    @Value("${jwt.refresh-token-expiration}")
-    private long refreshTokenExpirationSeconds;
-
+    private final JwtProperties jwtProperties;
     private Key key;
 
     @PostConstruct
     public void init() {
-        this.key = Keys.hmacShaKeyFor(secret.getBytes());
+        this.key = Keys.hmacShaKeyFor(jwtProperties.getSecretKey().getBytes());
     }
 
     public String createAccessToken(Long userId, Enum<?> role) {
-        return createToken(userId, role, accessTokenExpirationSeconds);
+        return createToken(userId, role, jwtProperties.getAccessTokenExpiration());
     }
 
     public String createRefreshToken(Long userId) {
-        return createToken(userId, null, refreshTokenExpirationSeconds);
+        return createToken(userId, null,  jwtProperties.getRefreshTokenExpiration());
     }
 
     private String createToken(Long userId, Enum<?> role, long expirySeconds) {
