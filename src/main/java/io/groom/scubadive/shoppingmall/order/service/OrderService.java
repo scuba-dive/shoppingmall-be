@@ -56,14 +56,13 @@ public class OrderService {
     public OrderListResponse getUserOrders(User user, int page, int size) {
         Page<Order> orders = orderRepository.findAllByUserId(user.getId(), PageRequest.of(page, size));
         return OrderListResponse.builder()
-                .currentPage(page)
+                .page(page)
                 .totalPages(orders.getTotalPages())
                 .orders(orders.getContent().stream().map(o -> OrderListResponse.OrderSummary.builder()
                         .orderId(o.getId())
                         .orderNumber(o.getOrderNumber())
-                        .username(o.getUser().getUsername())
                         .totalPrice(o.getTotalPrice())
-                        .status(o.getStatus().name())
+                        .orderStatus(o.getStatus().name())
                         .build()).collect(Collectors.toList()))
                 .build();
     }
@@ -71,14 +70,13 @@ public class OrderService {
     public OrderListResponse getAllOrders(int page, int size) {
         Page<Order> orders = orderRepository.findAll(PageRequest.of(page, size));
         return OrderListResponse.builder()
-                .currentPage(page)
+                .page(page)
                 .totalPages(orders.getTotalPages())
                 .orders(orders.getContent().stream().map(o -> OrderListResponse.OrderSummary.builder()
                         .orderId(o.getId())
                         .orderNumber(o.getOrderNumber())
-                        .username(o.getUser().getUsername())
                         .totalPrice(o.getTotalPrice())
-                        .status(o.getStatus().name())
+                        .orderStatus(o.getStatus().name())
                         .build()).collect(Collectors.toList()))
                 .build();
     }
@@ -93,13 +91,13 @@ public class OrderService {
         return OrderResponse.builder()
                 .orderId(order.getId())
                 .orderNumber(order.getOrderNumber())
-                .orderDate(order.getCreatedAt())
+                .orderedAt(order.getCreatedAt())
                 .totalCount(order.getTotalCount())
                 .totalPrice(order.getTotalPrice())
-                .status(order.getStatus())
-                .items(order.getItems().stream().map(i -> OrderResponse.OrderItemDto.builder()
+                .orderStatus(order.getStatus().name())
+                .orderItems(order.getItems().stream().map(i -> OrderResponse.OrderItemDto.builder()
                         .productName(i.getProductOption().getProduct().getName())
-                        .color(i.getProductOption().getColor())
+                        .option(i.getProductOption().getColor())
                         .quantity(i.getQuantity())
                         .price(i.getProductOption().getProduct().getPrice())
                         .build()).collect(Collectors.toList()))
