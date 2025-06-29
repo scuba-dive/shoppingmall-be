@@ -25,6 +25,7 @@ public class OrderItem {
     public OrderItem(ProductOption productOption, int quantity) {
         this.productOption = productOption;
         this.quantity = quantity;
+
     }
 
     public void setOrder(Order order) {
