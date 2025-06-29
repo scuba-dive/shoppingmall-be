@@ -80,4 +80,10 @@ public class User extends BaseTimeEntity {
     public void updateUserImage(UserImage image) {
         this.userImage = image;
     }
+
+    public void updateStatus(UserStatus status) {
+        this.status = status;
+    }
+
+
 }
