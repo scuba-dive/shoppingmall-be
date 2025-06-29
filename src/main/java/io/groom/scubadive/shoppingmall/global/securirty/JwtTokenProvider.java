@@ -73,4 +73,8 @@ public class JwtTokenProvider {
                 .getBody();
         return claims.get("role", String.class);
     }
+
+    public long getRefreshTokenExpirySeconds() {
+        return jwtProperties.getRefreshTokenExpiration();
+    }
 }

@@ -1,6 +1,7 @@
 package io.groom.scubadive.shoppingmall.member.controller;
 
 import io.groom.scubadive.shoppingmall.global.dto.ApiResponseDto;
+import io.groom.scubadive.shoppingmall.global.util.CookieUtil;
 import io.groom.scubadive.shoppingmall.member.dto.request.SignInRequest;
 import io.groom.scubadive.shoppingmall.member.dto.request.SignUpRequest;
 import io.groom.scubadive.shoppingmall.member.dto.response.SignInResponse;
@@ -38,15 +39,7 @@ public class UserController {
         SignInResponse signInResponse = userService.login(request);
 
         // Refresh Token을 HttpOnly 쿠키로 설정
-        ResponseCookie refreshTokenCookie = ResponseCookie.from("refreshToken", signInResponse.getRefreshToken())
-                .httpOnly(true)
-                .secure(true)
-                .path("/")
-                .sameSite("Strict")
-                .maxAge(Duration.ofDays(7))
-                .build();
-
-        response.setHeader("Set-Cookie", refreshTokenCookie.toString());
+        CookieUtil.addRefreshTokenCookie(response, signInResponse.getAccessToken());
 
         // 응답 데이터는 AccessToken + UserSummary
         return ResponseEntity.ok(

@@ -22,6 +22,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -105,12 +107,13 @@ public class UserService {
         // JWT 발급
         String accessToken = jwtTokenProvider.createAccessToken(user.getId(), user.getRole());
         String refreshToken = jwtTokenProvider.createRefreshToken(user.getId());
+        LocalDateTime expiresAt = LocalDateTime.now().plusSeconds(jwtTokenProvider.getRefreshTokenExpirySeconds());
 
         // RefreshToken 저장 또는 갱신
         refreshTokenRepository.findById(user.getId())
                 .ifPresentOrElse(
-                        token -> token.updateToken(refreshToken),
-                        () -> refreshTokenRepository.save(new RefreshToken(user.getId(), refreshToken))
+                        token -> token.updateToken(refreshToken, expiresAt),
+                        () -> refreshTokenRepository.save(new RefreshToken(user.getId(), refreshToken, expiresAt))
                 );
 
         return new SignInResponse(

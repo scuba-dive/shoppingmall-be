@@ -7,6 +7,8 @@ import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
 @Entity
 @Getter
 @NoArgsConstructor
@@ -19,11 +21,16 @@ public class RefreshToken {
     @Column(nullable = false)
     private String token;
 
-    public RefreshToken(Long userId, String token) {
+    @Column(nullable = false)
+    private LocalDateTime expiresAt;
+
+    public RefreshToken(Long userId, String token, LocalDateTime expiresAt) {
         this.userId = userId;
         this.token = token;
+        this.expiresAt = expiresAt;
     }
-    public void updateToken(String token) {
+    public void updateToken(String token, LocalDateTime expiresAt) {
         this.token = token;
+        this.expiresAt = expiresAt;
     }
 }

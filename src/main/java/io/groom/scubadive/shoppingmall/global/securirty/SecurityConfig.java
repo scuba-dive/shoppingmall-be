@@ -31,6 +31,8 @@ public class SecurityConfig {
                         .requestMatchers(
                                 "/api/users/signup",
                                 "/api/users/login",
+                                "/api/products/**",
+                                "/api/categories",
                                 "/ping",
                                 "/h2-console/**"
                         ).permitAll() // 인증 없이 허용할 경로들
