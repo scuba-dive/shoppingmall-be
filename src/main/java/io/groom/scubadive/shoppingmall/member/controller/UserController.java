@@ -5,6 +5,8 @@ import io.groom.scubadive.shoppingmall.global.securirty.LoginUser;
 import io.groom.scubadive.shoppingmall.global.util.CookieUtil;
 import io.groom.scubadive.shoppingmall.member.dto.request.SignInRequest;
 import io.groom.scubadive.shoppingmall.member.dto.request.SignUpRequest;
+import io.groom.scubadive.shoppingmall.member.dto.request.UpdateUserRequest;
+import io.groom.scubadive.shoppingmall.member.dto.response.UpdateUserResponseWrapper;
 import io.groom.scubadive.shoppingmall.member.dto.response.UserInfoResponse;
 import io.groom.scubadive.shoppingmall.member.dto.response.SignInResponse;
 import io.groom.scubadive.shoppingmall.member.dto.response.UserResponse;
@@ -51,5 +53,17 @@ public class UserController {
         UserInfoResponse response = userService.getMyInfo(userId);
         return ResponseEntity.ok(ApiResponseDto.of(200, "내 정보 조회에 성공하였습니다.", response));
     }
+
+
+    @PatchMapping("/me")
+    public ResponseEntity<ApiResponseDto<UpdateUserResponseWrapper>> updateMyInfo(
+            @LoginUser Long userId,
+            @Valid @RequestBody UpdateUserRequest request
+    ) {
+        UpdateUserResponseWrapper response = userService.updateMyInfo(userId, request);
+        return ResponseEntity.ok(ApiResponseDto.of(200, "내 정보가 성공적으로 수정되었습니다.", response));
+    }
+
+
 
 }

@@ -2,6 +2,7 @@ package io.groom.scubadive.shoppingmall.member.dto.request;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import lombok.Getter;
 
 @Getter
@@ -12,12 +13,14 @@ public class SignUpRequest {
     private String email;
 
     @NotBlank(message = "비밀번호는 필수입니다.")
+    @Size(min = 4, max = 30)
     private String password;
 
     @NotBlank(message = "비밀번호 확인은 필수입니다.")
     private String passwordCheck;
 
     @NotBlank(message = "이름은 필수입니다.")
+    @Size(min = 2, max = 30)
     private String username;
 
     @NotBlank(message = "전화번호는 필수입니다.")
