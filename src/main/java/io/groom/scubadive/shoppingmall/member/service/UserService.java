@@ -9,10 +9,8 @@ import io.groom.scubadive.shoppingmall.member.domain.UserPaid;
 import io.groom.scubadive.shoppingmall.member.domain.enums.UserStatus;
 import io.groom.scubadive.shoppingmall.member.dto.request.SignInRequest;
 import io.groom.scubadive.shoppingmall.member.dto.request.SignUpRequest;
-import io.groom.scubadive.shoppingmall.member.dto.response.UserInfoResponse;
-import io.groom.scubadive.shoppingmall.member.dto.response.SignInResponse;
-import io.groom.scubadive.shoppingmall.member.dto.response.UserResponse;
-import io.groom.scubadive.shoppingmall.member.dto.response.UserSummary;
+import io.groom.scubadive.shoppingmall.member.dto.request.UpdateUserRequest;
+import io.groom.scubadive.shoppingmall.member.dto.response.*;
 import io.groom.scubadive.shoppingmall.member.repository.RefreshTokenRepository;
 import io.groom.scubadive.shoppingmall.member.repository.UserPaidRepository;
 import io.groom.scubadive.shoppingmall.member.repository.UserRepository;
@@ -36,6 +34,7 @@ public class UserService {
     private final JwtTokenProvider jwtTokenProvider;
     private final RefreshTokenRepository refreshTokenRepository;
 
+    // 회원가입
     public UserResponse signUp(SignUpRequest dto) {
         // 이메일 중복 검사
         if (userRepository.existsByEmail(dto.getEmail())) {
@@ -70,6 +69,7 @@ public class UserService {
         return new UserResponse(user.getId(), user.getEmail(), user.getNickname());
     }
 
+    //닉네임 자동 생성
     private String generateUniqueNickname() {
         String nickname = NicknameGenerator.generate();
         while (userRepository.existsByNickname(nickname)) {
@@ -78,6 +78,7 @@ public class UserService {
         return nickname;
     }
 
+    // 로그인
     @Transactional
     public SignInResponse login(SignInRequest request) {
         User user = userRepository.findByEmail(request.getEmail())
@@ -124,6 +125,7 @@ public class UserService {
         );
     }
 
+    //내 정보 조회
     @Transactional(readOnly = true)
     public UserInfoResponse getMyInfo(Long userId) {
         User user = userRepository.findById(userId)
@@ -142,6 +144,75 @@ public class UserService {
                 .lastLoginAt(user.getLastLoginAt())
                 .createdAt(user.getCreatedAt())
                 .updatedAt(user.getUpdatedAt())
+                .build();
+    }
+
+    //내 정보 수정
+    @Transactional
+    public UpdateUserResponseWrapper updateMyInfo(Long userId, UpdateUserRequest request) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new GlobalException(ErrorCode.MEMBER_DELETED));
+
+        boolean isUpdated = false;
+        boolean passwordChanged = false;
+
+        // 비밀번호 변경
+        if (request.getNewPassword() != null && !request.getNewPassword().isBlank()) {
+            if (request.getCurrentPassword() == null || request.getCurrentPassword().isBlank()) {
+                throw new GlobalException(ErrorCode.PASSWORD_REQUIRED);
+            }
+            if (!passwordEncoder.matches(request.getCurrentPassword(), user.getPassword())) {
+                throw new GlobalException(ErrorCode.WRONG_PASSWORD);
+            }
+            if (passwordEncoder.matches(request.getNewPassword(), user.getPassword())) {
+                throw new GlobalException(ErrorCode.PASSWORD_SAME_AS_OLD);
+            }
+
+            user.updatePassword(passwordEncoder.encode(request.getNewPassword()));
+            // 비밀번호 변경 시 로그아웃 처리
+            refreshTokenRepository.deleteById(userId);
+            isUpdated = true;
+            passwordChanged = true;
+        }
+
+        // 닉네임 변경
+        if (request.getNickname() != null && !request.getNickname().equals(user.getNickname())) {
+            if (userRepository.existsByNicknameAndIdNot(request.getNickname(), user.getId())) {
+                throw new GlobalException(ErrorCode.NICKNAME_ALREADY_EXISTS);
+            }
+
+            user.updateNickname(request.getNickname());
+            isUpdated = true;
+        }
+
+        // 전화번호 변경
+        if (request.getPhoneNumber() != null && !request.getPhoneNumber().equals(user.getPhoneNumber())) {
+            user.updatePhoneNumber(request.getPhoneNumber());
+            isUpdated = true;
+        }
+
+        if (!isUpdated) {
+            throw new GlobalException(ErrorCode.NO_CHANGES_REQUESTED);
+        }
+
+        UserInfoResponse userResponse = UserInfoResponse.builder()
+                .id(user.getId())
+                .username(user.getUsername())
+                .nickname(user.getNickname())
+                .email(user.getEmail())
+                .phoneNumber(user.getPhoneNumber())
+                .role(user.getRole().name())
+                .status(user.getStatus().name().toLowerCase())
+                .grade(user.getGrade().name())
+                .imagePath(user.getUserImage() != null ? user.getUserImage().getFullImageUrl() : null)
+                .lastLoginAt(user.getLastLoginAt())
+                .createdAt(user.getCreatedAt())
+                .updatedAt(user.getUpdatedAt())
+                .build();
+
+        return UpdateUserResponseWrapper.builder()
+                .user(userResponse)
+                .loggedOut(passwordChanged)
                 .build();
     }
 

@@ -77,13 +77,23 @@ public class User extends BaseTimeEntity {
         this.lastLoginAt = LocalDateTime.now();
     }
 
-    public void updateUserImage(UserImage image) {
-        this.userImage = image;
-    }
 
     public void updateStatus(UserStatus status) {
         this.status = status;
     }
+
+    public void updateNickname(String nickname) {
+        this.nickname = nickname;
+    }
+
+    public void updatePhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
+    }
+
+    public void updatePassword(String newEncodedPassword) {
+        this.password = newEncodedPassword;
+    }
+
 
 
 }
