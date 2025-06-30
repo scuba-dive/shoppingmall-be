@@ -36,4 +36,14 @@ public class UserImage extends BaseTimeEntity {
         this.imagePath = imagePath;
         this.bucket = bucket;
     }
+
+    public String getFullImageUrl() {
+        if (bucket == null || imagePath == null) {
+            return null;
+        }
+        String cleanedPath = imagePath.startsWith("/") ? imagePath.substring(1) : imagePath;
+
+        return "https://" + bucket + ".s3.amazonaws.com/" + cleanedPath;
+    }
+
 }

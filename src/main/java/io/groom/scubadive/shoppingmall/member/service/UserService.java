@@ -9,6 +9,7 @@ import io.groom.scubadive.shoppingmall.member.domain.UserPaid;
 import io.groom.scubadive.shoppingmall.member.domain.enums.UserStatus;
 import io.groom.scubadive.shoppingmall.member.dto.request.SignInRequest;
 import io.groom.scubadive.shoppingmall.member.dto.request.SignUpRequest;
+import io.groom.scubadive.shoppingmall.member.dto.response.UserInfoResponse;
 import io.groom.scubadive.shoppingmall.member.dto.response.SignInResponse;
 import io.groom.scubadive.shoppingmall.member.dto.response.UserResponse;
 import io.groom.scubadive.shoppingmall.member.dto.response.UserSummary;
@@ -122,4 +123,26 @@ public class UserService {
                 new UserSummary(user)
         );
     }
+
+    @Transactional(readOnly = true)
+    public UserInfoResponse getMyInfo(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new GlobalException(ErrorCode.MEMBER_DELETED));
+
+        return UserInfoResponse.builder()
+                .id(user.getId())
+                .username(user.getUsername())
+                .nickname(user.getNickname())
+                .email(user.getEmail())
+                .phoneNumber(user.getPhoneNumber())
+                .role(user.getRole().name())
+                .status(user.getStatus().name().toLowerCase())
+                .grade(user.getGrade().name())
+                .imagePath(user.getUserImage() != null ? user.getUserImage().getImagePath() : null)
+                .lastLoginAt(user.getLastLoginAt())
+                .createdAt(user.getCreatedAt())
+                .updatedAt(user.getUpdatedAt())
+                .build();
+    }
+
 }

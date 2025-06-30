@@ -1,5 +1,6 @@
 package io.groom.scubadive.shoppingmall.global.securirty;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -11,7 +12,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
+@RequiredArgsConstructor
 public class SecurityConfig {
+
+    private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -36,8 +40,10 @@ public class SecurityConfig {
                                 "/ping",
                                 "/h2-console/**"
                         ).permitAll() // 인증 없이 허용할 경로들
+                        .requestMatchers("/api/users/me").hasAuthority("USER")
                         .anyRequest().authenticated() // 나머지는 인증 필요
                 )
+                .addFilterBefore(jwtAuthenticationFilter, org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter.class)
                 .headers().frameOptions().disable();
 
 
