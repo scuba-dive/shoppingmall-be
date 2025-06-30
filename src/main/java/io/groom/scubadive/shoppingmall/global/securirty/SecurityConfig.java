@@ -1,5 +1,6 @@
 package io.groom.scubadive.shoppingmall.global.securirty;
 
+import io.groom.scubadive.shoppingmall.member.domain.enums.Role;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -36,6 +37,7 @@ public class SecurityConfig {
                                 "/ping",
                                 "/h2-console/**"
                         ).permitAll() // 인증 없이 허용할 경로들
+                        .requestMatchers("/api/admin/**").hasRole(Role.ADMIN.name()) // 어드민 롤만 접근 가능.
                         .anyRequest().authenticated() // 나머지는 인증 필요
                 )
                 .headers().frameOptions().disable();
