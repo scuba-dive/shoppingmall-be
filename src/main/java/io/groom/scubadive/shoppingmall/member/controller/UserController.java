@@ -1,20 +1,19 @@
 package io.groom.scubadive.shoppingmall.member.controller;
 
 import io.groom.scubadive.shoppingmall.global.dto.ApiResponseDto;
+import io.groom.scubadive.shoppingmall.global.securirty.LoginUser;
 import io.groom.scubadive.shoppingmall.global.util.CookieUtil;
 import io.groom.scubadive.shoppingmall.member.dto.request.SignInRequest;
 import io.groom.scubadive.shoppingmall.member.dto.request.SignUpRequest;
+import io.groom.scubadive.shoppingmall.member.dto.response.UserInfoResponse;
 import io.groom.scubadive.shoppingmall.member.dto.response.SignInResponse;
 import io.groom.scubadive.shoppingmall.member.dto.response.UserResponse;
 import io.groom.scubadive.shoppingmall.member.service.UserService;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.time.Duration;
 
 @RestController
 @RequiredArgsConstructor
@@ -46,4 +45,11 @@ public class UserController {
                 ApiResponseDto.of(200, "로그인에 성공하였습니다.", signInResponse)
         );
     }
+
+    @GetMapping("/me")
+    public ResponseEntity<ApiResponseDto<UserInfoResponse>> getMyInfo(@LoginUser Long userId) {
+        UserInfoResponse response = userService.getMyInfo(userId);
+        return ResponseEntity.ok(ApiResponseDto.of(200, "내 정보 조회에 성공하였습니다.", response));
+    }
+
 }
