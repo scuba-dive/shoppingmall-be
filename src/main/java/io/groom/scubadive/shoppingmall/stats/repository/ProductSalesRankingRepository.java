@@ -10,4 +10,5 @@ public interface ProductSalesRankingRepository extends JpaRepository<ProductSale
     List<ProductSalesRanking> findByDateOrderByTotalSalesDesc(LocalDate date);
 
     List<ProductSalesRanking> findByDateOrderByTotalQuantityDesc(LocalDate date);
+    void deleteByDate(LocalDate date);
 }

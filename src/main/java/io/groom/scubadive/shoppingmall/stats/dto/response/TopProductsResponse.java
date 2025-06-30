@@ -17,7 +17,7 @@ public class TopProductsResponse {
     public static class ProductRanking {
         private int rank;
         private String productName;
-        private long totalPrice;
+        private long totalSales;
         private int totalQuantity;
     }
 }

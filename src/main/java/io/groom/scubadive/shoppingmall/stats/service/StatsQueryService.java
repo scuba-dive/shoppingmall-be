@@ -1,3 +1,4 @@
+// StatsQueryService.java
 package io.groom.scubadive.shoppingmall.stats.service;
 
 import io.groom.scubadive.shoppingmall.stats.domain.DailyStats;
@@ -42,16 +43,16 @@ public class StatsQueryService {
 
     public TopProductsResponse getTopProducts() {
         LocalDate today = LocalDate.now();
-        List<ProductSalesRanking> rankings = productSalesRankingRepository.findByDateOrderByTotalSalesDesc(today);
 
-        List<TopProductsResponse.ProductRanking> salesRankings = rankings.stream()
-                .sorted((a, b) -> Long.compare(b.getTotalSales(), a.getTotalSales()))
+        List<ProductSalesRanking> salesRankingsRaw = productSalesRankingRepository.findByDateOrderByTotalSalesDesc(today);
+        List<ProductSalesRanking> quantityRankingsRaw = productSalesRankingRepository.findByDateOrderByTotalQuantityDesc(today);
+
+        List<TopProductsResponse.ProductRanking> salesRankings = salesRankingsRaw.stream()
                 .limit(5)
                 .map(r -> new TopProductsResponse.ProductRanking(r.getRank(), r.getProductName(), r.getTotalSales(), r.getTotalQuantity()))
                 .collect(Collectors.toList());
 
-        List<TopProductsResponse.ProductRanking> quantityRankings = rankings.stream()
-                .sorted((a, b) -> Integer.compare(b.getTotalQuantity(), a.getTotalQuantity()))
+        List<TopProductsResponse.ProductRanking> quantityRankings = quantityRankingsRaw.stream()
                 .limit(5)
                 .map(r -> new TopProductsResponse.ProductRanking(r.getRank(), r.getProductName(), r.getTotalSales(), r.getTotalQuantity()))
                 .collect(Collectors.toList());

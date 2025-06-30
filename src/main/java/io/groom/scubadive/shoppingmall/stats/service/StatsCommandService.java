@@ -43,6 +43,7 @@ public class StatsCommandService {
     }
 
     public void saveTopProductRankings(LocalDate date) {
+        productSalesRankingRepository.deleteByDate(date);
         LocalDateTime start = date.atStartOfDay();
         LocalDateTime end = date.atTime(LocalTime.MAX);
 
