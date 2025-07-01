@@ -8,12 +8,18 @@ import io.groom.scubadive.shoppingmall.member.dto.request.SignUpRequest;
 import io.groom.scubadive.shoppingmall.member.dto.request.UpdateUserRequest;
 import io.groom.scubadive.shoppingmall.member.dto.response.*;
 import io.groom.scubadive.shoppingmall.member.service.UserService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+@Tag(name = "사용자", description = "회원 관련 API")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/users")
@@ -21,6 +27,11 @@ public class UserController {
 
     private final UserService userService;
 
+    @Operation(summary = "회원가입", description = "사용자가 회원가입을 진행합니다.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "201", description = "회원가입 성공"),
+            @ApiResponse(responseCode = "400", description = "요청 값 오류", content = @Content)
+    })
     @PostMapping("/signup")
     public ResponseEntity<ApiResponseDto<UserResponse>> signUp(
             @Valid @RequestBody SignUpRequest request
@@ -30,6 +41,11 @@ public class UserController {
                 .body(ApiResponseDto.of(201, "회원가입이 완료되었습니다.", response));
     }
 
+    @Operation(summary = "로그인", description = "사용자가 로그인하고 AccessToken과 RefreshToken을 발급받습니다.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "로그인 성공"),
+            @ApiResponse(responseCode = "401", description = "로그인 실패", content = @Content)
+    })
     @PostMapping("/login")
     public ResponseEntity<ApiResponseDto<SignInResponse>> login(
             @Valid @RequestBody SignInRequest request,
@@ -50,6 +66,11 @@ public class UserController {
         );
     }
 
+    @Operation(summary = "내 정보 조회", description = "로그인한 사용자의 정보를 조회합니다.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "조회 성공"),
+            @ApiResponse(responseCode = "401", description = "인증 실패", content = @Content)
+    })
     @GetMapping("/me")
     public ResponseEntity<ApiResponseDto<UserInfoResponse>> getMyInfo(@LoginUser Long userId) {
         UserInfoResponse response = userService.getMyInfo(userId);
@@ -58,6 +79,12 @@ public class UserController {
         );
     }
 
+    @Operation(summary = "내 정보 수정", description = "로그인한 사용자의 비밀번호, 닉네임, 전화번호를 수정합니다.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "수정 성공"),
+            @ApiResponse(responseCode = "400", description = "입력값 오류", content = @Content),
+            @ApiResponse(responseCode = "401", description = "인증 실패", content = @Content)
+    })
     @PatchMapping("/me")
     public ResponseEntity<ApiResponseDto<UpdateUserResponseWrapper>> updateMyInfo(
             @LoginUser Long userId,
@@ -69,6 +96,11 @@ public class UserController {
         );
     }
 
+
+    @Operation(summary = "로그아웃", description = "로그인한 사용자를 로그아웃 처리하고 RefreshToken 쿠키를 제거합니다.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "로그아웃 성공")
+    })
     @PostMapping("/logout")
     public ResponseEntity<ApiResponseDto<Void>> logout(
             @LoginUser Long userId,
