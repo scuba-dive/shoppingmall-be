@@ -6,7 +6,6 @@ import io.groom.scubadive.shoppingmall.global.securirty.JwtTokenProvider;
 import io.groom.scubadive.shoppingmall.global.util.CookieUtil;
 import io.groom.scubadive.shoppingmall.member.domain.RefreshToken;
 import io.groom.scubadive.shoppingmall.member.domain.User;
-import io.groom.scubadive.shoppingmall.member.domain.UserImage;
 import io.groom.scubadive.shoppingmall.member.domain.UserPaid;
 import io.groom.scubadive.shoppingmall.member.domain.enums.UserStatus;
 import io.groom.scubadive.shoppingmall.member.dto.request.SignInRequest;
@@ -107,7 +106,7 @@ public class UserService {
                         () -> refreshTokenRepository.save(new RefreshToken(user.getId(), refreshToken, expiresAt))
                 );
 
-        return new SignInResponse(accessToken, refreshToken, new UserSummary(user));
+        return new SignInResponse(accessToken, new UserSummary(user));
     }
 
     // 로그인 시 사용자 상태 및 비밀번호 검증 + 로그인 기록 업데이트
