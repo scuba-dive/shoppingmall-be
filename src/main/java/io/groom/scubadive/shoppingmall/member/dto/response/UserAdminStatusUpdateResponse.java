@@ -1,6 +1,5 @@
 package io.groom.scubadive.shoppingmall.member.dto.response;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import io.groom.scubadive.shoppingmall.member.domain.enums.Grade;
 import io.groom.scubadive.shoppingmall.member.domain.enums.Role;
 import io.groom.scubadive.shoppingmall.member.domain.enums.UserStatus;
@@ -19,10 +18,6 @@ public class UserAdminStatusUpdateResponse {
     private UserStatus status;
     private Grade grade;
     private Role role;
-
-    @JsonProperty("last_login_at")
     private LocalDateTime lastLoginAt;
-
-    @JsonProperty("created_at")
     private LocalDateTime createdAt;
 }
