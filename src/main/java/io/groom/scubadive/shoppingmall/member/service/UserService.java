@@ -86,7 +86,7 @@ public class UserService {
      * 1. 사용자 조회 → 2. 상태 및 비밀번호 검증 → 3. 토큰 발급 및 저장 → 4. 응답 반환
      */
     @Transactional
-    public SignInResponse login(SignInRequest request) {
+    public LoginResult login(SignInRequest request) {
         User user = userRepository.findByEmail(request.getEmail())
                 .orElseThrow(() -> {
                     log.warn("[LOGIN_FAIL] 존재하지 않는 이메일: {}", request.getEmail());
@@ -99,6 +99,8 @@ public class UserService {
         String refreshToken = jwtTokenProvider.createRefreshToken(user.getId());
         LocalDateTime expiresAt = LocalDateTime.now().plusSeconds(jwtTokenProvider.getRefreshTokenExpirySeconds());
 
+
+
         // RefreshToken 저장 또는 갱신
         refreshTokenRepository.findById(user.getId())
                 .ifPresentOrElse(
@@ -106,7 +108,7 @@ public class UserService {
                         () -> refreshTokenRepository.save(new RefreshToken(user.getId(), refreshToken, expiresAt))
                 );
 
-        return new SignInResponse(accessToken, new UserSummary(user));
+        return new LoginResult(accessToken, refreshToken, new UserSummary(user));
     }
 
     // 로그인 시 사용자 상태 및 비밀번호 검증 + 로그인 기록 업데이트

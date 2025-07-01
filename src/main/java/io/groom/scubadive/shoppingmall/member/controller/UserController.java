@@ -6,10 +6,7 @@ import io.groom.scubadive.shoppingmall.global.util.CookieUtil;
 import io.groom.scubadive.shoppingmall.member.dto.request.SignInRequest;
 import io.groom.scubadive.shoppingmall.member.dto.request.SignUpRequest;
 import io.groom.scubadive.shoppingmall.member.dto.request.UpdateUserRequest;
-import io.groom.scubadive.shoppingmall.member.dto.response.UpdateUserResponseWrapper;
-import io.groom.scubadive.shoppingmall.member.dto.response.UserInfoResponse;
-import io.groom.scubadive.shoppingmall.member.dto.response.SignInResponse;
-import io.groom.scubadive.shoppingmall.member.dto.response.UserResponse;
+import io.groom.scubadive.shoppingmall.member.dto.response.*;
 import io.groom.scubadive.shoppingmall.member.service.UserService;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
@@ -38,10 +35,15 @@ public class UserController {
             @Valid @RequestBody SignInRequest request,
             HttpServletResponse response
     ) {
-        SignInResponse signInResponse = userService.login(request);
+        LoginResult loginResult = userService.login(request);
+
+        SignInResponse signInResponse = new SignInResponse(
+                loginResult.getAccessToken(),
+                loginResult.getUser()
+        );
 
         // Refresh Token을 HttpOnly 쿠키로 저장
-        CookieUtil.addRefreshTokenCookie(response, signInResponse.getAccessToken());
+        CookieUtil.addRefreshTokenCookie(response, loginResult.getRefreshToken());
 
         return ResponseEntity.ok(
                 ApiResponseDto.of(200, "로그인에 성공하였습니다.", signInResponse)
