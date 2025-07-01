@@ -40,9 +40,8 @@ public class SecurityConfig {
                                 "/ping",
                                 "/h2-console/**"
                         ).permitAll() // 인증 없이 허용할 경로들
-
-                        .requestMatchers("/api/admin/**").hasRole(Role.ADMIN.name()) // 어드민 롤만 접근 가능.
-                        .requestMatchers("/api/users/me").hasAuthority("USER")
+                        .requestMatchers("/api/admin/**").hasRole("ADMIN")// 어드민 롤만 접근 가능.
+                        .requestMatchers("/api/users/**").hasAnyRole("USER", "ADMIN")
                         .anyRequest().authenticated() // 나머지는 인증 필요
                 )
                 .addFilterBefore(jwtAuthenticationFilter, org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter.class)
