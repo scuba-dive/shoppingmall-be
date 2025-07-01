@@ -17,7 +17,7 @@ public class UserInfoResponse {
     private String status;
     private String grade;
     private String imagePath;
-    private String totalAmount;
+    private String totalPaid;
     private LocalDateTime lastLoginAt;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
