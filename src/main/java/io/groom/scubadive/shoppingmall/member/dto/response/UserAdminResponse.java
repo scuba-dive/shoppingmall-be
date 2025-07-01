@@ -16,6 +16,7 @@ public class UserAdminResponse {
     private String role;
     private String status;
     private String grade;
+    private String totalPaid;
     private LocalDateTime createdAt;
     private LocalDateTime lastLoginAt;
 
