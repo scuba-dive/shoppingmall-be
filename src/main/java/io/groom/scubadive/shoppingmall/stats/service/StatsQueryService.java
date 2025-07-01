@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -23,17 +24,22 @@ public class StatsQueryService {
     private final ProductSalesRankingRepository productSalesRankingRepository;
 
     public TodayStatsResponse getTodayStats() {
-        DailyStats stats = dailyStatsRepository.findByDate(LocalDate.now());
-        return new TodayStatsResponse(stats.getTotalSales(), stats.getTotalOrders());
+        DailyStats stats = dailyStatsRepository.findTopByOrderByTimestampDesc()
+                .orElseThrow(() -> new IllegalStateException("오늘 통계가 존재하지 않습니다."));
+
+        return new TodayStatsResponse(stats.getTotalSales(), stats.getTotalOrders(), stats.getTimestamp());
     }
 
     public RecentStatsResponse getRecentStats() {
         LocalDate today = LocalDate.now();
-        List<DailyStats> recent = dailyStatsRepository.findByDateBetween(today.minusDays(3), today.minusDays(1));
+        List<DailyStats> recent = dailyStatsRepository.findByTimestampBetween(
+                today.minusDays(3).atStartOfDay(),
+                today.minusDays(1).atTime(LocalTime.MAX)
+        );
 
         List<RecentStatsResponse.SalesStats> list = recent.stream()
                 .map(stat -> new RecentStatsResponse.SalesStats(
-                        stat.getDate(),
+                        stat.getTimestamp().toLocalDate(),  // 수정 포인트
                         stat.getTotalSales(),
                         stat.getTotalOrders()))
                 .collect(Collectors.toList());

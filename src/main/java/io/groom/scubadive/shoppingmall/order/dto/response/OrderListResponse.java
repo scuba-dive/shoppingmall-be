@@ -21,9 +21,8 @@ public class OrderListResponse {
         private Long orderId;
         private String orderNumber;
         private LocalDateTime orderedAt;
-        private int totalCount;
-        private Long totalPrice;
-        private String paymentStatus;
+        private int totalQuantity;
+        private Long totalAmount;
         private String orderStatus;
     }
 }

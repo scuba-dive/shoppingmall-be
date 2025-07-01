@@ -15,7 +15,7 @@ public class CartItemResponse {
     private String color;
     private Long price;
     private int quantity;
-    private Long totalPrice;
+    private Long totalPricePerItem; // 기존 totalPrice → 명확하게 변경
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 }

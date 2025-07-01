@@ -30,11 +30,11 @@ public class StatsCommandService {
 
         List<Order> orders = orderRepository.findByCreatedAtBetween(start, end);
 
-        long totalSales = orders.stream().mapToLong(Order::getTotalPrice).sum();
+        long totalSales = orders.stream().mapToLong(Order::getTotalAmount).sum();
         int totalOrders = orders.size();
 
         DailyStats stats = DailyStats.builder()
-                .date(date)
+                .timestamp(LocalDateTime.now())
                 .totalSales(totalSales)
                 .totalOrders(totalOrders)
                 .build();

@@ -2,7 +2,6 @@ package io.groom.scubadive.shoppingmall.order.dto.response;
 
 import lombok.Builder;
 import lombok.Getter;
-
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -16,8 +15,8 @@ public class OrderResponse {
     private String phoneNumber;
     private String address;
     private String orderStatus;
-    private Long totalPrice;
-    private int totalCount;
+    private Long totalAmount;
+    private int totalQuantity;
     private List<OrderItemDto> orderItems;
 
     @Getter
@@ -27,6 +26,6 @@ public class OrderResponse {
         private String option;
         private int quantity;
         private Long price;
-        private Long totalPrice;
+        private Long totalPricePerItem;
     }
 }
