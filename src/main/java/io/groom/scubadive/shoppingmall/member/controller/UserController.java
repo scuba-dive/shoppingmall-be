@@ -64,6 +64,13 @@ public class UserController {
         return ResponseEntity.ok(ApiResponseDto.of(200, "내 정보가 성공적으로 수정되었습니다.", response));
     }
 
+    @PostMapping("/logout")
+    public ResponseEntity<ApiResponseDto<Void>> logout(@LoginUser Long userId, HttpServletResponse response) {
+        userService.logout(userId, response);
+        return ResponseEntity.ok(ApiResponseDto.of(200, "로그아웃에 성공하였습니다.", null));
+    }
+
+
 
 
 }
