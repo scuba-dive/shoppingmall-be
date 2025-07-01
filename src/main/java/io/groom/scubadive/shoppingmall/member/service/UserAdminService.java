@@ -7,6 +7,7 @@ import io.groom.scubadive.shoppingmall.member.domain.enums.UserStatus;
 import io.groom.scubadive.shoppingmall.member.dto.request.AdminUserStatusUpdateRequest;
 import io.groom.scubadive.shoppingmall.member.dto.response.UserAdminStatusUpdateResponse;
 import io.groom.scubadive.shoppingmall.member.dto.response.UserAdminResponse;
+import io.groom.scubadive.shoppingmall.member.repository.UserPaidRepository;
 import io.groom.scubadive.shoppingmall.member.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -21,6 +22,7 @@ import java.time.LocalDateTime;
 public class UserAdminService {
 
     private final UserRepository userRepository;
+    private final UserPaidRepository userPaidRepository;
 
     public Page<UserAdminResponse> getAllUsers(Pageable pageable) {
         return userRepository.findAll(pageable)
@@ -33,6 +35,7 @@ public class UserAdminService {
                         .role(user.getRole().name())
                         .status(user.getStatus().name())
                         .grade(user.getGrade().name())
+                        .totalPaid(userPaidRepository.findByUserId(user.getId()).getAmount())
                         .createdAt(user.getCreatedAt())
                         .lastLoginAt(user.getLastLoginAt())
                         .build());
