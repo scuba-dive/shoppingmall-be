@@ -1,6 +1,7 @@
 package io.groom.scubadive.shoppingmall.order.service;
 
 import io.groom.scubadive.shoppingmall.cart.domain.Cart;
+import io.groom.scubadive.shoppingmall.cart.domain.CartItem;
 import io.groom.scubadive.shoppingmall.cart.repository.CartRepository;
 import io.groom.scubadive.shoppingmall.member.domain.User;
 import io.groom.scubadive.shoppingmall.order.domain.*;
@@ -31,11 +32,11 @@ public class OrderService {
         if (cart.getItems().isEmpty()) throw new IllegalStateException("장바구니가 비어있습니다.");
 
         String orderNumber = "ORD" + UUID.randomUUID().toString().replace("-", "").substring(0, 12);
-        int totalCount = cart.getItems().stream().mapToInt(i -> i.getQuantity()).sum();
-        Long totalPrice = cart.getItems().stream().mapToLong(i ->
+        int totalQuantity = cart.getItems().stream().mapToInt(CartItem::getQuantity).sum();
+        Long totalAmount = cart.getItems().stream().mapToLong(i ->
                 i.getProductOption().getProduct().getPrice() * i.getQuantity()).sum();
 
-        Order order = new Order(user, orderNumber, totalCount, totalPrice, OrderStatus.PAYMENT_COMPLETED);
+        Order order = new Order(user, orderNumber, totalQuantity, totalAmount, OrderStatus.PAYMENT_COMPLETED);
 
         cart.getItems().forEach(i -> {
             OrderItem item = new OrderItem(i.getProductOption(), i.getQuantity());
@@ -61,8 +62,10 @@ public class OrderService {
                 .orders(orders.getContent().stream().map(o -> OrderListResponse.OrderSummary.builder()
                         .orderId(o.getId())
                         .orderNumber(o.getOrderNumber())
-                        .totalPrice(o.getTotalPrice())
+                        .totalAmount(o.getTotalAmount())
+                        .totalQuantity(o.getTotalQuantity())
                         .orderStatus(o.getStatus().name())
+                        .orderedAt(o.getCreatedAt())
                         .build()).collect(Collectors.toList()))
                 .build();
     }
@@ -75,8 +78,10 @@ public class OrderService {
                 .orders(orders.getContent().stream().map(o -> OrderListResponse.OrderSummary.builder()
                         .orderId(o.getId())
                         .orderNumber(o.getOrderNumber())
-                        .totalPrice(o.getTotalPrice())
+                        .totalAmount(o.getTotalAmount())
+                        .totalQuantity(o.getTotalQuantity())
                         .orderStatus(o.getStatus().name())
+                        .orderedAt(o.getCreatedAt())
                         .build()).collect(Collectors.toList()))
                 .build();
     }
@@ -92,14 +97,18 @@ public class OrderService {
                 .orderId(order.getId())
                 .orderNumber(order.getOrderNumber())
                 .orderedAt(order.getCreatedAt())
-                .totalCount(order.getTotalCount())
-                .totalPrice(order.getTotalPrice())
+                .userName(order.getUser().getUsername())
+                .phoneNumber(order.getUser().getPhoneNumber())
+                .address(order.getUser().getAddress())
                 .orderStatus(order.getStatus().name())
+                .totalAmount(order.getTotalAmount())
+                .totalQuantity(order.getTotalQuantity())
                 .orderItems(order.getItems().stream().map(i -> OrderResponse.OrderItemDto.builder()
                         .productName(i.getProductOption().getProduct().getName())
                         .option(i.getProductOption().getColor())
                         .quantity(i.getQuantity())
                         .price(i.getProductOption().getProduct().getPrice())
+                        .totalPricePerItem(i.getProductOption().getProduct().getPrice() * i.getQuantity())
                         .build()).collect(Collectors.toList()))
                 .build();
     }

@@ -3,6 +3,7 @@ package io.groom.scubadive.shoppingmall.cart.service;
 import io.groom.scubadive.shoppingmall.cart.domain.*;
 import io.groom.scubadive.shoppingmall.cart.dto.request.*;
 import io.groom.scubadive.shoppingmall.cart.dto.response.CartItemResponse;
+import io.groom.scubadive.shoppingmall.cart.dto.response.CartResponse;
 import io.groom.scubadive.shoppingmall.cart.repository.*;
 import io.groom.scubadive.shoppingmall.member.domain.User;
 import io.groom.scubadive.shoppingmall.product.domain.ProductOption;
@@ -24,7 +25,6 @@ public class CartService {
     private final ProductOptionRepository productOptionRepository;
 
     @Transactional
-// CartService.java (수정된 부분)
     public CartItemResponse addItem(User user, CartItemRequest request) {
         Cart cart = cartRepository.findByUserId(user.getId())
                 .orElseGet(() -> cartRepository.save(new Cart(user)));
@@ -46,7 +46,7 @@ public class CartService {
                 .color(option.getColor())
                 .price(price)
                 .quantity(quantity)
-                .totalPrice(price * quantity)
+                .totalPricePerItem(price * quantity)
                 .createdAt(item.getCreatedAt())
                 .updatedAt(item.getUpdatedAt())
                 .build();
@@ -69,17 +69,17 @@ public class CartService {
                 .color(item.getProductOption().getColor())
                 .price(price)
                 .quantity(quantity)
-                .totalPrice(price * quantity)
+                .totalPricePerItem(price * quantity)
                 .createdAt(item.getCreatedAt())
                 .updatedAt(item.getUpdatedAt())
                 .build();
     }
 
-    public List<CartItemResponse> getItems(User user) {
+    public CartResponse getCartResponse(User user) {
         Cart cart = cartRepository.findByUserId(user.getId())
                 .orElseThrow(() -> new IllegalStateException("장바구니가 없습니다."));
 
-        return cart.getItems().stream().map(item -> {
+        List<CartItemResponse> items = cart.getItems().stream().map(item -> {
             Long price = item.getProductOption().getProduct().getPrice();
             int quantity = item.getQuantity();
             return CartItemResponse.builder()
@@ -90,13 +90,21 @@ public class CartService {
                     .color(item.getProductOption().getColor())
                     .price(price)
                     .quantity(quantity)
-                    .totalPrice(price * quantity)
+                    .totalPricePerItem(price * quantity)
                     .createdAt(item.getCreatedAt())
                     .updatedAt(item.getUpdatedAt())
                     .build();
         }).collect(Collectors.toList());
-    }
 
+        int totalQuantity = items.stream().mapToInt(CartItemResponse::getQuantity).sum();
+        Long totalAmount = items.stream().mapToLong(CartItemResponse::getTotalPricePerItem).sum();
+
+        return CartResponse.builder()
+                .items(items)
+                .totalQuantity(totalQuantity)
+                .totalAmount(totalAmount)
+                .build();
+    }
 
     @Transactional
     public void deleteItem(Long cartItemId) {

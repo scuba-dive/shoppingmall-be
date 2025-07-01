@@ -3,7 +3,7 @@ package io.groom.scubadive.shoppingmall.stats.domain;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity
 @Getter
@@ -16,7 +16,7 @@ public class DailyStats {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private LocalDate date;
+    private LocalDateTime timestamp;
 
     private long totalSales;
 

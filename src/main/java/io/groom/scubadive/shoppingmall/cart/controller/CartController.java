@@ -3,6 +3,7 @@ package io.groom.scubadive.shoppingmall.cart.controller;
 import io.groom.scubadive.shoppingmall.cart.dto.request.CartItemRequest;
 import io.groom.scubadive.shoppingmall.cart.dto.request.CartUpdateRequest;
 import io.groom.scubadive.shoppingmall.cart.dto.response.CartItemResponse;
+import io.groom.scubadive.shoppingmall.cart.dto.response.CartResponse;
 import io.groom.scubadive.shoppingmall.cart.service.CartService;
 import io.groom.scubadive.shoppingmall.global.dto.ApiResponseDto;
 import io.groom.scubadive.shoppingmall.member.domain.User;
@@ -21,9 +22,9 @@ public class CartController {
     private final CartService cartService;
 
     @GetMapping
-    public ResponseEntity<ApiResponseDto<List<CartItemResponse>>> getCart(@AuthenticationPrincipal User user) {
-        List<CartItemResponse> items = cartService.getItems(user);
-        return ResponseEntity.ok(ApiResponseDto.of(200, "장바구니 조회 성공", items));
+    public ResponseEntity<ApiResponseDto<CartResponse>> getCart(@AuthenticationPrincipal User user) {
+        CartResponse response = cartService.getCartResponse(user);
+        return ResponseEntity.ok(ApiResponseDto.of(200, "장바구니 조회 성공", response));
     }
 
     @PostMapping("/items")
