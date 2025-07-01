@@ -6,6 +6,7 @@ import io.groom.scubadive.shoppingmall.global.securirty.JwtTokenProvider;
 import io.groom.scubadive.shoppingmall.global.util.CookieUtil;
 import io.groom.scubadive.shoppingmall.member.domain.RefreshToken;
 import io.groom.scubadive.shoppingmall.member.domain.User;
+import io.groom.scubadive.shoppingmall.member.domain.UserImage;
 import io.groom.scubadive.shoppingmall.member.domain.UserPaid;
 import io.groom.scubadive.shoppingmall.member.domain.enums.UserStatus;
 import io.groom.scubadive.shoppingmall.member.dto.request.SignInRequest;
@@ -68,7 +69,7 @@ public class UserService {
     private User createUserFromRequest(SignUpRequest dto, String nickname, String encodedPassword) {
         return new User(
                 dto.getUsername(), nickname, dto.getEmail(),
-                encodedPassword, dto.getPhoneNumber(), dto.getAddress()
+                encodedPassword, dto.getPhoneNumber(), dto.getAddress(), null
         );
     }
 
