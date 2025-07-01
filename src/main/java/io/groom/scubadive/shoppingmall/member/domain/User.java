@@ -95,5 +95,12 @@ public class User extends BaseTimeEntity {
     }
 
 
+    public boolean isInactiveOverThreeMonths() {
+        if (lastLoginAt == null) return true;
+        return lastLoginAt.isBefore(LocalDateTime.now().minusMonths(3));
+    }
 
+    public void changeStatus(UserStatus userStatus) {
+        this.status = userStatus;
+    }
 }

@@ -23,6 +23,4 @@ public class UpdateUserRequest {
     @Size(min = 4, max = 30)
     private String newPasswordCheck;
 
-
-
 }
