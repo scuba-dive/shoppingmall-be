@@ -61,7 +61,7 @@ public class User extends BaseTimeEntity {
      * 기본 상태: ACTIVE / 기본 등급: BRONZE / 기본 권한: USER
      */
     public User(String username, String nickname, String email, String password,
-                String phoneNumber, String address) {
+                String phoneNumber, String address, UserImage userImage) {
         this.username = username;
         this.nickname = nickname;
         this.email = email;
@@ -71,6 +71,7 @@ public class User extends BaseTimeEntity {
         this.status = UserStatus.ACTIVE;
         this.grade = Grade.BRONZE;
         this.role = Role.USER;
+        this.userImage = null;
         this.lastLoginAt = LocalDateTime.now(); // 최초 가입 시 현재 시각 설정
     }
 
