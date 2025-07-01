@@ -179,12 +179,18 @@ public class UserService {
 
         // 닉네임 변경 처리
         if (shouldChangeNickname(user, request)) {
+            if (request.getNickname().isBlank()) {
+                throw new GlobalException(ErrorCode.INVALID_NICKNAME);
+            }
             user.updateNickname(request.getNickname());
             isUpdated = true;
         }
 
         // 전화번호 변경 처리
         if (shouldChangePhoneNumber(user, request)) {
+            if (request.getPhoneNumber().isBlank()) {
+                throw new GlobalException(ErrorCode.INVALID_PHONE_NUMBER);
+            }
             user.updatePhoneNumber(request.getPhoneNumber());
             isUpdated = true;
         }
@@ -211,6 +217,9 @@ public class UserService {
         }
         if (!passwordEncoder.matches(request.getCurrentPassword(), user.getPassword())) {
             throw new GlobalException(ErrorCode.WRONG_PASSWORD);
+        }
+        if (request.getNewPasswordCheck() == null || !request.getNewPassword().equals(request.getNewPasswordCheck())) {
+            throw new GlobalException(ErrorCode.PASSWORDS_DO_NOT_MATCH);
         }
         if (passwordEncoder.matches(request.getNewPassword(), user.getPassword())) {
             throw new GlobalException(ErrorCode.PASSWORD_SAME_AS_OLD);

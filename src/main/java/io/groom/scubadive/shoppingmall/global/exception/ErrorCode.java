@@ -17,6 +17,8 @@ public enum ErrorCode {
     NICKNAME_ALREADY_EXISTS(HttpStatus.BAD_REQUEST, "이미 사용 중인 닉네임입니다."),
     PASSWORD_REQUIRED(HttpStatus.BAD_REQUEST, "비밀번호 확인이 필요합니다."),
     NO_CHANGES_REQUESTED(HttpStatus.BAD_REQUEST, "변경된 정보가 없습니다."),
+    INVALID_NICKNAME(HttpStatus.BAD_REQUEST,"유효하지 않은 닉네임입니다."),
+    INVALID_PHONE_NUMBER(HttpStatus.BAD_REQUEST,"유효하지 않은 전화번호입니다."),
 
     // 401 UNAUTHORIZED
     UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "인증되지 않았습니다."),
