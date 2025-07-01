@@ -18,4 +18,16 @@ public class CookieUtil {
 
         response.setHeader("Set-Cookie", cookie.toString());
     }
+
+    public static void deleteRefreshTokenCookie(HttpServletResponse response) {
+        ResponseCookie expiredCookie = ResponseCookie.from("refreshToken", "")
+                .httpOnly(true)
+                .secure(true)
+                .path("/")
+                .sameSite("Strict")
+                .maxAge(0) // 즉시 만료
+                .build();
+
+        response.setHeader("Set-Cookie", expiredCookie.toString());
+    }
 }

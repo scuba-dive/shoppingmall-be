@@ -3,6 +3,7 @@ package io.groom.scubadive.shoppingmall.member.service;
 import io.groom.scubadive.shoppingmall.global.exception.ErrorCode;
 import io.groom.scubadive.shoppingmall.global.exception.GlobalException;
 import io.groom.scubadive.shoppingmall.global.securirty.JwtTokenProvider;
+import io.groom.scubadive.shoppingmall.global.util.CookieUtil;
 import io.groom.scubadive.shoppingmall.member.domain.RefreshToken;
 import io.groom.scubadive.shoppingmall.member.domain.User;
 import io.groom.scubadive.shoppingmall.member.domain.UserPaid;
@@ -15,6 +16,7 @@ import io.groom.scubadive.shoppingmall.member.repository.RefreshTokenRepository;
 import io.groom.scubadive.shoppingmall.member.repository.UserPaidRepository;
 import io.groom.scubadive.shoppingmall.member.repository.UserRepository;
 import io.groom.scubadive.shoppingmall.member.util.NicknameGenerator;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -169,7 +171,7 @@ public class UserService {
             }
 
             user.updatePassword(passwordEncoder.encode(request.getNewPassword()));
-            // 비밀번호 변경 시 로그아웃 처리
+            // 비밀번호 변경 시 토큰 무효화
             refreshTokenRepository.deleteById(userId);
             isUpdated = true;
             passwordChanged = true;
@@ -215,5 +217,15 @@ public class UserService {
                 .loggedOut(passwordChanged)
                 .build();
     }
+
+    @Transactional
+    public void logout(Long userId, HttpServletResponse response) {
+        if (userId == null) {
+            throw new GlobalException(ErrorCode.ACCESS_TOKEN_REQUIRED);
+        }
+        refreshTokenRepository.deleteById(userId);
+        CookieUtil.deleteRefreshTokenCookie(response);
+    }
+
 
 }
