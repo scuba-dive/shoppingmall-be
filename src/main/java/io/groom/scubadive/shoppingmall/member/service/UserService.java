@@ -139,6 +139,9 @@ public class UserService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new GlobalException(ErrorCode.MEMBER_DELETED));
 
+        UserPaid userPaid = (UserPaid) userPaidRepository.findByUserId(userId)
+                .orElseThrow(() -> new GlobalException(ErrorCode.USER_PAID_NOT_FOUND));
+
         return UserInfoResponse.builder()
                 .id(user.getId())
                 .username(user.getUsername())
@@ -149,6 +152,7 @@ public class UserService {
                 .status(user.getStatus().name().toLowerCase())
                 .grade(user.getGrade().name())
                 .imagePath(user.getUserImage() != null ? user.getUserImage().getImagePath() : null)
+                .totalPaid(userPaid.getAmount())
                 .lastLoginAt(user.getLastLoginAt())
                 .createdAt(user.getCreatedAt())
                 .updatedAt(user.getUpdatedAt())
