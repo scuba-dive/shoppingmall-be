@@ -5,6 +5,7 @@ import io.groom.scubadive.shoppingmall.member.domain.enums.Grade;
 import io.groom.scubadive.shoppingmall.member.domain.enums.Role;
 import io.groom.scubadive.shoppingmall.member.domain.enums.UserStatus;
 import lombok.Getter;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
 
@@ -13,6 +14,7 @@ import java.time.LocalDateTime;
  * 도메인 객체(User) 전체를 그대로 노출하지 않고 필요한 정보만 추려 제공합니다.
  */
 @Getter
+@Setter
 public class UserSummary {
     private Long id;
     private String username;
@@ -26,17 +28,4 @@ public class UserSummary {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
-    public UserSummary(User user) {
-        this.id = user.getId();
-        this.username = user.getUsername();
-        this.nickname = user.getNickname();
-        this.email = user.getEmail();
-        this.phoneNumber = user.getPhoneNumber();
-        this.role = user.getRole();
-        this.status = user.getStatus();
-        this.grade = user.getGrade();
-        this.lastLoginAt = user.getLastLoginAt();
-        this.createdAt = user.getCreatedAt();
-        this.updatedAt = user.getUpdatedAt();
-    }
 }
