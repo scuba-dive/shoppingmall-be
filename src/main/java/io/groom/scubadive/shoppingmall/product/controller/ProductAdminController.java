@@ -11,6 +11,7 @@ import io.groom.scubadive.shoppingmall.product.dto.response.ProductWithOptionPag
 import io.groom.scubadive.shoppingmall.product.service.ProductService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -35,6 +36,7 @@ public class ProductAdminController {
      * @return
      */
     @PostMapping()
+    @ResponseStatus(HttpStatus.CREATED)
     public ApiResponseDto<ProductSaveResponse> createProduct(@RequestBody ProductSaveRequest request) {
         return productService.createProduct(request);
     }
