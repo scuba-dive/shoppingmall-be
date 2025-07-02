@@ -9,7 +9,7 @@ import java.util.List;
 
 public record ProductSaveRequest(
         @NotBlank
-        String name,
+        String productName,
 
         @NotBlank
         String description,

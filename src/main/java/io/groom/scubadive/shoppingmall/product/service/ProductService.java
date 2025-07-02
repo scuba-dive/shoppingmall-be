@@ -41,7 +41,7 @@ public class ProductService {
         );
 
 
-        Product product = Product.createProduct(request.name(), request.description(), request.price(), productUtil.getRandomNumber().longValue(), productUtil.generateRandomRating(), category);
+        Product product = Product.createProduct(request.productName(), request.description(), request.price(), productUtil.getRandomNumber().longValue(), productUtil.generateRandomRating(), category);
         productRepository.save(product);
 
         // 해당 카테고리 안에 상품이 얼마나 있는지 확인.
