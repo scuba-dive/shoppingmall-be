@@ -35,7 +35,7 @@ public class SecurityConfig {
                                 "/api/users/signup",
                                 "/api/users/login",
                                 "/api/users/products/**",
-                                "/api/categories",
+                                "/api/users/categories/**",
                                 "/ping",
                                 "/h2-console/**"
                         ).permitAll() // 인증 없이 허용할 경로들
