@@ -39,8 +39,8 @@ public class UserAdminService {
     }
 
     @Transactional
-    public UserAdminStatusUpdateResponse updateStatus(Long userId) {
-        User user = userRepository.findById(userId)
+    public UserAdminStatusUpdateResponse updateStatus(Long id) {
+        User user = userRepository.findById(id)
                 .orElseThrow(() -> new GlobalException(ErrorCode.USER_NOT_FOUND));
 
         UserStatus current = user.getStatus();

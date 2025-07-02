@@ -43,11 +43,11 @@ public class UserAdminController {
             @ApiResponse(responseCode = "404", description = "해당 사용자를 찾을 수 없음"),
             @ApiResponse(responseCode = "403", description = "접근 권한이 없습니다.")
     })
-    @PatchMapping("/{userId}/status")
+    @PatchMapping("/{id}/status")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ApiResponseDto<UserAdminStatusUpdateResponse>> updateUserStatus(
             @Parameter(description = "상태를 변경할 사용자 ID", example = "1")
-            @PathVariable Long userId
+            @PathVariable Long id
     ) {
         UserAdminStatusUpdateResponse response = userAdminService.updateStatus(userId);
         return ResponseEntity.ok(
