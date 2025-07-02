@@ -10,6 +10,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.*;
 
@@ -32,7 +33,8 @@ public class ProductController {
             @ApiResponse(responseCode = "200", description = "상품 목록 조회 성공")
     })
     @GetMapping
-    public ApiResponseDto<ProductUserPageResponse> getProducts(@PageableDefault(size = 8) Pageable pageable) {
+    public ApiResponseDto<ProductUserPageResponse> getProducts(
+            @PageableDefault(size = 8, sort = "productName", direction = Sort.Direction.DESC) Pageable pageable) {
         return productService.getProductUsersByPageable(pageable);
     }
 

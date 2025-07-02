@@ -16,17 +16,20 @@ public class Category extends BaseTimeEntity {
     private Long id;
     private String categoryName;
     private String koreanName;
+    private String imageUrl;
 
     @Builder(access = AccessLevel.PRIVATE)
-    public Category(String categoryName, String koreanName) {
+    public Category(String categoryName, String koreanName, String imageUrl) {
         this.categoryName = categoryName;
         this.koreanName = koreanName;
+        this.imageUrl = imageUrl;
     }
 
-    public static Category createCategory(String categoryName,String koreanName) {
+    public static Category createCategory(String categoryName,String koreanName, String imageUrl) {
         return Category.builder()
                 .categoryName(categoryName)
                 .koreanName(koreanName)
+                .imageUrl(imageUrl)
                 .build();
     }
 }
