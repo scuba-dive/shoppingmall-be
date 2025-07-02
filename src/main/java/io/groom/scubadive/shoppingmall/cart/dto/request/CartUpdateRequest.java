@@ -1,7 +1,6 @@
 package io.groom.scubadive.shoppingmall.cart.dto.request;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.validation.constraints.Min;
 import lombok.Getter;
 
 @Getter
