@@ -81,9 +81,6 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
         return new PageImpl<>(content, pageable, total);
     }
 
-    ;
-
-
     private String createOrderByClause(Pageable pageable) {
         if (pageable.getSort().isEmpty()) {
             return " order by p.id desc";
