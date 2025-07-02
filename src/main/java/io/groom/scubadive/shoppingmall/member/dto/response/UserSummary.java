@@ -34,7 +34,7 @@ public class UserSummary {
     private String phoneNumber;
 
     @Schema(description = "프로필 이미지 URL", example = "https://example.com/images/profile.jpg")
-    private String profileImageUrl;
+    private String imagePath;
 
     @Schema(description = "권한", example = "USER")
     private Role role;
@@ -62,7 +62,7 @@ public class UserSummary {
         this.phoneNumber = user.getPhoneNumber();
         this.role = user.getRole();
         this.status = user.getStatus();
-        this.profileImageUrl = user.getUserImage() != null ? user.getUserImage().getFullImageUrl() : "https://my-shop-image-bucket.s3.ap-northeast-2.amazonaws.com/profile/default_profile.webp";
+        this.imagePath = user.getUserImage() != null ? user.getUserImage().getFullImageUrl() : "https://my-shop-image-bucket.s3.ap-northeast-2.amazonaws.com/profile/default_profile.webp";
         this.grade = user.getGrade();
         this.lastLoginAt = user.getLastLoginAt();
         this.createdAt = user.getCreatedAt();
