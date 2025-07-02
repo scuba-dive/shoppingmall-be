@@ -37,7 +37,10 @@ public class SecurityConfig {
                                 "/api/users/products/**",
                                 "/api/users/categories/**",
                                 "/ping",
-                                "/h2-console/**"
+                                "/h2-console/**",
+                                "/v3/api-docs/**",
+                                "/swagger-ui/**",
+                                "/swagger-ui.html"
                         ).permitAll() // 인증 없이 허용할 경로들
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")// 어드민 롤만 접근 가능.
                         .requestMatchers("/api/users/**").hasAnyRole("USER", "ADMIN")
