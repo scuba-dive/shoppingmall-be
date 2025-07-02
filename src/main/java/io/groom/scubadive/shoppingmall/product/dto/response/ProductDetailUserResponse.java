@@ -8,7 +8,7 @@ import java.util.List;
 
 public record ProductDetailUserResponse(
         Long id,
-        String name,
+        String productName,
         String description,
         Long price,
         CategoryResponse category,

@@ -7,7 +7,7 @@ import java.math.BigDecimal;
 
 public record ProductUserResponse(
         Long id,
-        String name,
+        String productName,
         Long price,
         BigDecimal rating,
         Long reviewCount,
