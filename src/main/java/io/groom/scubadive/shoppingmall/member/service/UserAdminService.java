@@ -4,7 +4,6 @@ import io.groom.scubadive.shoppingmall.global.exception.ErrorCode;
 import io.groom.scubadive.shoppingmall.global.exception.GlobalException;
 import io.groom.scubadive.shoppingmall.member.domain.User;
 import io.groom.scubadive.shoppingmall.member.domain.enums.UserStatus;
-import io.groom.scubadive.shoppingmall.member.dto.request.AdminUserStatusUpdateRequest;
 import io.groom.scubadive.shoppingmall.member.dto.response.UserAdminStatusUpdateResponse;
 import io.groom.scubadive.shoppingmall.member.dto.response.UserAdminResponse;
 import io.groom.scubadive.shoppingmall.member.repository.UserPaidRepository;
@@ -14,8 +13,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.time.LocalDateTime;
 
 @Service
 @RequiredArgsConstructor
@@ -71,7 +68,5 @@ public class UserAdminService {
                 .createdAt(user.getCreatedAt())
                 .build();
     }
-
-
 
 }
