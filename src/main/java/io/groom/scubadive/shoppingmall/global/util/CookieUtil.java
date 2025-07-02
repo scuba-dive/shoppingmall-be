@@ -12,7 +12,7 @@ public class CookieUtil {
                 .httpOnly(true)
                 .secure(true)
                 .path("/")
-                .sameSite("Strict")
+                .sameSite("None") // CSRF 보호를 위해 SameSite=None 설정
                 .maxAge(Duration.ofDays(7))
                 .build();
 
@@ -24,7 +24,7 @@ public class CookieUtil {
                 .httpOnly(true)
                 .secure(true)
                 .path("/")
-                .sameSite("Strict")
+                .sameSite("None") // CSRF 보호를 위해 SameSite=None 설정
                 .maxAge(0) // 즉시 만료
                 .build();
 
