@@ -7,6 +7,10 @@ plugins {
 group = 'io.groom.scubadive'
 version = '0.0.1-SNAPSHOT'
 
+jar {
+    archiveBaseName.set('shoppingmall')
+}
+
 java {
 //	toolchain {
 //		 JDK21 버전으로 자동인식 됨, 직접 버전 명시 방법으로 17 버전 인식 시킴
