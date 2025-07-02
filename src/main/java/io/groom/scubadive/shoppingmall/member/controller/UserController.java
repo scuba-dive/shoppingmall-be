@@ -19,7 +19,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-@Tag(name = "사용자", description = "회원 관련 API")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/users")
@@ -27,6 +26,7 @@ public class UserController {
 
     private final UserService userService;
 
+    @Tag(name = "Public API", description = "비회원 공개 API")
     @Operation(summary = "회원가입", description = "사용자가 회원가입을 진행합니다.")
     @ApiResponses({
             @ApiResponse(responseCode = "201", description = "회원가입 성공"),
@@ -41,6 +41,7 @@ public class UserController {
                 .body(ApiResponseDto.of(201, "회원가입이 완료되었습니다.", response));
     }
 
+    @Tag(name = "Public API", description = "비회원 공개 API")
     @Operation(summary = "로그인", description = "사용자가 로그인하고 AccessToken과 RefreshToken을 발급받습니다.")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "로그인 성공"),
@@ -66,6 +67,7 @@ public class UserController {
         );
     }
 
+    @Tag(name = "User API", description = "회원 전용 API")
     @Operation(summary = "내 정보 조회", description = "로그인한 사용자의 정보를 조회합니다.")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "조회 성공"),
@@ -79,6 +81,7 @@ public class UserController {
         );
     }
 
+    @Tag(name = "User API", description = "회원 전용 API")
     @Operation(summary = "내 정보 수정", description = "로그인한 사용자의 비밀번호, 닉네임, 전화번호를 수정합니다.")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "수정 성공"),
@@ -97,6 +100,7 @@ public class UserController {
     }
 
 
+    @Tag(name = "User API", description = "회원 전용 API")
     @Operation(summary = "로그아웃", description = "로그인한 사용자를 로그아웃 처리하고 RefreshToken 쿠키를 제거합니다.")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "로그아웃 성공")

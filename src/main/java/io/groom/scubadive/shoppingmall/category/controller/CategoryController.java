@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@Tag(name = "카테고리 API", description = "카테고리 및 카테고리별 상품 관련 API")
+@Tag(name = "Public API", description = "비회원 공개 API")
 @RestController
 @RequestMapping("/api/users/categories")
 @RequiredArgsConstructor

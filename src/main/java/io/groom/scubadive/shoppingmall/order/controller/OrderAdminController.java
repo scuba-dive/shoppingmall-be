@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 @RequestMapping("/api/admin/orders")
 @PreAuthorize("hasRole('ADMIN')")
-@Tag(name = "Admin Order API", description = "관리자 주문 관리 API")
+@Tag(name = "Admin API", description = "관리자 전용 API")
 public class OrderAdminController {
 
     private final OrderService orderService;

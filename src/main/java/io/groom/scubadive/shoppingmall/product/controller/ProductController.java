@@ -13,7 +13,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.*;
 
-@Tag(name = "User - 상품 API", description = "회원 및 비회원 상품 목록 및 상세 조회 기능을 제공합니다.")
+@Tag(name = "Public API", description = "비회원 공개 API")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/users/products")

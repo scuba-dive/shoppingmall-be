@@ -13,7 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-@Tag(name = "Admin Stats", description = "관리자 통계 조회 API")
+@Tag(name = "Admin API", description = "관리자 전용 API")
 @RestController
 @RequestMapping("/api/admin/stats")
 @RequiredArgsConstructor

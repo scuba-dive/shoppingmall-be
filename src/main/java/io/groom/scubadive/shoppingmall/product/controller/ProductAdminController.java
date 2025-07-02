@@ -19,7 +19,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-@Tag(name = "Admin - 상품 API", description = "관리자용 상품 등록, 수정, 삭제, 조회 기능을 제공합니다.")
+@Tag(name = "Admin API", description = "관리자 전용 API")
 @RestController
 @RequestMapping("/api/admin/products")
 @RequiredArgsConstructor
