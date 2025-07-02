@@ -26,7 +26,7 @@ public record ProductUserResponse(
 
         return new ProductUserResponse(
                 product.getId(),
-                product.getName(),
+                product.getProductName(),
                 product.getPrice(),
                 product.getRating(),
                 product.getReviewCount(),

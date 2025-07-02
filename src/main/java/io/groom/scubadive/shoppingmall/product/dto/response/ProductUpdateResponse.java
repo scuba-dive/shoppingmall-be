@@ -16,7 +16,7 @@ public record ProductUpdateResponse(
     public static ProductUpdateResponse from(Product product) {
         return new ProductUpdateResponse(
                 product.getId(),
-                product.getName(),
+                product.getProductName(),
                 product.getDescription(),
                 product.getPrice(),
                 CategoryResponse.from(product.getCategory()),

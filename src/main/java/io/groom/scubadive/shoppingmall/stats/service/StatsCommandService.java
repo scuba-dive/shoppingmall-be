@@ -53,7 +53,7 @@ public class StatsCommandService {
                 .toList();
 
         Map<String, List<OrderItem>> grouped = items.stream().collect(Collectors.groupingBy(
-                item -> item.getProductOption().getProduct().getName()
+                item -> item.getProductOption().getProduct().getProductName()
         ));
 
         List<ProductSalesRanking> rankings = grouped.entrySet().stream()

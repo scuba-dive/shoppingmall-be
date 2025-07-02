@@ -19,7 +19,7 @@ public record ProductWithOptionResponse(
     public static ProductWithOptionResponse from(Product product, ProductOption option) {
         return new ProductWithOptionResponse(
                 product.getId(),
-                product.getName(),
+                product.getProductName(),
                 CategoryResponse.from(product.getCategory()),
                 option.getId(),
                 option.getColor(),

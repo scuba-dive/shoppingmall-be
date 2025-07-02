@@ -104,7 +104,7 @@ public class OrderService {
                 .totalAmount(order.getTotalAmount())
                 .totalQuantity(order.getTotalQuantity())
                 .orderItems(order.getItems().stream().map(i -> OrderResponse.OrderItemDto.builder()
-                        .productName(i.getProductOption().getProduct().getName())
+                        .productName(i.getProductOption().getProduct().getProductName())
                         .option(i.getProductOption().getColor())
                         .quantity(i.getQuantity())
                         .price(i.getProductOption().getProduct().getPrice())

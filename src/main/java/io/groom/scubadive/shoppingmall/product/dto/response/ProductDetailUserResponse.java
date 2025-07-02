@@ -19,7 +19,7 @@ public record ProductDetailUserResponse(
     public static ProductDetailUserResponse from(Product product) {
         return new ProductDetailUserResponse(
                 product.getId(),
-                product.getName(),
+                product.getProductName(),
                 product.getDescription(),
                 product.getPrice(),
                 CategoryResponse.from(product.getCategory()),

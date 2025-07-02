@@ -4,7 +4,6 @@ import io.groom.scubadive.shoppingmall.category.dto.response.CategoryResponse;
 import io.groom.scubadive.shoppingmall.product.domain.Product;
 
 import java.time.LocalDateTime;
-import java.time.ZonedDateTime;
 import java.util.List;
 
 public record ProductSaveResponse(
@@ -19,7 +18,7 @@ public record ProductSaveResponse(
     public static ProductSaveResponse from(Product product) {
         return new ProductSaveResponse(
                 product.getId(),
-                product.getName(),
+                product.getProductName(),
                 product.getDescription(),
                 product.getPrice(),
                 CategoryResponse.from(product.getCategory()),
