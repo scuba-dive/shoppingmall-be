@@ -10,10 +10,13 @@ public record CategoryResponse(
         Long id,
 
         @Schema(description = "카테고리명", example = "의자")
-        String name
+        String name,
+
+        @Schema(description = "카테고리 이미지 URL", example = "https://example.com/images/chair.jpg")
+        String imageUrl
 
 ) {
     public static CategoryResponse from(Category category) {
-        return new CategoryResponse(category.getId(), category.getKoreanName());
+        return new CategoryResponse(category.getId(), category.getKoreanName(), category.getImageUrl());
     }
 }
