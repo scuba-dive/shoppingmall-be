@@ -75,7 +75,7 @@ public class StatsCommandService {
                 .toList();
 
         for (int i = 0; i < rankings.size(); i++) {
-            rankings.get(i).setRank(i + 1);
+            rankings.get(i).setRanking(i + 1);
             productSalesRankingRepository.save(rankings.get(i));
         }
     }

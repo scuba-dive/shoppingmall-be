@@ -49,7 +49,7 @@ public class UserAdminController {
             @Parameter(description = "상태를 변경할 사용자 ID", example = "1")
             @PathVariable Long id
     ) {
-        UserAdminStatusUpdateResponse response = userAdminService.updateStatus(userId);
+        UserAdminStatusUpdateResponse response = userAdminService.updateStatus(id);
         return ResponseEntity.ok(
                 ApiResponseDto.of(200, "사용자 상태 변경 성공", response)
         );
