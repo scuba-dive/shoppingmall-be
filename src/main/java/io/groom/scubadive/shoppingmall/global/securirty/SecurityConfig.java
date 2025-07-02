@@ -1,6 +1,5 @@
 package io.groom.scubadive.shoppingmall.global.securirty;
 
-import io.groom.scubadive.shoppingmall.member.domain.enums.Role;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -35,7 +34,7 @@ public class SecurityConfig {
                         .requestMatchers(
                                 "/api/users/signup",
                                 "/api/users/login",
-                                "/api/products/**",
+                                "/api/users/products/**",
                                 "/api/categories",
                                 "/ping",
                                 "/h2-console/**"

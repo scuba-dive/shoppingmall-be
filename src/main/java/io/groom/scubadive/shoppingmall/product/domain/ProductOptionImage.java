@@ -29,7 +29,9 @@ public class ProductOptionImage extends BaseTimeEntity {
 
     public String getImageUrl() {
         // bucket을 포함한 URL로 변경하거나, bucket 필드 제거 고려
-        return "https://" + bucket + ".scubadive.com" + imagePath;
+        return "https://" + bucket + ".s3.ap-northeast-2.amazonaws.com" + imagePath;
+        // bucket = my-shop-image-bucket
+        // imagePath = /product/bed1-blue.webp
     }
 
     public void setProductOption(ProductOption productOption) {

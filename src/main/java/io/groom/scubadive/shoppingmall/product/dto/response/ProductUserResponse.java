@@ -20,7 +20,7 @@ public record ProductUserResponse(
         String thumbnailUrl = product.getOptions().stream()
                 .findFirst()
                 .flatMap(option -> option.getProductOptionImages().stream().findFirst())
-                .map(img -> "https://cdn.scubadive.com" + img.getImagePath())
+                .map(img -> "https://my-shop-image-bucket.s3.ap-northeast-2.amazonaws.com" + img.getImagePath())
                 .orElse(null);
 
 
