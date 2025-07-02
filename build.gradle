@@ -7,10 +7,18 @@ plugins {
 group = 'io.groom.scubadive'
 version = '0.0.1-SNAPSHOT'
 
+jar {
+    archiveBaseName.set('shoppingmall')
+}
+
 java {
-	toolchain {
-		languageVersion = JavaLanguageVersion.of(17)
-	}
+//	toolchain {
+//		 JDK21 버전으로 자동인식 됨, 직접 버전 명시 방법으로 17 버전 인식 시킴
+//		languageVersion = JavaLanguageVersion.of(17)
+//	}
+	sourceCompatibility = JavaVersion.VERSION_17
+	targetCompatibility = JavaVersion.VERSION_17
+
 }
 
 configurations {
@@ -24,12 +32,13 @@ repositories {
 }
 
 dependencies {
-	// 웹, JPA, 보안, 검증
+    implementation 'org.springframework.boot:spring-boot-starter'
+    // 웹, JPA, 보안, 검증
 	// Spring MVC, REST API, 내장 톰캣 서버 포함
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	// Spring Data JPA + Hibernate 포함. DB 연동과 ORM 처리
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-	// 로그인/회원가입 등 보안 기능 제공
+//	// 로그인/회원가입 등 보안 기능 제공
 	implementation 'org.springframework.boot:spring-boot-starter-security'
 	// @Valid, @NotBlank 등 Bean Validation 처리
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
