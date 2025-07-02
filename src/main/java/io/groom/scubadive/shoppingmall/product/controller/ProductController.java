@@ -13,6 +13,12 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.*;
 
+@CrossOrigin(
+        origins = {
+                "http://localhost:5173",
+        },
+        allowCredentials = "true"
+)
 @Tag(name = "Public API", description = "비회원 공개 API")
 @RestController
 @RequiredArgsConstructor

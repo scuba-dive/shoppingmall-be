@@ -19,6 +19,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+@CrossOrigin(
+        origins = {
+                "http://localhost:5173",
+        },
+        allowCredentials = "true"
+)
 @Tag(name = "Admin API", description = "관리자 전용 API")
 @RestController
 @RequestMapping("/api/admin/products")

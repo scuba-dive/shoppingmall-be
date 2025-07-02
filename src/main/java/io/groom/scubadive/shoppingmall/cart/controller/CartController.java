@@ -16,6 +16,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+@CrossOrigin(
+        origins = {
+                "http://localhost:5173",
+        },
+        allowCredentials = "true"
+)
 @Tag(name = "User API", description = "회원 전용 API")
 @RestController
 @RequiredArgsConstructor
