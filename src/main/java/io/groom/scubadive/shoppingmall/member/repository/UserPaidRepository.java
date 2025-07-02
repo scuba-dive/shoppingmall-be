@@ -6,5 +6,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface UserPaidRepository extends JpaRepository<UserPaid, Long> {
 
 
-
+    UserPaid findByUserId(Long userId);
 }

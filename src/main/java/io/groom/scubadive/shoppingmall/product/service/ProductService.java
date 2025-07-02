@@ -23,11 +23,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.util.List;
-import java.util.Random;
-import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @Service
@@ -45,7 +41,7 @@ public class ProductService {
         );
 
 
-        Product product = Product.createProduct(request.name(), request.description(), request.price(), productUtil.getRandomNumber().longValue(), productUtil.generateRandomRating(), category);
+        Product product = Product.createProduct(request.productName(), request.description(), request.price(), productUtil.getRandomNumber().longValue(), productUtil.generateRandomRating(), category);
         productRepository.save(product);
 
         // 해당 카테고리 안에 상품이 얼마나 있는지 확인.
@@ -54,7 +50,7 @@ public class ProductService {
         AtomicInteger skuCount = new AtomicInteger(count.byteValue() + 1);
         List<ProductOption> options = request.options().stream().map(productOptionRequest -> {
 
-            String sku = productUtil.generateSku(category.getName(), productOptionRequest.color(), skuCount.getAndIncrement());
+            String sku = productUtil.generateSku(category.getCategoryName(), productOptionRequest.color(), skuCount.getAndIncrement());
 
             return ProductOption.createProductOption(productOptionRequest.color(), sku, productOptionRequest.stock().longValue(), ProductOptionStatus.ACTIVE, product);
         }).toList();

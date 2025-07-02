@@ -17,7 +17,7 @@ import java.util.Set;
 public class ProductRepositoryImpl implements ProductRepositoryCustom {
 
     private final EntityManager em;
-    private static final Set<String> ALLOWED_SORT_FIELDS = Set.of("id", "name", "price", "createdAt");
+    private static final Set<String> ALLOWED_SORT_FIELDS = Set.of("id", "productName", "price", "createdAt");
 
 
     @Override
@@ -80,9 +80,6 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
 
         return new PageImpl<>(content, pageable, total);
     }
-
-    ;
-
 
     private String createOrderByClause(Pageable pageable) {
         if (pageable.getSort().isEmpty()) {

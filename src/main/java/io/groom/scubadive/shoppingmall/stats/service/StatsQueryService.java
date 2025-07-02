@@ -55,12 +55,12 @@ public class StatsQueryService {
 
         List<TopProductsResponse.ProductRanking> salesRankings = salesRankingsRaw.stream()
                 .limit(5)
-                .map(r -> new TopProductsResponse.ProductRanking(r.getRank(), r.getProductName(), r.getTotalSales(), r.getTotalQuantity()))
+                .map(r -> new TopProductsResponse.ProductRanking(r.getRanking(), r.getProductName(), r.getTotalSales(), r.getTotalQuantity()))
                 .collect(Collectors.toList());
 
         List<TopProductsResponse.ProductRanking> quantityRankings = quantityRankingsRaw.stream()
                 .limit(5)
-                .map(r -> new TopProductsResponse.ProductRanking(r.getRank(), r.getProductName(), r.getTotalSales(), r.getTotalQuantity()))
+                .map(r -> new TopProductsResponse.ProductRanking(r.getRanking(), r.getProductName(), r.getTotalSales(), r.getTotalQuantity()))
                 .collect(Collectors.toList());
 
         return new TopProductsResponse(salesRankings, quantityRankings);

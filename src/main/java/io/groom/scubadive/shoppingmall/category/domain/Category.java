@@ -14,18 +14,18 @@ public class Category extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String name;
+    private String categoryName;
     private String koreanName;
 
     @Builder(access = AccessLevel.PRIVATE)
-    public Category(String name, String koreanName) {
-        this.name = name;
+    public Category(String categoryName, String koreanName) {
+        this.categoryName = categoryName;
         this.koreanName = koreanName;
     }
 
-    public static Category createCategory(String name,String koreanName) {
+    public static Category createCategory(String categoryName,String koreanName) {
         return Category.builder()
-                .name(name)
+                .categoryName(categoryName)
                 .koreanName(koreanName)
                 .build();
     }

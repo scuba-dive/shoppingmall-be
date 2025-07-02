@@ -21,9 +21,9 @@ public class ProductSalesRanking {
 
     private String productName;
 
-    private int totalQuantity;
+    private Integer totalQuantity;
 
-    private long totalSales;
+    private Long totalSales;
 
-    private int rank;
+    private Integer ranking;
 }
