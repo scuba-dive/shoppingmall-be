@@ -21,12 +21,12 @@ public class Product extends BaseTimeEntity {
     @Column(name = "product_id")
     private Long id;
 
-    private String name;
+    private String productName;
 
-    @Column(columnDefinition = "TEXT")
+    @Column(columnDefinition = "TEXT", nullable = false)
     private String description;
 
-
+    @Column(nullable = false)
     private Long price;
 
     private Long reviewCount;
@@ -42,8 +42,8 @@ public class Product extends BaseTimeEntity {
     private Category category;
 
     @Builder(access = AccessLevel.PRIVATE)
-    public Product(String name, String description, Long price, Long reviewCount, BigDecimal rating, Category category) {
-        this.name = name;
+    public Product(String productName, String description, Long price, Long reviewCount, BigDecimal rating, Category category) {
+        this.productName = productName;
         this.description = description;
         this.price = price;
         this.reviewCount = reviewCount;
@@ -51,9 +51,9 @@ public class Product extends BaseTimeEntity {
         this.category = category;
     }
 
-    public static Product createProduct(String name, String description, Long price, Long reviewCount, BigDecimal rating, Category category) {
+    public static Product createProduct(String productName, String description, Long price, Long reviewCount, BigDecimal rating, Category category) {
         return Product.builder()
-                .name(name)
+                .productName(productName)
                 .description(description)
                 .price(price)
                 .reviewCount(reviewCount)
