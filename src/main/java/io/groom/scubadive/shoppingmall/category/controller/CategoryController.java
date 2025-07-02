@@ -16,6 +16,12 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@CrossOrigin(
+        origins = {
+                "http://localhost:5173",
+        },
+        allowCredentials = "true"
+)
 @Tag(name = "Public API", description = "비회원 공개 API")
 @RestController
 @RequestMapping("/api/users/categories")
