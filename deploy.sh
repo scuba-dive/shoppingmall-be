@@ -1,7 +1,7 @@
 #!/bin/bash
 
-APP_NAME=user-management-backend
-JAR_NAME=user-management-backend-0.0.1-SNAPSHOT.jar
+APP_NAME=shoppingmall
+JAR_NAME=shoppingmall-0.0.1-SNAPSHOT.jar
 JAR_PATH=./build/libs/$JAR_NAME
 LOG_PATH=app.log
 
@@ -27,12 +27,9 @@ nohup java \
   -Dspring.datasource.url="$SPRING_DATASOURCE_URL" \
   -Dspring.datasource.username="$SPRING_DATASOURCE_USERNAME" \
   -Dspring.datasource.password="$SPRING_DATASOURCE_PASSWORD" \
-  -Dspring.mail.username="$MAIL_USERNAME" \
-  -Dspring.mail.password="$MAIL_PASSWORD" \
   -Djwt.secret-key="$JWT_SECRET_KEY" \
-  -Dcoolsms.api.key="$COOLSMS_API_KEY" \
-  -Dcoolsms.api.secret="$COOLSMS_API_SECRET" \
-  -Dcoolsms.api.number="$COOLSMS_API_NUMBER" \
+  -Djwt.access-token-expiration="$JWT_ACCESS_TOKEN_EXPIRATION" \
+  -Djwt.refresh-token-expiration="$JWT_REFRESH_TOKEN_EXPIRATION" \
   -jar "$JAR_PATH" --spring.profiles.active=prod > "$LOG_PATH" 2>&1 &
 
 echo "✅ 배포 스크립트 완료. 로그 확인: tail -f $LOG_PATH"
