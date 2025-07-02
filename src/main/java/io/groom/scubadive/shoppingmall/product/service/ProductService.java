@@ -50,7 +50,7 @@ public class ProductService {
         AtomicInteger skuCount = new AtomicInteger(count.byteValue() + 1);
         List<ProductOption> options = request.options().stream().map(productOptionRequest -> {
 
-            String sku = productUtil.generateSku(category.getName(), productOptionRequest.color(), skuCount.getAndIncrement());
+            String sku = productUtil.generateSku(category.getCategoryName(), productOptionRequest.color(), skuCount.getAndIncrement());
 
             return ProductOption.createProductOption(productOptionRequest.color(), sku, productOptionRequest.stock().longValue(), ProductOptionStatus.ACTIVE, product);
         }).toList();
