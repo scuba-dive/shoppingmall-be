@@ -227,5 +227,11 @@ public class UserService {
         CookieUtil.deleteRefreshTokenCookie(response);
     }
 
+    @Transactional(readOnly = true)
+    public void validateEmailDuplication(String email) {
+        if (userRepository.existsByEmail(email)) {
+            throw new GlobalException(ErrorCode.EMAIL_ALREADY_EXISTS);
+        }
+    }
 
 }

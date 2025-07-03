@@ -32,6 +32,12 @@ public class UserController {
         return ResponseEntity.ok(ApiResponseDto.of(200, "회원가입이 완료되었습니다.", response));
     }
 
+    @GetMapping("/check-email")
+    public ResponseEntity<ApiResponseDto<Void>> checkEmailDuplicate(@RequestParam String email) {
+        userService.validateEmailDuplication(email);
+        return ResponseEntity.ok(ApiResponseDto.of(200, "사용 가능한 이메일입니다.", null));
+    }
+
     @PostMapping("/login")
     public ResponseEntity<ApiResponseDto<SignInResponse>> login(
             @RequestBody @Valid SignInRequest request,
