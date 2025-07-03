@@ -5,7 +5,10 @@ import io.groom.scubadive.shoppingmall.cart.dto.request.*;
 import io.groom.scubadive.shoppingmall.cart.dto.response.CartItemResponse;
 import io.groom.scubadive.shoppingmall.cart.dto.response.CartResponse;
 import io.groom.scubadive.shoppingmall.cart.repository.*;
+import io.groom.scubadive.shoppingmall.global.exception.ErrorCode;
+import io.groom.scubadive.shoppingmall.global.exception.GlobalException;
 import io.groom.scubadive.shoppingmall.member.domain.User;
+import io.groom.scubadive.shoppingmall.member.repository.UserRepository;
 import io.groom.scubadive.shoppingmall.product.domain.ProductOption;
 import io.groom.scubadive.shoppingmall.product.repository.ProductOptionRepository;
 import lombok.RequiredArgsConstructor;
@@ -20,12 +23,16 @@ import java.util.stream.Collectors;
 @Transactional(readOnly = true)
 public class CartService {
 
+    private final UserRepository userRepository;
     private final CartRepository cartRepository;
     private final CartItemRepository cartItemRepository;
     private final ProductOptionRepository productOptionRepository;
 
     @Transactional
-    public CartItemResponse addItem(User user, CartItemRequest request) {
+    public CartItemResponse addItem(Long userId, CartItemRequest request) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new GlobalException(ErrorCode.MEMBER_DELETED));
+
         Cart cart = cartRepository.findByUserId(user.getId())
                 .orElseGet(() -> cartRepository.save(new Cart(user)));
 
@@ -75,7 +82,10 @@ public class CartService {
                 .build();
     }
 
-    public CartResponse getCartResponse(User user) {
+    public CartResponse getCartResponse(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new GlobalException(ErrorCode.MEMBER_DELETED));
+
         Cart cart = cartRepository.findByUserId(user.getId())
                 .orElseThrow(() -> new IllegalStateException("장바구니가 없습니다."));
 
@@ -112,7 +122,9 @@ public class CartService {
     }
 
     @Transactional
-    public void clearCart(User user) {
+    public void clearCart(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new GlobalException(ErrorCode.MEMBER_DELETED));
         Cart cart = cartRepository.findByUserId(user.getId())
                 .orElseThrow(() -> new IllegalStateException("장바구니가 없습니다."));
         cart.getItems().clear();

@@ -22,13 +22,22 @@ public class Cart extends BaseTimeEntity {
     @JoinColumn(name = "user_id")
     private User user;
 
-    public Cart(User user) {
-        this.user = user;
-    }
     @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<CartItem> items = new ArrayList<>();
 
     public void clearItems() {
         this.items.clear();
     }
+
+    public Cart(User user) {
+        this.user = user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+        if (user.getCart() != this) {
+            user.assignCart(this);
+        }
+    }
+
 }

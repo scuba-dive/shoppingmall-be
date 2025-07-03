@@ -12,6 +12,9 @@ public record ProductWithOptionPageResponse(
         @Schema(description = "전체 상품 수", example = "124")
         long total,
 
+        @Schema(description = "전체 페이지 수", example = "13")
+        int totalPages,
+
         @Schema(description = "현재 페이지 번호 (0부터 시작)", example = "0")
         int page,
 
@@ -32,6 +35,7 @@ public record ProductWithOptionPageResponse(
 
         return new ProductWithOptionPageResponse(
                 optionPage.getTotalElements(),
+                optionPage.getTotalPages(),
                 optionPage.getNumber(),
                 optionPage.getSize(),
                 results

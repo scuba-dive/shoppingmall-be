@@ -1,5 +1,6 @@
 package io.groom.scubadive.shoppingmall.member.domain;
 
+import io.groom.scubadive.shoppingmall.cart.domain.Cart;
 import io.groom.scubadive.shoppingmall.global.util.BaseTimeEntity;
 import io.groom.scubadive.shoppingmall.member.domain.enums.Grade;
 import io.groom.scubadive.shoppingmall.member.domain.enums.Role;
@@ -8,11 +9,13 @@ import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
 
 @Entity
 @Getter
+@Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "users", uniqueConstraints = {
         @UniqueConstraint(name = "uq_users_email", columnNames = "email")
@@ -56,6 +59,16 @@ public class User extends BaseTimeEntity {
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private UserImage userImage; // 프로필 이미지
 
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Cart cart;
+
+    public void assignCart(Cart cart) {
+        this.cart = cart;
+        if (cart.getUser() != this) {
+            cart.setUser(this);
+        }
+    }
+
     /**
      * 사용자 생성자 (가입 시 사용)
      * 기본 상태: ACTIVE / 기본 등급: BRONZE / 기본 권한: USER
@@ -74,6 +87,7 @@ public class User extends BaseTimeEntity {
         this.userImage = userImage;
         this.lastLoginAt = LocalDateTime.now(); // 최초 가입 시 현재 시각 설정
     }
+
 
     // 마지막 로그인 시간 업데이트
     public void updateLastLoginAt() {
@@ -110,5 +124,7 @@ public class User extends BaseTimeEntity {
     public void changeStatus(UserStatus userStatus) {
         this.status = userStatus;
     }
+
+
 }
 
