@@ -1,5 +1,6 @@
 package io.groom.scubadive.shoppingmall.member.service;
 
+import io.groom.scubadive.shoppingmall.cart.domain.Cart;
 import io.groom.scubadive.shoppingmall.global.exception.ErrorCode;
 import io.groom.scubadive.shoppingmall.global.exception.GlobalException;
 import io.groom.scubadive.shoppingmall.global.securirty.JwtTokenProvider;
@@ -66,10 +67,14 @@ public class UserService {
 
     // 요청으로부터 사용자 엔티티 생성
     private User createUserFromRequest(SignUpRequest dto, String nickname, String encodedPassword) {
-        return new User(
+        User user = new User(
                 dto.getUsername(), nickname, dto.getEmail(),
                 encodedPassword, dto.getPhoneNumber(), dto.getAddress(), null
         );
+
+        Cart cart = new Cart(user);       // Cart 객체 생성
+        user.assignCart(cart);        // 양방향 연관관계 설정 (setUser도 내부에서 호출됨)
+        return user;
     }
 
     // 닉네임 중복 방지 자동 생성
