@@ -12,6 +12,9 @@ public record ProductUserPageResponse(
         @Schema(description = "전체 상품 수", example = "120")
         long total,
 
+        @Schema(description = "전체 페이지 수", example = "13")
+        int totalPages,
+
         @Schema(description = "현재 페이지 번호 (0부터 시작)", example = "0")
         int page,
 
@@ -31,6 +34,7 @@ public record ProductUserPageResponse(
                 productPage.getTotalElements(),
                 productPage.getNumber(),
                 productPage.getSize(),
+                productPage.getTotalPages(),
                 results
         );
     }
