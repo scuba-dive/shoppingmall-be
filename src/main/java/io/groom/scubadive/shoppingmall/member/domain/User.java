@@ -74,7 +74,7 @@ public class User extends BaseTimeEntity {
      * 기본 상태: ACTIVE / 기본 등급: BRONZE / 기본 권한: USER
      */
     public User(String username, String nickname, String email, String password,
-                String phoneNumber, String address, UserImage userImage, Cart cart) {
+                String phoneNumber, String address, UserImage userImage) {
         this.username = username;
         this.nickname = nickname;
         this.email = email;
