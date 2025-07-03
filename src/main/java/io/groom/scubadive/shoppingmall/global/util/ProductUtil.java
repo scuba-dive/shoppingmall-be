@@ -35,6 +35,7 @@ public class ProductUtil {
             case "파란색" -> "BLUE";
             case "남색" -> "NAVY";
             case "보라색" -> "PURPLE";
+            case "검은색" -> "BLACK";
             default -> "GEN";
         };
     }

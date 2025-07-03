@@ -1,28 +1,26 @@
 package io.groom.scubadive.shoppingmall.member.dto.request;
 
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor
+@Schema(description = "회원 정보 수정 요청 DTO")
 public class UpdateUserRequest {
 
-    @Size(min = 3, max = 20, message = "닉네임은 3자 이상 20자 이하여야 합니다.")
+    @Schema(description = "변경할 닉네임 (중복 불가)", example = "new_nickname")
     private String nickname;
 
+    @Schema(description = "변경할 전화번호", example = "01012345678")
     private String phoneNumber;
 
-    @Size(min = 4, max = 30, message = "현재 비밀번호는 4자 이상이어야 합니다.")
+    @Schema(description = "현재 비밀번호 (비밀번호 변경 시 필수)", example = "currentPass123")
     private String currentPassword;
 
-    @Size(min = 4, max = 30, message = "새 비밀번호는 4자 이상이어야 합니다.")
+    @Schema(description = "새 비밀번호 (비밀번호 변경 시 사용)", example = "newSecurePass456")
     private String newPassword;
 
-    @Size(min = 4, max = 30)
+    @Schema(description = "새 비밀번호 확인", example = "newSecurePass456")
     private String newPasswordCheck;
-
-
-
 }

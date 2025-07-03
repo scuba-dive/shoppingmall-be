@@ -1,6 +1,5 @@
 package io.groom.scubadive.shoppingmall.product.domain;
 
-
 import io.groom.scubadive.shoppingmall.global.util.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.*;
@@ -12,23 +11,29 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 public class ProductOption extends BaseTimeEntity {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "product_option_id")
     private Long id;
 
-    private  String color;
-    private String sku;
+    private String color;
+
+    @Column(unique = true, nullable = false)
+    private String sku; // SKU 중복 방지
+
+    @Column(nullable = false)
     private Long stock;
 
     @Enumerated(EnumType.STRING)
-    private ProductOptionStatus status;
+    @Column(nullable = false)
+    private ProductOptionStatus status = ProductOptionStatus.ACTIVE; // 기본값 ACTIVE
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_id")
     private Product product;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "productOption")
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "productOption", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ProductOptionImage> productOptionImages = new ArrayList<>();
 
     @Builder(access = AccessLevel.PRIVATE)
@@ -36,7 +41,7 @@ public class ProductOption extends BaseTimeEntity {
         this.color = color;
         this.sku = sku;
         this.stock = stock;
-        this.status = status;
+        this.status = status != null ? status : ProductOptionStatus.ACTIVE;
         this.product = product;
     }
 
@@ -62,10 +67,10 @@ public class ProductOption extends BaseTimeEntity {
         this.status = status;
     }
 
-    public void addProductOptionImage(ProductOptionImage productOptionImage) {
-        this.productOptionImages.add(productOptionImage);
-        productOptionImage.addProductOption(this);
+    public void addProductOptionImage(ProductOptionImage image) {
+        if (!productOptionImages.contains(image)) {
+            productOptionImages.add(image);
+            image.setProductOption(this); // 단방향만 유지, 무한 루프 방지
+        }
     }
-
-
 }
