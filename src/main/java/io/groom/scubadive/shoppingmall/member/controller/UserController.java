@@ -48,6 +48,19 @@ public class UserController {
     }
 
     @Tag(name = "Public API", description = "비회원 공개 API")
+    @Operation(summary = "이메일 인증", description = "회원가입시 이메일 중복 체크를 진행합니다.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "이메일 중복 체크 성공"),
+            @ApiResponse(responseCode = "401", description = "이메일 중복 체크 실패", content = @Content)
+    })
+    @GetMapping("/check-email")
+    public ResponseEntity<ApiResponseDto<Void>> checkEmailDuplicate(@RequestParam String email) {
+        userService.validateEmailDuplication(email);
+        return ResponseEntity.ok(ApiResponseDto.of(200, "사용 가능한 이메일입니다.", null));
+    }
+
+
+    @Tag(name = "Public API", description = "비회원 공개 API")
     @Operation(summary = "로그인", description = "사용자가 로그인하고 AccessToken과 RefreshToken을 발급받습니다.")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "로그인 성공"),
