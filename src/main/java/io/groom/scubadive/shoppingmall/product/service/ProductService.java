@@ -101,13 +101,18 @@ public class ProductService {
         return ApiResponseDto.of(200, "재고 수량이 변경되었습니다.", null);
     }
 
-    public ApiResponseDto<Void> updateStatusByOptionId(Long id, ProductStatusUpdateRequest request) {
+    public ApiResponseDto<Void> toggleStatusByOptionId(Long id) {
         ProductOption productOption = findProductOptionById(id);
 
-        productOption.updateStatus(request.status());
+        ProductOptionStatus currentStatus = productOption.getStatus();
+        ProductOptionStatus newStatus =
+                currentStatus == ProductOptionStatus.ACTIVE
+                        ? ProductOptionStatus.SOLD_OUT
+                        : ProductOptionStatus.ACTIVE;
 
-        return ApiResponseDto.of(200, "상품 상태가 변경되었습니다.", null);
+        productOption.updateStatus(newStatus);
 
+        return ApiResponseDto.of(200, "상품 옵션 상태가 " + newStatus + "로 변경되었습니다.", null);
     }
 
     public ApiResponseDto<ProductDetailUserResponse> findProductDetailUserById(Long id) {
