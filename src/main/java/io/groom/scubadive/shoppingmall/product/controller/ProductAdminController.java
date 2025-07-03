@@ -87,11 +87,8 @@ public class ProductAdminController {
     })
     @PatchMapping("/{id}/status")
     @PreAuthorize("hasRole('ADMIN')")
-    public ApiResponseDto<Void> updateStatus(
-            @PathVariable Long id,
-            @RequestBody ProductStatusUpdateRequest request
-    ) {
-        return productService.updateStatusByOptionId(id, request);
+    public ApiResponseDto<Void> toggleStatus(@PathVariable Long id) {
+        return productService.toggleStatusByOptionId(id);
     }
 
     @Operation(summary = "상품 옵션 재고 수정", description = "상품 옵션의 재고 수량을 수정합니다.")
