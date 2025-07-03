@@ -1,5 +1,7 @@
 package io.groom.scubadive.shoppingmall.global.securirty;
 
+import io.sentry.Sentry;
+import io.sentry.protocol.User;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -35,12 +37,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             if (jwtTokenProvider.validateToken(token)) {
                 Long userId = jwtTokenProvider.getUserIdFromToken(token);
                 String role = jwtTokenProvider.getRoleFromToken(token);
+                String username = jwtTokenProvider.getUsernameFromToken(token); // ✅ 추가
+                String email = jwtTokenProvider.getEmailFromToken(token);       // ✅ 추가
 
                 UsernamePasswordAuthenticationToken authentication =
                         new UsernamePasswordAuthenticationToken(
                                 userId,
                                 null,
-                                List.of(new SimpleGrantedAuthority("ROLE_" + role)) // ex: "USER"
+                                List.of(new SimpleGrantedAuthority("ROLE_" + role))
                         );
 
                 authentication.setDetails(
@@ -48,6 +52,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 );
 
                 SecurityContextHolder.getContext().setAuthentication(authentication);
+
+                User sentryUser = new User();
+                sentryUser.setId(userId.toString());
+                sentryUser.setUsername(username);
+                sentryUser.setEmail(email);
+                Sentry.setUser(sentryUser);
             }
         }
 
