@@ -21,11 +21,5 @@ jwt:
   access-token-expiration: ${JWT_ACCESS_TOKEN_EXPIRATION}
   refresh-token-expiration: ${JWT_REFRESH_TOKEN_EXPIRATION}
 
-sentry:
-  dsn: https://f93fd0bbd617ea140678c14099d604b0@o4509603423125504.ingest.us.sentry.io/4509603447504896
-  send-default-pii: true
-  environment: production
-  traces-sample-rate: 1.0
-
 server:
   port: 8080
