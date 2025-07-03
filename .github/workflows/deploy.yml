@@ -59,5 +59,4 @@ jobs:
             export JWT_SECRET_KEY="${{ secrets.JWT_SECRET_KEY }}"
             export JWT_ACCESS_TOKEN_EXPIRATION="${{ secrets.JWT_ACCESS_TOKEN_EXPIRATION }}"
             export JWT_REFRESH_TOKEN_EXPIRATION="${{ secrets.JWT_REFRESH_TOKEN_EXPIRATION }}"
-            export SENTRY_AUTH_TOKEN="${{ secrets.SENTRY_AUTH_TOKEN }}"
             ./deploy.sh
