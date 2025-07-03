@@ -35,9 +35,9 @@ public record ProductWithOptionPageResponse(
 
         return new ProductWithOptionPageResponse(
                 optionPage.getTotalElements(),
+                optionPage.getTotalPages(),
                 optionPage.getNumber(),
                 optionPage.getSize(),
-                optionPage.getTotalPages(),
                 results
         );
     }

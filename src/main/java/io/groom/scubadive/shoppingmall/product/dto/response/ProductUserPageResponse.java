@@ -32,9 +32,9 @@ public record ProductUserPageResponse(
 
         return new ProductUserPageResponse(
                 productPage.getTotalElements(),
+                productPage.getTotalPages(),
                 productPage.getNumber(),
                 productPage.getSize(),
-                productPage.getTotalPages(),
                 results
         );
     }
