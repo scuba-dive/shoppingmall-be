@@ -95,7 +95,7 @@ public class UserService {
 
         validateLoginUser(user, request.getPassword());
 
-        String accessToken = jwtTokenProvider.createAccessToken(user.getId(), user.getRole(),user.getUsername(), user.getEmail());
+        String accessToken = jwtTokenProvider.createAccessToken(user.getId(), user.getRole());
         String refreshToken = jwtTokenProvider.createRefreshToken(user.getId());
         LocalDateTime expiresAt = LocalDateTime.now().plusSeconds(jwtTokenProvider.getRefreshTokenExpirySeconds());
 
