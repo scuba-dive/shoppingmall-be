@@ -6,6 +6,7 @@ import io.groom.scubadive.shoppingmall.cart.dto.response.CartItemResponse;
 import io.groom.scubadive.shoppingmall.cart.dto.response.CartResponse;
 import io.groom.scubadive.shoppingmall.cart.service.CartService;
 import io.groom.scubadive.shoppingmall.global.dto.ApiResponseDto;
+import io.groom.scubadive.shoppingmall.global.securirty.LoginUser;
 import io.groom.scubadive.shoppingmall.member.domain.User;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -35,8 +36,8 @@ public class CartController {
             @ApiResponse(responseCode = "200", description = "장바구니 조회 성공")
     })
     @GetMapping
-    public ResponseEntity<ApiResponseDto<CartResponse>> getCart(@AuthenticationPrincipal User user) {
-        CartResponse response = cartService.getCartResponse(user);
+    public ResponseEntity<ApiResponseDto<CartResponse>> getCart(@LoginUser Long userId) {
+        CartResponse response = cartService.getCartResponse(userId);
         return ResponseEntity.ok(ApiResponseDto.of(200, "장바구니 조회 성공", response));
     }
 
@@ -45,9 +46,9 @@ public class CartController {
             @ApiResponse(responseCode = "200", description = "장바구니에 추가되었습니다.")
     })
     @PostMapping("/items")
-    public ResponseEntity<ApiResponseDto<CartItemResponse>> addItem(@AuthenticationPrincipal User user,
+    public ResponseEntity<ApiResponseDto<CartItemResponse>> addItem(@LoginUser Long userId,
                                                                     @RequestBody CartItemRequest request) {
-        CartItemResponse response = cartService.addItem(user, request);
+        CartItemResponse response = cartService.addItem(userId, request);
         return ResponseEntity.ok(ApiResponseDto.of(200, "장바구니에 추가되었습니다.", response));
     }
 
@@ -77,8 +78,8 @@ public class CartController {
             @ApiResponse(responseCode = "200", description = "장바구니가 비워졌습니다.")
     })
     @DeleteMapping
-    public ResponseEntity<ApiResponseDto<Void>> clearCart(@AuthenticationPrincipal User user) {
-        cartService.clearCart(user);
+    public ResponseEntity<ApiResponseDto<Void>> clearCart(@LoginUser Long userId) {
+        cartService.clearCart(userId);
         return ResponseEntity.ok(ApiResponseDto.of(200, "장바구니가 비워졌습니다.", null));
     }
 }
