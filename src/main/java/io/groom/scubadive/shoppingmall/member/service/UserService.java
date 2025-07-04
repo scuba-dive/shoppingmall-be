@@ -156,7 +156,11 @@ public class UserService {
                 .status(user.getStatus().name().toLowerCase())
                 .grade(user.getGrade().name())
                 .imagePath(user.getUserImage() != null ? user.getUserImage().getFullImageUrl() : "https://my-shop-image-bucket.s3.ap-northeast-2.amazonaws.com/profile/default_profile.webp")
-                .totalPaid(userPaidRepository.findByUserId(userId).getAmount())
+                .totalPaid(
+                        userPaidRepository.findByUserId(userId)
+                                .map(UserPaid::getAmount)
+                                .orElse(0L)
+                )
                 .lastLoginAt(user.getLastLoginAt())
                 .createdAt(user.getCreatedAt())
                 .updatedAt(user.getUpdatedAt())
@@ -256,7 +260,12 @@ public class UserService {
                 .status(user.getStatus().name().toLowerCase())
                 .grade(user.getGrade().name())
                 .imagePath(user.getUserImage() != null ? user.getUserImage().getFullImageUrl() : null)
-                .totalPaid(userPaidRepository.findByUserId(user.getId()).getAmount())
+                .totalPaid(
+                        userPaidRepository.findByUserId(user.getId())
+                                .map(UserPaid::getAmount)
+                                .orElse(0L)
+                )
+
                 .lastLoginAt(user.getLastLoginAt())
                 .createdAt(user.getCreatedAt())
                 .updatedAt(user.getUpdatedAt())
