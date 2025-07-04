@@ -20,6 +20,8 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -43,24 +45,31 @@ public class OrderService {
         Cart cart = cartRepository.findById(request.getCartId())
                 .orElseThrow(() -> new GlobalException(ErrorCode.CART_NOT_FOUND));
 
-        // 장바구니가 해당 사용자 소유인지 확인
         if (!cart.getUser().getId().equals(userId)) {
             throw new GlobalException(ErrorCode.FORBIDDEN);
         }
 
         List<Long> selectedIds = request.getCartItemIds();
-
-        // 장바구니 내부에서 선택된 항목 필터링
         List<CartItem> selectedItems = cart.getItems().stream()
                 .filter(item -> selectedIds.contains(item.getId()))
                 .toList();
 
-        // 선택된 cartItem 개수가 실제 요청한 개수와 다르면 오류
         if (selectedItems.isEmpty() || selectedItems.size() != selectedIds.size()) {
             throw new GlobalException(ErrorCode.INVALID_CART_ITEM);
         }
 
-        String orderNumber = "ORD" + UUID.randomUUID().toString().replace("-", "").substring(0, 12);
+        // 주문 번호 생성
+        LocalDate today = LocalDate.now();
+        String datePart = today.format(DateTimeFormatter.ofPattern("yyyyMMdd"));
+
+        Long todayOrderCount = orderRepository.countByCreatedAtBetween(
+                today.atStartOfDay(),
+                today.plusDays(1).atStartOfDay()
+        );
+        String sequencePart = String.format("%04d", todayOrderCount + 1); // 0001, 0002, ...
+
+        String orderNumber = "ORD" + datePart + sequencePart;
+
         int totalQuantity = selectedItems.stream().mapToInt(CartItem::getQuantity).sum();
         Long totalAmount = selectedItems.stream()
                 .mapToLong(i -> i.getProductOption().getProduct().getPrice() * i.getQuantity())
@@ -74,12 +83,11 @@ public class OrderService {
         });
 
         orderRepository.save(order);
-
-        // 선택된 항목만 장바구니에서 제거
         cart.getItems().removeIf(item -> selectedIds.contains(item.getId()));
 
         return mapToOrderResponse(order);
     }
+
 
 
 

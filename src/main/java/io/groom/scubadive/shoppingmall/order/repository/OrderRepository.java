@@ -11,4 +11,6 @@ import java.util.List;
 public interface OrderRepository extends JpaRepository<Order, Long> {
     Page<Order> findAllByUserId(Long userId, Pageable pageable);
     List<Order> findByCreatedAtBetween(LocalDateTime start, LocalDateTime end);
+
+    long countByCreatedAtBetween(LocalDateTime start, LocalDateTime end);
 }
