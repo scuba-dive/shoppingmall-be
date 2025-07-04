@@ -16,6 +16,7 @@ import io.groom.scubadive.shoppingmall.order.repository.OrderRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -92,7 +93,8 @@ public class OrderService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new GlobalException(ErrorCode.MEMBER_DELETED));
 
-        Page<Order> orders = orderRepository.findAllByUserId(user.getId(), PageRequest.of(page, size));
+        Page<Order> orders = orderRepository.findAllByUserId(user.getId(),
+                PageRequest.of(page, size,Sort.by(Sort.Direction.DESC, "createdAt")));
         return OrderListResponse.builder()
                 .page(page)
                 .totalPages(orders.getTotalPages())
@@ -110,7 +112,10 @@ public class OrderService {
     public OrderListResponse getAllOrders(int page, int size) {
 
 
-        Page<Order> orders = orderRepository.findAll(PageRequest.of(page, size));
+        Page<Order> orders = orderRepository.findAll(
+                PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"))
+        );
+
         return OrderListResponse.builder()
                 .page(page)
                 .totalPages(orders.getTotalPages())
