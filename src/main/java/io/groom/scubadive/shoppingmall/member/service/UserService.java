@@ -47,11 +47,29 @@ public class UserService {
     public UserResponse signUp(SignUpRequest dto) {
         validateSignUpRequest(dto);
 
+        // 실명 유효성 검사: 한글 2자 이상
+        if (!dto.getUsername().matches("^[가-힣]{2,}$")) {
+            throw new GlobalException(ErrorCode.INVALID_USERNAME);
+        }
+
+        // 비밀번호 형식 검사: 소문자, 숫자, 특수문자 포함 + 8자 이상
+        if (!dto.getPassword().matches("^(?=.*[a-z])(?=.*\\d)(?=.*[!@#$%^&*()_+{}\\[\\]:;<>,.?~\\-=/\\\\]).{8,}$")) {
+            throw new GlobalException(ErrorCode.INVALID_PASSWORD_FORMAT);
+        }
+
+        // 비밀번호 일치 여부
+        if (!dto.getPassword().equals(dto.getPasswordCheck())) {
+            throw new GlobalException(ErrorCode.PASSWORDS_DO_NOT_MATCH);
+        }
+
+        // 닉네임 자동 생성 및 중복 방지
         String nickname = generateUniqueNickname();
         String encodedPassword = passwordEncoder.encode(dto.getPassword());
         User user = createUserFromRequest(dto, nickname, encodedPassword);
 
         userRepository.save(user);
+
+        // 초기 UserPaid 엔티티 생성
         userPaidRepository.save(new UserPaid(user));
 
         return new UserResponse(user.getId(), user.getEmail(), user.getNickname());
