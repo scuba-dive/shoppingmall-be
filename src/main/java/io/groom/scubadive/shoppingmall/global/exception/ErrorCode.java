@@ -40,6 +40,7 @@ public enum ErrorCode {
     PRODUCT_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 상품을 찾을 수 없습니다."),
     MEMBER_DELETED(HttpStatus.NOT_FOUND, "로그인할 수 없는 사용자입니다."),
     USER_PAID_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 사용자의 촘 사용 금액을 찾을 수 없습니다."),
+    CART_NOT_FOUND(HttpStatus.NOT_FOUND, "장바구니를 찾을 수 없습니다."),
     // 409 CONFLICT
 
     // 500 INTERNAL SERVER ERROR

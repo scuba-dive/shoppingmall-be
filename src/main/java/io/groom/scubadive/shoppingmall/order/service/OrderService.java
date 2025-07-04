@@ -19,6 +19,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -37,27 +38,41 @@ public class OrderService {
     public OrderResponse createOrder(Long userId, OrderCreateRequest request) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new GlobalException(ErrorCode.MEMBER_DELETED));
-        Cart cart = cartRepository.findById(request.getCartId()).orElseThrow();
 
-        if (cart.getItems().isEmpty()) throw new IllegalStateException("장바구니가 비어있습니다.");
+        Cart cart = cartRepository.findById(request.getCartId())
+                .orElseThrow(() -> new GlobalException(ErrorCode.CART_NOT_FOUND));
+
+        List<Long> selectedIds = request.getCartItemIds();
+
+        List<CartItem> selectedItems = cart.getItems().stream()
+                .filter(item -> selectedIds.contains(item.getId()))
+                .toList();
+
+        if (selectedItems.isEmpty()) {
+            throw new IllegalStateException("선택된 장바구니 항목이 없습니다.");
+        }
 
         String orderNumber = "ORD" + UUID.randomUUID().toString().replace("-", "").substring(0, 12);
-        int totalQuantity = cart.getItems().stream().mapToInt(CartItem::getQuantity).sum();
-        Long totalAmount = cart.getItems().stream().mapToLong(i ->
-                i.getProductOption().getProduct().getPrice() * i.getQuantity()).sum();
+        int totalQuantity = selectedItems.stream().mapToInt(CartItem::getQuantity).sum();
+        Long totalAmount = selectedItems.stream()
+                .mapToLong(i -> i.getProductOption().getProduct().getPrice() * i.getQuantity())
+                .sum();
 
         Order order = new Order(user, orderNumber, totalQuantity, totalAmount, OrderStatus.PAYMENT_COMPLETED);
 
-        cart.getItems().forEach(i -> {
+        selectedItems.forEach(i -> {
             OrderItem item = new OrderItem(i.getProductOption(), i.getQuantity());
             order.addItem(item);
         });
 
         orderRepository.save(order);
-        cart.clearItems();
+
+        // 선택된 항목만 장바구니에서 제거
+        cart.getItems().removeIf(item -> selectedIds.contains(item.getId()));
 
         return mapToOrderResponse(order);
     }
+
 
     public OrderResponse getOrder(Long orderId) {
         Order order = orderRepository.findById(orderId).orElseThrow();
