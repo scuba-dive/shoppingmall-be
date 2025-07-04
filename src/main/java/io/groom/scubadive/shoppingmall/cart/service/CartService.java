@@ -71,7 +71,7 @@ public class CartService {
                 .build();
     }
 
-
+    @Transactional
     public CartItemResponse updateItem(Long cartItemId, CartUpdateRequest request) {
         CartItem item = cartItemRepository.findById(cartItemId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 장바구니 항목을 찾을 수 없습니다."));
