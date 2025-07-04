@@ -42,14 +42,21 @@ public class OrderService {
         Cart cart = cartRepository.findById(request.getCartId())
                 .orElseThrow(() -> new GlobalException(ErrorCode.CART_NOT_FOUND));
 
+        // 장바구니가 해당 사용자 소유인지 확인
+        if (!cart.getUser().getId().equals(userId)) {
+            throw new GlobalException(ErrorCode.FORBIDDEN);
+        }
+
         List<Long> selectedIds = request.getCartItemIds();
 
+        // 장바구니 내부에서 선택된 항목 필터링
         List<CartItem> selectedItems = cart.getItems().stream()
                 .filter(item -> selectedIds.contains(item.getId()))
                 .toList();
 
-        if (selectedItems.isEmpty()) {
-            throw new IllegalStateException("선택된 장바구니 항목이 없습니다.");
+        // 선택된 cartItem 개수가 실제 요청한 개수와 다르면 오류
+        if (selectedItems.isEmpty() || selectedItems.size() != selectedIds.size()) {
+            throw new GlobalException(ErrorCode.INVALID_CART_ITEM);
         }
 
         String orderNumber = "ORD" + UUID.randomUUID().toString().replace("-", "").substring(0, 12);
@@ -72,6 +79,7 @@ public class OrderService {
 
         return mapToOrderResponse(order);
     }
+
 
 
     public OrderResponse getOrder(Long orderId) {

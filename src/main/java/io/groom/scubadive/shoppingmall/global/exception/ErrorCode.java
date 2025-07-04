@@ -19,6 +19,7 @@ public enum ErrorCode {
     NO_CHANGES_REQUESTED(HttpStatus.BAD_REQUEST, "변경된 정보가 없습니다."),
     INVALID_NICKNAME(HttpStatus.BAD_REQUEST,"유효하지 않은 닉네임입니다."),
     INVALID_PHONE_NUMBER(HttpStatus.BAD_REQUEST,"유효하지 않은 전화번호입니다."),
+    INVALID_CART_ITEM(HttpStatus.BAD_REQUEST, "장바구니 아이템이 유효하지 않습니다."),
 
     INVALID_USERNAME(HttpStatus.BAD_REQUEST, "이름은 한글 2자 이상만 입력 가능합니다."),
     INVALID_PASSWORD_FORMAT(HttpStatus.BAD_REQUEST, "비밀번호는 영어 소문자, 숫자, 특수문자를 모두 포함해야 합니다."),
