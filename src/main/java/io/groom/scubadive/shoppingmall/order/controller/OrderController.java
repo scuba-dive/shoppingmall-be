@@ -32,9 +32,9 @@ public class OrderController {
     })
     @PostMapping
     public ResponseEntity<ApiResponseDto<OrderResponse>> createOrder(
-            @AuthenticationPrincipal User user,
+            @LoginUser Long userId,
             @RequestBody OrderCreateRequest request) {
-        OrderResponse response = orderService.createOrder(user, request);
+        OrderResponse response = orderService.createOrder(userId, request);
         return ResponseEntity.status(201).body(ApiResponseDto.of(201, "주문 생성 성공", response));
     }
 

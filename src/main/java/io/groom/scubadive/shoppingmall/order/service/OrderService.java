@@ -34,7 +34,9 @@ public class OrderService {
     private final UserService userService;
 
     @Transactional
-    public OrderResponse createOrder(User user, OrderCreateRequest request) {
+    public OrderResponse createOrder(Long userId, OrderCreateRequest request) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new GlobalException(ErrorCode.MEMBER_DELETED));
         Cart cart = cartRepository.findById(request.getCartId()).orElseThrow();
 
         if (cart.getItems().isEmpty()) throw new IllegalStateException("장바구니가 비어있습니다.");
