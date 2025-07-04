@@ -3,7 +3,10 @@ package io.groom.scubadive.shoppingmall.order.service;
 import io.groom.scubadive.shoppingmall.cart.domain.Cart;
 import io.groom.scubadive.shoppingmall.cart.domain.CartItem;
 import io.groom.scubadive.shoppingmall.cart.repository.CartRepository;
+import io.groom.scubadive.shoppingmall.global.exception.ErrorCode;
+import io.groom.scubadive.shoppingmall.global.exception.GlobalException;
 import io.groom.scubadive.shoppingmall.member.domain.User;
+import io.groom.scubadive.shoppingmall.member.repository.UserRepository;
 import io.groom.scubadive.shoppingmall.member.service.UserPaidService;
 import io.groom.scubadive.shoppingmall.member.service.UserService;
 import io.groom.scubadive.shoppingmall.order.domain.*;
@@ -26,6 +29,7 @@ public class OrderService {
 
     private final CartRepository cartRepository;
     private final OrderRepository orderRepository;
+    private final UserRepository userRepository;
     private final UserPaidService userPaidService;
     private final UserService userService;
 
@@ -58,7 +62,11 @@ public class OrderService {
         return mapToOrderResponse(order);
     }
 
-    public OrderListResponse getUserOrders(User user, int page, int size) {
+    public OrderListResponse getUserOrders(Long userId, int page, int size) {
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new GlobalException(ErrorCode.MEMBER_DELETED));
+
         Page<Order> orders = orderRepository.findAllByUserId(user.getId(), PageRequest.of(page, size));
         return OrderListResponse.builder()
                 .page(page)
@@ -75,6 +83,8 @@ public class OrderService {
     }
 
     public OrderListResponse getAllOrders(int page, int size) {
+
+
         Page<Order> orders = orderRepository.findAll(PageRequest.of(page, size));
         return OrderListResponse.builder()
                 .page(page)
