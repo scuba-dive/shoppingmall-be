@@ -8,6 +8,7 @@ import io.groom.scubadive.shoppingmall.global.util.CookieUtil;
 import io.groom.scubadive.shoppingmall.member.domain.RefreshToken;
 import io.groom.scubadive.shoppingmall.member.domain.User;
 import io.groom.scubadive.shoppingmall.member.domain.UserPaid;
+import io.groom.scubadive.shoppingmall.member.domain.enums.Grade;
 import io.groom.scubadive.shoppingmall.member.domain.enums.UserStatus;
 import io.groom.scubadive.shoppingmall.member.dto.request.SignInRequest;
 import io.groom.scubadive.shoppingmall.member.dto.request.SignUpRequest;
@@ -25,6 +26,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 @Slf4j
 @Service
@@ -45,11 +47,29 @@ public class UserService {
     public UserResponse signUp(SignUpRequest dto) {
         validateSignUpRequest(dto);
 
+        // 실명 유효성 검사: 한글 2자 이상
+        if (!dto.getUsername().matches("^[가-힣]{2,}$")) {
+            throw new GlobalException(ErrorCode.INVALID_USERNAME);
+        }
+
+        // 비밀번호 형식 검사: 소문자, 숫자, 특수문자 포함 + 8자 이상
+        if (!dto.getPassword().matches("^(?=.*[a-z])(?=.*\\d)(?=.*[!@#$%^&*()_+{}\\[\\]:;<>,.?~\\-=/\\\\]).{8,}$")) {
+            throw new GlobalException(ErrorCode.INVALID_PASSWORD_FORMAT);
+        }
+
+        // 비밀번호 일치 여부
+        if (!dto.getPassword().equals(dto.getPasswordCheck())) {
+            throw new GlobalException(ErrorCode.PASSWORDS_DO_NOT_MATCH);
+        }
+
+        // 닉네임 자동 생성 및 중복 방지
         String nickname = generateUniqueNickname();
         String encodedPassword = passwordEncoder.encode(dto.getPassword());
         User user = createUserFromRequest(dto, nickname, encodedPassword);
 
         userRepository.save(user);
+
+        // 초기 UserPaid 엔티티 생성
         userPaidRepository.save(new UserPaid(user));
 
         return new UserResponse(user.getId(), user.getEmail(), user.getNickname());
@@ -154,7 +174,11 @@ public class UserService {
                 .status(user.getStatus().name().toLowerCase())
                 .grade(user.getGrade().name())
                 .imagePath(user.getUserImage() != null ? user.getUserImage().getFullImageUrl() : "https://my-shop-image-bucket.s3.ap-northeast-2.amazonaws.com/profile/default_profile.webp")
-                .totalPaid(userPaidRepository.findByUserId(userId).getAmount())
+                .totalPaid(
+                        userPaidRepository.findByUserId(userId)
+                                .map(UserPaid::getAmount)
+                                .orElse(0L)
+                )
                 .lastLoginAt(user.getLastLoginAt())
                 .createdAt(user.getCreatedAt())
                 .updatedAt(user.getUpdatedAt())
@@ -254,7 +278,12 @@ public class UserService {
                 .status(user.getStatus().name().toLowerCase())
                 .grade(user.getGrade().name())
                 .imagePath(user.getUserImage() != null ? user.getUserImage().getFullImageUrl() : null)
-                .totalPaid(userPaidRepository.findByUserId(user.getId()).getAmount())
+                .totalPaid(
+                        userPaidRepository.findByUserId(user.getId())
+                                .map(UserPaid::getAmount)
+                                .orElse(0L)
+                )
+
                 .lastLoginAt(user.getLastLoginAt())
                 .createdAt(user.getCreatedAt())
                 .updatedAt(user.getUpdatedAt())
@@ -278,6 +307,34 @@ public class UserService {
         if (userRepository.existsByEmail(email)) {
             throw new GlobalException(ErrorCode.EMAIL_ALREADY_EXISTS);
         }
+    }
+
+    /**
+     * 누적 결제 금액 기준 등급 갱신
+     * 1. user_paid에서 총 결제 금액 조회 -> 2. 기준에 따라 Grade 계산 -> 3. users.grade 업데이트
+     */
+    @Transactional
+    public void updateGradeBasedOnTotalAmount(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(()-> new GlobalException(ErrorCode.USER_NOT_FOUND));
+        Optional<UserPaid> userPaid = userPaidRepository.findByUserId(userId);
+
+        long totalAmount = userPaidRepository.findByUserId(userId)
+                .map(UserPaid::getAmount)
+                .orElseThrow(() -> new GlobalException(ErrorCode.USER_PAID_NOT_FOUND));
+
+        Grade newGrade = calculateGrade(totalAmount);
+
+        if (user.getGrade() != newGrade) {
+            user.updateGrade(newGrade);
+        }
+    }
+
+    private Grade calculateGrade(long amount) {
+        if (amount >= 500_000) return Grade.VIP;
+        if (amount >= 300_000) return Grade.GOLD;
+        if (amount >= 100_000) return Grade.SILVER;
+        return Grade.BRONZE;
     }
 
 }

@@ -33,4 +33,8 @@ public class CartItem extends BaseTimeEntity {
     public void changeQuantity(int quantity) {
         this.quantity = quantity;
     }
+
+    public void addQuantity(int addQty) {
+        this.quantity += addQty;
+    }
 }

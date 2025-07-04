@@ -125,6 +125,9 @@ public class User extends BaseTimeEntity {
         this.status = userStatus;
     }
 
-
+    // 사용자 등급 변경
+    public void updateGrade(Grade newGrade) {
+        this.grade = newGrade;
+    }
 }
 

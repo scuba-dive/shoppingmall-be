@@ -19,6 +19,13 @@ public enum ErrorCode {
     NO_CHANGES_REQUESTED(HttpStatus.BAD_REQUEST, "변경된 정보가 없습니다."),
     INVALID_NICKNAME(HttpStatus.BAD_REQUEST,"유효하지 않은 닉네임입니다."),
     INVALID_PHONE_NUMBER(HttpStatus.BAD_REQUEST,"유효하지 않은 전화번호입니다."),
+    INVALID_CART_ITEM(HttpStatus.BAD_REQUEST, "장바구니 아이템이 유효하지 않습니다."),
+    ORDER_ALREADY_COMPLETED(HttpStatus.BAD_REQUEST, "이미 완료된 주문입니다."),
+    ORDER_ALREADY_SHIPPING(HttpStatus.BAD_REQUEST, "이미 배송중인 주문입니다."),
+    ORDER_ALREADY_CANCELED(HttpStatus.BAD_REQUEST, "이미 취소된 주문입니다."),
+
+    INVALID_USERNAME(HttpStatus.BAD_REQUEST, "이름은 한글 2자 이상만 입력 가능합니다."),
+    INVALID_PASSWORD_FORMAT(HttpStatus.BAD_REQUEST, "비밀번호는 영어 소문자, 숫자, 특수문자를 모두 포함해야 합니다."),
 
     // 401 UNAUTHORIZED
     UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "인증되지 않았습니다."),
@@ -37,6 +44,9 @@ public enum ErrorCode {
     PRODUCT_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 상품을 찾을 수 없습니다."),
     MEMBER_DELETED(HttpStatus.NOT_FOUND, "로그인할 수 없는 사용자입니다."),
     USER_PAID_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 사용자의 촘 사용 금액을 찾을 수 없습니다."),
+    CART_NOT_FOUND(HttpStatus.NOT_FOUND, "장바구니를 찾을 수 없습니다."),
+    ORDER_NOT_FOUND(HttpStatus.NOT_FOUND, "주문을 찾을 수 없습니다."),
+
     // 409 CONFLICT
 
     // 500 INTERNAL SERVER ERROR
