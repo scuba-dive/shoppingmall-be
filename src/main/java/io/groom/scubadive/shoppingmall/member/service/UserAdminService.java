@@ -32,7 +32,10 @@ public class UserAdminService {
                         .role(user.getRole().name())
                         .status(user.getStatus().name())
                         .grade(user.getGrade().name())
-                        .totalPaid(userPaidRepository.findByUserId(user.getId()).getAmount())
+                        .totalPaid(userPaidRepository.findByUserId(user.getId())
+                                .map(paid -> paid.getAmount())
+                                .orElse(0L))
+
                         .createdAt(user.getCreatedAt())
                         .lastLoginAt(user.getLastLoginAt())
                         .build());
