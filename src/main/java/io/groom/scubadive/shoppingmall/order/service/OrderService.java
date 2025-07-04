@@ -3,7 +3,10 @@ package io.groom.scubadive.shoppingmall.order.service;
 import io.groom.scubadive.shoppingmall.cart.domain.Cart;
 import io.groom.scubadive.shoppingmall.cart.domain.CartItem;
 import io.groom.scubadive.shoppingmall.cart.repository.CartRepository;
+import io.groom.scubadive.shoppingmall.global.exception.ErrorCode;
+import io.groom.scubadive.shoppingmall.global.exception.GlobalException;
 import io.groom.scubadive.shoppingmall.member.domain.User;
+import io.groom.scubadive.shoppingmall.member.repository.UserRepository;
 import io.groom.scubadive.shoppingmall.order.domain.*;
 import io.groom.scubadive.shoppingmall.order.dto.request.OrderCreateRequest;
 import io.groom.scubadive.shoppingmall.order.dto.response.*;
@@ -24,6 +27,7 @@ public class OrderService {
 
     private final CartRepository cartRepository;
     private final OrderRepository orderRepository;
+    private final UserRepository userRepository;
 
     @Transactional
     public OrderResponse createOrder(User user, OrderCreateRequest request) {
@@ -92,14 +96,44 @@ public class OrderService {
         order.changeStatus(status);
     }
 
+    @Transactional
+    public void cancelOrderByUser(User user, Long orderId) {
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 주문입니다."));
+
+        if (!order.getUser().getId().equals(user.getId())) {
+            throw new IllegalStateException("해당 주문은 취소할 수 없습니다.");
+        }
+
+        if (order.getStatus() == OrderStatus.CANCELED || order.getStatus() == OrderStatus.COMPLETED) {
+            throw new IllegalStateException("해당 주문은 취소할 수 없습니다.");
+        }
+
+        order.changeStatus(OrderStatus.CANCELED);
+    }
+
+    @Transactional
+    public void cancelOrderByAdmin(Long orderId) {
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 주문입니다."));
+
+        if (order.getStatus() == OrderStatus.CANCELED || order.getStatus() == OrderStatus.COMPLETED) {
+            throw new IllegalStateException("해당 주문은 취소할 수 없습니다.");
+        }
+
+        order.changeStatus(OrderStatus.CANCELED);
+    }
+
     private OrderResponse mapToOrderResponse(Order order) {
+        User user = userRepository.findById(order.getUser().getId())
+                .orElseThrow(() -> new GlobalException(ErrorCode.USER_NOT_FOUND));
         return OrderResponse.builder()
                 .orderId(order.getId())
                 .orderNumber(order.getOrderNumber())
                 .orderedAt(order.getCreatedAt())
-                .userName(order.getUser().getUsername())
-                .phoneNumber(order.getUser().getPhoneNumber())
-                .address(order.getUser().getAddress())
+                .userName(user.getUsername())
+                .phoneNumber(user.getPhoneNumber())
+                .address(user.getAddress())
                 .orderStatus(order.getStatus().name())
                 .totalAmount(order.getTotalAmount())
                 .totalQuantity(order.getTotalQuantity())

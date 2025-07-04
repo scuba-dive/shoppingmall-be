@@ -1,6 +1,7 @@
 package io.groom.scubadive.shoppingmall.order.controller;
 
 import io.groom.scubadive.shoppingmall.global.dto.ApiResponseDto;
+import io.groom.scubadive.shoppingmall.global.securirty.LoginUser;
 import io.groom.scubadive.shoppingmall.member.domain.User;
 import io.groom.scubadive.shoppingmall.order.dto.request.OrderCreateRequest;
 import io.groom.scubadive.shoppingmall.order.dto.response.OrderListResponse;
@@ -31,7 +32,7 @@ public class OrderController {
     })
     @PostMapping
     public ResponseEntity<ApiResponseDto<OrderResponse>> createOrder(
-            @AuthenticationPrincipal User user,
+            @LoginUser User user,
             @RequestBody OrderCreateRequest request) {
         OrderResponse response = orderService.createOrder(user, request);
         return ResponseEntity.status(201).body(ApiResponseDto.of(201, "주문 생성 성공", response));
@@ -55,10 +56,26 @@ public class OrderController {
     })
     @GetMapping
     public ResponseEntity<ApiResponseDto<OrderListResponse>> getUserOrders(
-            @AuthenticationPrincipal User user,
+            @LoginUser User user,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
         OrderListResponse response = orderService.getUserOrders(user, page, size);
         return ResponseEntity.ok(ApiResponseDto.of(200, "사용자 주문 목록 조회 성공", response));
+    }
+
+    @Operation(summary = "주문 취소", description = "사용자가 본인의 주문을 취소합니다.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "주문이 취소되었습니다."),
+            @ApiResponse(responseCode = "400", description = "해당 주문은 취소할 수 없습니다."),
+            @ApiResponse(responseCode = "502", description = "결제사와 통신 중 오류가 발생했습니다.")
+    })
+    @PostMapping("/{orderId}/cancel")
+    public ResponseEntity<ApiResponseDto<Void>> cancelOrderByUser(
+            @LoginUser User user,
+            @PathVariable Long orderId) {
+        System.out.println("🔥 user = " + user);
+        System.out.println("🔥 user.getId() = " + user.getId());
+        orderService.cancelOrderByUser(user, orderId);
+        return ResponseEntity.ok(ApiResponseDto.of(200, "주문이 취소되었습니다.", null));
     }
 }

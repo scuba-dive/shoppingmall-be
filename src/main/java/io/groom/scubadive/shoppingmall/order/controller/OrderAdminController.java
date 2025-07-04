@@ -69,6 +69,18 @@ public class OrderAdminController {
         return ResponseEntity.ok(ApiResponseDto.of(200, "주문 상태가 변경되었습니다.", null));
     }
 
+    @Operation(summary = "주문 취소", description = "관리자가 주문을 취소합니다.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "주문이 취소되었습니다."),
+            @ApiResponse(responseCode = "400", description = "해당 주문은 취소할 수 없습니다."),
+            @ApiResponse(responseCode = "404", description = "존재하지 않는 주문입니다.")
+    })
+    @PostMapping("/{orderId}/cancel")
+    public ResponseEntity<ApiResponseDto<Void>> cancelOrderByAdmin(@PathVariable Long orderId) {
+        orderService.cancelOrderByAdmin(orderId);
+        return ResponseEntity.ok(ApiResponseDto.of(200, "주문이 취소되었습니다.", null));
+    }
+
     @Getter
     public static class StatusRequest {
         private OrderStatus status;

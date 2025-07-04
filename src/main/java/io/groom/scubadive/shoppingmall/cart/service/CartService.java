@@ -5,7 +5,10 @@ import io.groom.scubadive.shoppingmall.cart.dto.request.*;
 import io.groom.scubadive.shoppingmall.cart.dto.response.CartItemResponse;
 import io.groom.scubadive.shoppingmall.cart.dto.response.CartResponse;
 import io.groom.scubadive.shoppingmall.cart.repository.*;
+import io.groom.scubadive.shoppingmall.global.exception.ErrorCode;
+import io.groom.scubadive.shoppingmall.global.exception.GlobalException;
 import io.groom.scubadive.shoppingmall.member.domain.User;
+import io.groom.scubadive.shoppingmall.member.repository.UserRepository;
 import io.groom.scubadive.shoppingmall.product.domain.ProductOption;
 import io.groom.scubadive.shoppingmall.product.repository.ProductOptionRepository;
 import lombok.RequiredArgsConstructor;
@@ -23,6 +26,7 @@ public class CartService {
     private final CartRepository cartRepository;
     private final CartItemRepository cartItemRepository;
     private final ProductOptionRepository productOptionRepository;
+    private final UserRepository userRepository;
 
     @Transactional
     public CartItemResponse addItem(User user, CartItemRequest request) {
@@ -76,9 +80,9 @@ public class CartService {
     }
 
     public CartResponse getCartResponse(User user) {
+//        Cart cart = getOrCreateCart(user.getId());
         Cart cart = cartRepository.findByUserId(user.getId())
-                .orElseThrow(() -> new IllegalStateException("장바구니가 없습니다."));
-
+                .orElseGet(() -> cartRepository.save(new Cart(user)));
         List<CartItemResponse> items = cart.getItems().stream().map(item -> {
             Long price = item.getProductOption().getProduct().getPrice();
             int quantity = item.getQuantity();
@@ -114,7 +118,17 @@ public class CartService {
     @Transactional
     public void clearCart(User user) {
         Cart cart = cartRepository.findByUserId(user.getId())
-                .orElseThrow(() -> new IllegalStateException("장바구니가 없습니다."));
+                .orElseGet(() -> cartRepository.save(new Cart(user)));
         cart.getItems().clear();
+    }
+    @Transactional
+    public Cart getOrCreateCart(Long userId) {
+        return cartRepository.findByUserId(userId)
+                .orElseGet(() -> {
+                    User user = userRepository.findById(userId)
+                            .orElseThrow(() -> new GlobalException(ErrorCode.USER_NOT_FOUND));
+                    Cart newCart = new Cart(user);
+                    return cartRepository.save(newCart);
+                });
     }
 }

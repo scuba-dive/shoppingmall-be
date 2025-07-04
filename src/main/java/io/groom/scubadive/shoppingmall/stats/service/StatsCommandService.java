@@ -24,17 +24,16 @@ public class StatsCommandService {
     private final DailyStatsRepository dailyStatsRepository;
     private final ProductSalesRankingRepository productSalesRankingRepository;
 
-    public void saveDailyStats(LocalDate date) {
-        LocalDateTime start = date.atStartOfDay();
-        LocalDateTime end = date.atTime(LocalTime.MAX);
+    public void saveDailyStats(LocalDateTime now) {
+        LocalDateTime start = now.toLocalDate().atStartOfDay();
 
-        List<Order> orders = orderRepository.findByCreatedAtBetween(start, end);
+        List<Order> orders = orderRepository.findByCreatedAtBetween(start, now);
 
         long totalSales = orders.stream().mapToLong(Order::getTotalAmount).sum();
         int totalOrders = orders.size();
 
         DailyStats stats = DailyStats.builder()
-                .timestamp(LocalDateTime.now())
+                .timestamp(now)
                 .totalSales(totalSales)
                 .totalOrders(totalOrders)
                 .build();
@@ -79,15 +78,12 @@ public class StatsCommandService {
             productSalesRankingRepository.save(rankings.get(i));
         }
     }
-
     public void saveHourlyStats() {
-        LocalDate today = LocalDate.now();
-        saveDailyStats(today);
+        saveDailyStats(LocalDateTime.now());
     }
-
     public void saveDailyStatsAndRanking() {
         LocalDate today = LocalDate.now();
-        saveDailyStats(today);
+        saveDailyStats(LocalDateTime.of(today, LocalTime.now()));
         saveTopProductRankings(today);
     }
 }

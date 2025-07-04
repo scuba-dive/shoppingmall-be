@@ -33,8 +33,8 @@ public class StatsQueryService {
     public RecentStatsResponse getRecentStats() {
         LocalDate today = LocalDate.now();
         List<DailyStats> recent = dailyStatsRepository.findByTimestampBetween(
-                today.minusDays(3).atStartOfDay(),
-                today.minusDays(1).atTime(LocalTime.MAX)
+                today.minusDays(2).atStartOfDay(),
+                today.atTime(LocalTime.MAX)
         );
 
         List<RecentStatsResponse.SalesStats> list = recent.stream()
