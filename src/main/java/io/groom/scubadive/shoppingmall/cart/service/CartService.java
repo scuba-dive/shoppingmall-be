@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -39,8 +40,19 @@ public class CartService {
         ProductOption option = productOptionRepository.findById(request.getProductOptionId())
                 .orElseThrow(() -> new IllegalArgumentException("상품 옵션을 찾을 수 없습니다."));
 
-        CartItem item = new CartItem(cart, option, request.getQuantity());
-        cartItemRepository.save(item);
+        // 기존에 같은 productOptionId가 있는지 확인
+        Optional<CartItem> existingItemOpt = cartItemRepository.findByCartIdAndProductOptionId(cart.getId(), option.getId());
+
+        CartItem item;
+        if (existingItemOpt.isPresent()) {
+            // 이미 있으면 수량 증가
+            item = existingItemOpt.get();
+            item.addQuantity(request.getQuantity()); // 엔티티에서 quantity += 추가된 수량
+        } else {
+            // 없으면 새로 추가
+            item = new CartItem(cart, option, request.getQuantity());
+            cartItemRepository.save(item);
+        }
 
         Long price = option.getProduct().getPrice();
         int quantity = item.getQuantity();
@@ -58,6 +70,7 @@ public class CartService {
                 .updatedAt(item.getUpdatedAt())
                 .build();
     }
+
 
     public CartItemResponse updateItem(Long cartItemId, CartUpdateRequest request) {
         CartItem item = cartItemRepository.findById(cartItemId)
