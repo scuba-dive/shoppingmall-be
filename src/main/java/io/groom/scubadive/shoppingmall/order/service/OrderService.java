@@ -23,7 +23,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -92,7 +91,8 @@ public class OrderService {
 
 
     public OrderResponse getOrder(Long orderId) {
-        Order order = orderRepository.findById(orderId).orElseThrow();
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new GlobalException(ErrorCode.ORDER_NOT_FOUND));
         return mapToOrderResponse(order);
     }
 
@@ -140,12 +140,23 @@ public class OrderService {
 
     @Transactional
     public void changeStatus(Long orderId, OrderStatus status) {
-        Order order = orderRepository.findById(orderId).orElseThrow();
-        OrderStatus previousStatus = order.getStatus();
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new GlobalException(ErrorCode.ORDER_NOT_FOUND));
 
+        // 상태 제한 조건 추가
+        if (order.getStatus() == OrderStatus.COMPLETED) {
+            throw new GlobalException(ErrorCode.ORDER_ALREADY_COMPLETED);
+        } else if (order.getStatus() == OrderStatus.SHIPPING) {
+            throw new GlobalException(ErrorCode.ORDER_ALREADY_SHIPPING);
+        } else if (order.getStatus() == OrderStatus.CANCELED) {
+            throw new GlobalException(ErrorCode.ORDER_ALREADY_CANCELED);
+        }
+
+        OrderStatus previousStatus = order.getStatus();
         order.changeStatus(status);
 
-        if(previousStatus != OrderStatus.COMPLETED && status == OrderStatus.COMPLETED){
+        // 상태가 COMPLETED로 변경될 때에만 추가 로직 실행
+        if (previousStatus != OrderStatus.COMPLETED && status == OrderStatus.COMPLETED) {
             Long totalAmount = order.getTotalAmount();
             Long userId = order.getUser().getId();
 
@@ -173,5 +184,27 @@ public class OrderService {
                         .totalPricePerItem(i.getProductOption().getProduct().getPrice() * i.getQuantity())
                         .build()).collect(Collectors.toList()))
                 .build();
+    }
+
+    @Transactional
+    public void cancelOrder(Long userId, Long orderId) {
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new GlobalException(ErrorCode.ORDER_NOT_FOUND));
+
+        if (!order.getUser().getId().equals(userId)) {
+            throw new GlobalException(ErrorCode.FORBIDDEN);
+        }
+
+        if (order.getStatus() == OrderStatus.COMPLETED ) {
+            throw new GlobalException(ErrorCode.ORDER_ALREADY_COMPLETED);
+        }
+        else if (order.getStatus() == OrderStatus.SHIPPING) {
+            throw new GlobalException(ErrorCode.ORDER_ALREADY_SHIPPING);
+        }
+        else if (order.getStatus() == OrderStatus.CANCELED) {
+            throw new GlobalException(ErrorCode.ORDER_ALREADY_CANCELED);
+        }
+
+        order.changeStatus(OrderStatus.CANCELED);
     }
 }
