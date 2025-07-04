@@ -8,6 +8,7 @@ import io.groom.scubadive.shoppingmall.global.util.CookieUtil;
 import io.groom.scubadive.shoppingmall.member.domain.RefreshToken;
 import io.groom.scubadive.shoppingmall.member.domain.User;
 import io.groom.scubadive.shoppingmall.member.domain.UserPaid;
+import io.groom.scubadive.shoppingmall.member.domain.enums.Grade;
 import io.groom.scubadive.shoppingmall.member.domain.enums.UserStatus;
 import io.groom.scubadive.shoppingmall.member.dto.request.SignInRequest;
 import io.groom.scubadive.shoppingmall.member.dto.request.SignUpRequest;
@@ -25,6 +26,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 @Slf4j
 @Service
@@ -278,6 +280,34 @@ public class UserService {
         if (userRepository.existsByEmail(email)) {
             throw new GlobalException(ErrorCode.EMAIL_ALREADY_EXISTS);
         }
+    }
+
+    /**
+     * 누적 결제 금액 기준 등급 갱신
+     * 1. user_paid에서 총 결제 금액 조회 -> 2. 기준에 따라 Grade 계산 -> 3. users.grade 업데이트
+     */
+    @Transactional
+    public void updateGradeBasedOnTotalAmount(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(()-> new GlobalException(ErrorCode.USER_NOT_FOUND));
+        Optional<UserPaid> userPaid = userPaidRepository.findByUserId(userId);
+
+        long totalAmount = userPaidRepository.findByUserId(userId)
+                .map(UserPaid::getAmount)
+                .orElseThrow(() -> new GlobalException(ErrorCode.USER_PAID_NOT_FOUND));
+
+        Grade newGrade = calculateGrade(totalAmount);
+
+        if (user.getGrade() != newGrade) {
+            user.updateGrade(newGrade);
+        }
+    }
+
+    private Grade calculateGrade(long amount) {
+        if (amount >= 500_000) return Grade.VIP;
+        if (amount >= 300_000) return Grade.GOLD;
+        if (amount >= 100_000) return Grade.SILVER;
+        return Grade.BRONZE;
     }
 
 }
