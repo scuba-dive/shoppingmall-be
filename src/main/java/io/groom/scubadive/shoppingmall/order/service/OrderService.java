@@ -4,6 +4,8 @@ import io.groom.scubadive.shoppingmall.cart.domain.Cart;
 import io.groom.scubadive.shoppingmall.cart.domain.CartItem;
 import io.groom.scubadive.shoppingmall.cart.repository.CartRepository;
 import io.groom.scubadive.shoppingmall.member.domain.User;
+import io.groom.scubadive.shoppingmall.member.service.UserPaidService;
+import io.groom.scubadive.shoppingmall.member.service.UserService;
 import io.groom.scubadive.shoppingmall.order.domain.*;
 import io.groom.scubadive.shoppingmall.order.dto.request.OrderCreateRequest;
 import io.groom.scubadive.shoppingmall.order.dto.response.*;
@@ -24,6 +26,8 @@ public class OrderService {
 
     private final CartRepository cartRepository;
     private final OrderRepository orderRepository;
+    private final UserPaidService userPaidService;
+    private final UserService userService;
 
     @Transactional
     public OrderResponse createOrder(User user, OrderCreateRequest request) {
@@ -89,7 +93,17 @@ public class OrderService {
     @Transactional
     public void changeStatus(Long orderId, OrderStatus status) {
         Order order = orderRepository.findById(orderId).orElseThrow();
+        OrderStatus previousStatus = order.getStatus();
+
         order.changeStatus(status);
+
+        if(previousStatus != OrderStatus.COMPLETED && status == OrderStatus.COMPLETED){
+            Long totalAmount = order.getTotalAmount();
+            Long userId = order.getUser().getId();
+
+            userPaidService.addPayment(userId, totalAmount); // 누적 결제 금액 반영
+            userService.updateGradeBasedOnTotalAmount(userId); // 등급 갱신
+        }
     }
 
     private OrderResponse mapToOrderResponse(Order order) {
