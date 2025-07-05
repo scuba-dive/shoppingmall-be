@@ -64,7 +64,7 @@ public class OrderService {
         LocalDate today = LocalDate.now();
         String datePart = today.format(DateTimeFormatter.ofPattern("yyyyMMdd"));
 
-        Long todayOrderCount = orderRepository.countByCreatedAtBetween(
+        long todayOrderCount = orderRepository.countByCreatedAtBetween(
                 today.atStartOfDay(),
                 today.plusDays(1).atStartOfDay()
         );
