@@ -97,12 +97,12 @@ public class OrderService {
     }
 
     public OrderListResponse getUserOrders(Long userId, int page, int size) {
-
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new GlobalException(ErrorCode.MEMBER_DELETED));
 
         Page<Order> orders = orderRepository.findAllByUserId(user.getId(),
                 PageRequest.of(page, size,Sort.by(Sort.Direction.DESC, "createdAt")));
+      
         return OrderListResponse.builder()
                 .page(page)
                 .totalPages(orders.getTotalPages())
