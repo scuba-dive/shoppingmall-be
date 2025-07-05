@@ -7,7 +7,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 public interface ProductSalesRankingRepository extends JpaRepository<ProductSalesRanking, Long> {
-    List<ProductSalesRanking> findByDateOrderByTotalSalesDesc(LocalDate date);
+    List<ProductSalesRanking> findByDate(LocalDate date);
 
     List<ProductSalesRanking> findByDateOrderByTotalQuantityDesc(LocalDate date);
     void deleteByDate(LocalDate date);

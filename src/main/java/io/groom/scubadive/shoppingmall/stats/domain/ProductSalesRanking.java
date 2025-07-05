@@ -7,7 +7,6 @@ import java.time.LocalDate;
 
 @Entity
 @Getter
-@Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Builder
@@ -25,5 +24,6 @@ public class ProductSalesRanking {
 
     private Long totalSales;
 
+    @Setter
     private Integer ranking;
 }

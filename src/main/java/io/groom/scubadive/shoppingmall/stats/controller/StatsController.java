@@ -49,14 +49,14 @@ public class StatsController {
         RecentStatsResponse result = statsService.getRecentStats();
         return ResponseEntity.ok(ApiResponseDto.of(200, "최근 3일 통계 조회 성공", result));
     }
-//
-//    @Operation(summary = "상품 판매 순위 조회", description = "오늘의 상품별 판매 순위를 조회합니다.")
-//    @ApiResponse(responseCode = "200", description = "상품 판매 순위 조회 성공")
-//    @GetMapping("/top-products")
-//    public ResponseEntity<ApiResponseDto<TopProductsResponse>> getTopProducts() {
-//        TopProductsResponse result = statsService.getTopProducts();
-//        return ResponseEntity.ok(ApiResponseDto.of(200, "오늘 상품 판매 순위 조회 성공", result));
-//    }
+
+    @Operation(summary = "상품 판매 순위 조회", description = "오늘의 상품별 판매 순위를 조회합니다.")
+    @ApiResponse(responseCode = "200", description = "상품 판매 순위 조회 성공")
+    @GetMapping("/top-products")
+    public ResponseEntity<ApiResponseDto<TopProductsResponse>> getTopProducts() {
+        TopProductsResponse result = statsService.getTopProducts();
+        return ResponseEntity.ok(ApiResponseDto.of(200, "오늘 상품 판매 순위 조회 성공", result));
+    }
 
     @PostMapping("/daily")
     public ResponseEntity<String> saveDailyStats(@RequestParam(defaultValue = "2") int daysAgo) {

@@ -25,7 +25,7 @@ public class TopProductsResponse {
         @Schema(description = "순위", example = "1")
         private int rank;
 
-        @Schema(description = "상품명", example = "스쿠버 장비 세트")
+        @Schema(description = "상품명", example = "푹신한 의자")
         private String productName;
 
         @Schema(description = "총 판매 금액", example = "1250000")

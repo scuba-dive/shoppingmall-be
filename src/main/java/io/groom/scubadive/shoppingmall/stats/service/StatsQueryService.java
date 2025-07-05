@@ -19,6 +19,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -80,38 +81,37 @@ public class StatsQueryService {
     }
 
 
-//
-//    public TopProductsResponse getTopProducts() {
-//        LocalDate today = LocalDate.now();
-//
-//        List<ProductSalesRanking> salesRankingsRaw =
-//                productSalesRankingRepository.findByDateOrderByTotalSalesDesc(today);
-//
-//        List<ProductSalesRanking> quantityRankingsRaw =
-//                productSalesRankingRepository.findByDateOrderByTotalQuantityDesc(today);
-//
-//        if (salesRankingsRaw.isEmpty() && quantityRankingsRaw.isEmpty()) {
-//            throw new GlobalException(ErrorCode.PRODUCT_SALES_RANKING_NOT_FOUND);
-//        }
-//
-//        List<TopProductsResponse.ProductRanking> salesRankings = salesRankingsRaw.stream()
-//                .limit(5)
-//                .map(r -> new TopProductsResponse.ProductRanking(
-//                        r.getRanking(),
-//                        r.getProductName(),
-//                        r.getTotalSales(),
-//                        r.getTotalQuantity()))
-//                .toList();
-//
-//        List<TopProductsResponse.ProductRanking> quantityRankings = quantityRankingsRaw.stream()
-//                .limit(5)
-//                .map(r -> new TopProductsResponse.ProductRanking(
-//                        r.getRanking(),
-//                        r.getProductName(),
-//                        r.getTotalSales(),
-//                        r.getTotalQuantity()))
-//                .toList();
-//
-//        return new TopProductsResponse(salesRankings, quantityRankings);
-//    }
+    @Transactional(readOnly = true)
+    public TopProductsResponse getTopProducts() {
+        LocalDate today = LocalDate.now();
+
+        // 오늘 날짜 기준 랭킹 전체 조회
+        List<ProductSalesRanking> rankings = productSalesRankingRepository.findByDate(today);
+
+        // 판매금액 기준 상위 5개
+        List<TopProductsResponse.ProductRanking> salesRankings = rankings.stream()
+                .sorted(Comparator.comparingLong(ProductSalesRanking::getTotalSales).reversed())
+                .limit(5)
+                .map(r -> new TopProductsResponse.ProductRanking(
+                        r.getRanking(),
+                        r.getProductName(),
+                        r.getTotalSales(),
+                        r.getTotalQuantity()
+                ))
+                .toList();
+
+        // 판매수량 기준 상위 5개
+        List<TopProductsResponse.ProductRanking> quantityRankings = rankings.stream()
+                .sorted(Comparator.comparingInt(ProductSalesRanking::getTotalQuantity).reversed())
+                .limit(5)
+                .map(r -> new TopProductsResponse.ProductRanking(
+                        r.getRanking(),
+                        r.getProductName(),
+                        r.getTotalSales(),
+                        r.getTotalQuantity()
+                ))
+                .toList();
+
+        return new TopProductsResponse(salesRankings, quantityRankings);
+    }
 }
