@@ -1,6 +1,7 @@
 package io.groom.scubadive.shoppingmall.order.controller;
 
 import io.groom.scubadive.shoppingmall.global.dto.ApiResponseDto;
+import io.groom.scubadive.shoppingmall.global.securirty.LoginUser;
 import io.groom.scubadive.shoppingmall.member.domain.User;
 import io.groom.scubadive.shoppingmall.order.dto.request.OrderCreateRequest;
 import io.groom.scubadive.shoppingmall.order.dto.response.OrderListResponse;
@@ -31,9 +32,9 @@ public class OrderController {
     })
     @PostMapping
     public ResponseEntity<ApiResponseDto<OrderResponse>> createOrder(
-            @AuthenticationPrincipal User user,
+            @LoginUser Long userId,
             @RequestBody OrderCreateRequest request) {
-        OrderResponse response = orderService.createOrder(user, request);
+        OrderResponse response = orderService.createOrder(userId, request);
         return ResponseEntity.status(201).body(ApiResponseDto.of(201, "주문 생성 성공", response));
     }
 
@@ -55,10 +56,10 @@ public class OrderController {
     })
     @GetMapping
     public ResponseEntity<ApiResponseDto<OrderListResponse>> getUserOrders(
-            @AuthenticationPrincipal User user,
+            @LoginUser Long userId,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
-        OrderListResponse response = orderService.getUserOrders(user, page, size);
+        OrderListResponse response = orderService.getUserOrders(userId, page, size);
         return ResponseEntity.ok(ApiResponseDto.of(200, "사용자 주문 목록 조회 성공", response));
     }
 }

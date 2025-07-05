@@ -3,6 +3,8 @@ package io.groom.scubadive.shoppingmall.order.service;
 import io.groom.scubadive.shoppingmall.cart.domain.Cart;
 import io.groom.scubadive.shoppingmall.cart.domain.CartItem;
 import io.groom.scubadive.shoppingmall.cart.repository.CartRepository;
+import io.groom.scubadive.shoppingmall.global.exception.ErrorCode;
+import io.groom.scubadive.shoppingmall.global.exception.GlobalException;
 import io.groom.scubadive.shoppingmall.member.domain.User;
 import io.groom.scubadive.shoppingmall.member.service.UserPaidService;
 import io.groom.scubadive.shoppingmall.member.service.UserService;
@@ -30,8 +32,10 @@ public class OrderService {
     private final UserService userService;
 
     @Transactional
-    public OrderResponse createOrder(User user, OrderCreateRequest request) {
-        Cart cart = cartRepository.findById(request.getCartId()).orElseThrow();
+    public OrderResponse createOrder(Long userId, OrderCreateRequest request) {
+        User user = userService.getUserById(userId);
+        Cart cart = cartRepository.findById(request.getCartId())
+                .orElseThrow(() -> new IllegalArgumentException("장바구니를 찾을 수 없습니다."));
 
         if (cart.getItems().isEmpty()) throw new IllegalStateException("장바구니가 비어있습니다.");
 
@@ -58,8 +62,8 @@ public class OrderService {
         return mapToOrderResponse(order);
     }
 
-    public OrderListResponse getUserOrders(User user, int page, int size) {
-        Page<Order> orders = orderRepository.findAllByUserId(user.getId(), PageRequest.of(page, size));
+    public OrderListResponse getUserOrders(Long userId, int page, int size) {
+        Page<Order> orders = orderRepository.findAllByUserId(userId, PageRequest.of(page, size));
         return OrderListResponse.builder()
                 .page(page)
                 .totalPages(orders.getTotalPages())

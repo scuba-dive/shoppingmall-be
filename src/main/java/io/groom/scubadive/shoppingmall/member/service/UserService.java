@@ -168,6 +168,16 @@ public class UserService {
     }
 
     /**
+     * 사용자 엔티티 조회 (비즈니스 로직용)
+     * - 주문, 결제 등에서 User 객체가 필요할 때 사용
+     * - Service 내부 도메인 로직 처리에 활용
+     */
+    public User getUserById(Long userId) {
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new GlobalException(ErrorCode.USER_NOT_FOUND));
+    }
+
+    /**
      * 내 정보 수정 - 비밀번호/닉네임/전화번호 변경
      * 변경된 항목이 없으면 예외 발생
      */
