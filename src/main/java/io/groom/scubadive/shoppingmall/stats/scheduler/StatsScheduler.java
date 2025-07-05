@@ -46,5 +46,19 @@ public class StatsScheduler {
         }
     }
 
+    @Scheduled(cron = "0 5 0 * * *") // 매일 자정 5분 후 실행
+    public void saveDailyStatsFromHourlyStats() {
+        LocalDate yesterday = LocalDate.now().minusDays(1);
+        LocalDateTime start = yesterday.atStartOfDay();         // 어제 00:00
+        LocalDateTime end = yesterday.atTime(23, 59, 59, 999_999_999); // 어제 23:59:59.999999999
+
+        try {
+            statsCommandService.saveDailyStats(start, end, yesterday);
+            log.info("[스케줄러] ✅ 어제 일일 매출 저장 완료: {}", yesterday);
+        } catch (Exception e) {
+            log.error("[스케줄러] ❌ 어제 일일 매출 저장 실패: {}", yesterday, e);
+        }
+    }
+
 
 }
