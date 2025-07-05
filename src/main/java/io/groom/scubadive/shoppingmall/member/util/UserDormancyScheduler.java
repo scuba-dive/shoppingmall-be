@@ -34,6 +34,5 @@ public class UserDormancyScheduler {
 
         log.info("✅ 자동 휴면 전환 완료 - 대상 수: {}, 기준일: {}", dormantTargets.size(), threshold.toLocalDate());
     }
-    }
-
 }
+
