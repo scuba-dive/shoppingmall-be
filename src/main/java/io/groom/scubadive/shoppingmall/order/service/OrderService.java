@@ -14,6 +14,7 @@ import io.groom.scubadive.shoppingmall.order.dto.request.OrderCreateRequest;
 import io.groom.scubadive.shoppingmall.order.dto.response.*;
 import io.groom.scubadive.shoppingmall.order.repository.OrderRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -23,8 +24,10 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -139,31 +142,48 @@ public class OrderService {
     }
 
     @Transactional
-    public void changeStatus(Long orderId, OrderStatus status) {
+    public void changeStatus(Long orderId, OrderStatus newStatus) {
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new GlobalException(ErrorCode.ORDER_NOT_FOUND));
 
-        // 상태 제한 조건 추가
-        if (order.getStatus() == OrderStatus.COMPLETED) {
-            throw new GlobalException(ErrorCode.ORDER_ALREADY_COMPLETED);
-        } else if (order.getStatus() == OrderStatus.SHIPPING) {
-            throw new GlobalException(ErrorCode.ORDER_ALREADY_SHIPPING);
-        } else if (order.getStatus() == OrderStatus.CANCELED) {
-            throw new GlobalException(ErrorCode.ORDER_ALREADY_CANCELED);
-        }
+        OrderStatus currentStatus = order.getStatus();
 
-        OrderStatus previousStatus = order.getStatus();
-        order.changeStatus(status);
+        // 상태 전이 유효성 검증
+        validateStatusTransition(currentStatus, newStatus);
 
-        // 상태가 COMPLETED로 변경될 때에만 추가 로직 실행
-        if (previousStatus != OrderStatus.COMPLETED && status == OrderStatus.COMPLETED) {
+        order.changeStatus(newStatus);
+
+        // COMPLETED 상태로 변경될 때만 결제/등급 로직 실행
+        if (currentStatus != OrderStatus.COMPLETED && newStatus == OrderStatus.COMPLETED) {
             Long totalAmount = order.getTotalAmount();
             Long userId = order.getUser().getId();
 
-            userPaidService.addPayment(userId, totalAmount); // 누적 결제 금액 반영
-            userService.updateGradeBasedOnTotalAmount(userId); // 등급 갱신
+            userPaidService.addPayment(userId, totalAmount);
+            userService.updateGradeBasedOnTotalAmount(userId);
         }
     }
+
+    private static final Map<OrderStatus, List<OrderStatus>> VALID_TRANSITIONS = Map.of(
+            OrderStatus.PAYMENT_COMPLETED, List.of(OrderStatus.CREATED, OrderStatus.CANCELED),
+            OrderStatus.CREATED, List.of(OrderStatus.SHIPPING, OrderStatus.CANCELED),
+            OrderStatus.SHIPPING, List.of(OrderStatus.COMPLETED)
+            // COMPLETED, CANCELED 는 종료 상태
+    );
+
+    private void validateStatusTransition(OrderStatus from, OrderStatus to) {
+        List<OrderStatus> validNextStatuses = VALID_TRANSITIONS.getOrDefault(from, List.of());
+
+        // 🔍 로그 출력
+        log.info("🔄 현재 상태(from): {}", from);
+        log.info("➡️  변경 요청 상태(to): {}", to);
+        log.info("✅ 가능한 전이 상태 목록: {}", validNextStatuses);
+        log.info("🧐 포함 여부 체크: {}", validNextStatuses.contains(to));
+
+        if (!validNextStatuses.contains(to)) {
+            throw new GlobalException(ErrorCode.INVALID_ORDER_STATUS_TRANSITION);
+        }
+    }
+
 
     private OrderResponse mapToOrderResponse(Order order) {
         return OrderResponse.builder()
