@@ -2,6 +2,8 @@ package io.groom.scubadive.shoppingmall.order.controller;
 
 import io.groom.scubadive.shoppingmall.global.dto.ApiResponseDto;
 import io.groom.scubadive.shoppingmall.global.securirty.LoginUser;
+import io.groom.scubadive.shoppingmall.member.domain.User;
+
 import io.groom.scubadive.shoppingmall.order.dto.request.OrderCreateRequest;
 import io.groom.scubadive.shoppingmall.order.dto.response.OrderListResponse;
 import io.groom.scubadive.shoppingmall.order.dto.response.OrderResponse;
@@ -61,7 +63,6 @@ public class OrderController {
         return ResponseEntity.ok(ApiResponseDto.of(200, "사용자 주문 목록 조회 성공", response));
     }
 
-
     @Operation(summary = "주문 취소", description = "주문 ID로 주문을 취소합니다.")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "주문 취소 성공"),
@@ -76,3 +77,4 @@ public class OrderController {
         return ResponseEntity.ok(ApiResponseDto.of(200, "주문 취소 성공", null));
     }
 }
+

@@ -1,24 +1,28 @@
 package io.groom.scubadive.shoppingmall.stats.domain;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
 import lombok.*;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Builder
-public class DailyStats {
+public class HourlyStats {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private LocalDate date; // 예: 2025-07-06
+    private LocalDateTime startTime;
+    private LocalDateTime endTime;
 
     private long totalSales;
-
     private int totalOrders;
 }
+
