@@ -1,7 +1,5 @@
 package io.groom.scubadive.shoppingmall.stats.service;
 
-import io.groom.scubadive.shoppingmall.global.exception.ErrorCode;
-import io.groom.scubadive.shoppingmall.global.exception.GlobalException;
 import io.groom.scubadive.shoppingmall.stats.domain.DailyStats;
 import io.groom.scubadive.shoppingmall.stats.domain.HourlyStats;
 import io.groom.scubadive.shoppingmall.stats.domain.ProductSalesRanking;
@@ -17,12 +15,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor

@@ -4,7 +4,6 @@ import io.groom.scubadive.shoppingmall.global.dto.ApiResponseDto;
 import io.groom.scubadive.shoppingmall.stats.dto.response.RecentStatsResponse;
 import io.groom.scubadive.shoppingmall.stats.dto.response.TodayStatsResponse;
 import io.groom.scubadive.shoppingmall.stats.dto.response.TopProductsResponse;
-import io.groom.scubadive.shoppingmall.stats.scheduler.StatsScheduler;
 import io.groom.scubadive.shoppingmall.stats.service.StatsCommandService;
 import io.groom.scubadive.shoppingmall.stats.service.StatsQueryService;
 import io.swagger.v3.oas.annotations.Operation;

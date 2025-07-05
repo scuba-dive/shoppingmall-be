@@ -82,7 +82,7 @@ public class StatsCommandService {
         // 2. 주문에 포함된 모든 아이템 수집
         List<OrderItem> orderItems = orders.stream()
                 .flatMap(order -> order.getItems().stream())
-                .collect(Collectors.toList());
+                .toList();
         log.info("🔎 {} 기준 OrderItem 개수: {}", date, orderItems.size());
 
         // 3. 상품 기준 그룹핑
@@ -94,7 +94,7 @@ public class StatsCommandService {
                 .map(Product::getProductName)
                 .collect(Collectors.toList()));
 
-        // 4. 집계 및 정렬
+        // 4. 집계 및 정렬 후 상위 5개만 추출
         List<ProductSalesRanking> rankings = grouped.entrySet().stream()
                 .map(entry -> {
                     Product product = entry.getKey();
@@ -113,6 +113,7 @@ public class StatsCommandService {
                             .build();
                 })
                 .sorted(Comparator.comparing(ProductSalesRanking::getTotalSales).reversed())
+                .limit(5)
                 .collect(Collectors.toList());
 
         log.info("📊 총 {}개 상품의 판매 랭킹 계산 완료", rankings.size());

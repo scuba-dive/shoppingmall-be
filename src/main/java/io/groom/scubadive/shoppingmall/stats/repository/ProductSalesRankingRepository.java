@@ -9,6 +9,5 @@ import java.util.List;
 public interface ProductSalesRankingRepository extends JpaRepository<ProductSalesRanking, Long> {
     List<ProductSalesRanking> findByDate(LocalDate date);
 
-    List<ProductSalesRanking> findByDateOrderByTotalQuantityDesc(LocalDate date);
     void deleteByDate(LocalDate date);
 }
