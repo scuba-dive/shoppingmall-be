@@ -6,7 +6,7 @@ import io.groom.scubadive.shoppingmall.order.repository.OrderRepository;
 import io.groom.scubadive.shoppingmall.stats.domain.DailyStats;
 import io.groom.scubadive.shoppingmall.stats.domain.HourlyStats;
 import io.groom.scubadive.shoppingmall.stats.domain.ProductSalesRanking;
-//import io.groom.scubadive.shoppingmall.stats.repository.DailyStatsRepository;
+import io.groom.scubadive.shoppingmall.stats.repository.DailyStatsRepository;
 import io.groom.scubadive.shoppingmall.stats.repository.HourlyStatsRepository;
 import io.groom.scubadive.shoppingmall.stats.repository.ProductSalesRankingRepository;
 import lombok.RequiredArgsConstructor;
@@ -25,7 +25,7 @@ public class StatsCommandService {
 
     private final OrderRepository orderRepository;
     private final HourlyStatsRepository hourlyStatsRepository;
-//    private final DailyStatsRepository dailyStatsRepository;
+    private final DailyStatsRepository dailyStatsRepository;
     private final ProductSalesRankingRepository productSalesRankingRepository;
 
     @Transactional
@@ -47,6 +47,24 @@ public class StatsCommandService {
                 .build();
 
         hourlyStatsRepository.save(stats);
+    }
+
+    @Transactional
+    public void saveDailyStats(LocalDateTime start, LocalDateTime end, LocalDate date) {
+        if (dailyStatsRepository.existsByDate(date)) return;
+
+        List<HourlyStats> hourlyStatsList = hourlyStatsRepository.findByStartTimeBetween(start, end);
+
+        long totalSales = hourlyStatsList.stream().mapToLong(HourlyStats::getTotalSales).sum();
+        int totalOrders = hourlyStatsList.stream().mapToInt(HourlyStats::getTotalOrders).sum();
+
+        DailyStats dailyStats = DailyStats.builder()
+                .date(date)
+                .totalSales(totalSales)
+                .totalOrders(totalOrders)
+                .build();
+
+        dailyStatsRepository.save(dailyStats);
     }
 
 

@@ -8,21 +8,27 @@ import io.groom.scubadive.shoppingmall.stats.domain.ProductSalesRanking;
 import io.groom.scubadive.shoppingmall.stats.dto.response.RecentStatsResponse;
 import io.groom.scubadive.shoppingmall.stats.dto.response.TodayStatsResponse;
 import io.groom.scubadive.shoppingmall.stats.dto.response.TopProductsResponse;
+import io.groom.scubadive.shoppingmall.stats.repository.DailyStatsRepository;
 import io.groom.scubadive.shoppingmall.stats.repository.HourlyStatsRepository;
 import io.groom.scubadive.shoppingmall.stats.repository.ProductSalesRankingRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class StatsQueryService {
 
     private final HourlyStatsRepository hourlyStatsRepository;
+    private final DailyStatsRepository dailyStatsRepository;
     private final ProductSalesRankingRepository productSalesRankingRepository;
 
     public TodayStatsResponse getTodayStats() {
@@ -38,26 +44,42 @@ public class StatsQueryService {
     }
 
 
-//    public RecentStatsResponse getRecentStats() {
-//        LocalDate today = LocalDate.now();
-//        List<DailyStats> recent = dailyStatsRepository.findByTimestampBetween(
-//                today.minusDays(3).atStartOfDay(),  // 오늘 포함 최근 3일
-//                today.atTime(LocalTime.MAX)
-//        );
-//
-//        if (recent.isEmpty()) {
-//            throw new GlobalException(ErrorCode.STATS_NOT_FOUND);
-//        }
-//
-//        List<RecentStatsResponse.SalesStats> list = recent.stream()
-//                .map(stat -> new RecentStatsResponse.SalesStats(
-//                        stat.getTimestamp().toLocalDate(),
-//                        stat.getTotalSales(),
-//                        stat.getTotalOrders()))
-//                .toList();
-//
-//        return new RecentStatsResponse(list);
-//    }
+    @Transactional(readOnly = true)
+    public RecentStatsResponse getRecentStats() {
+        LocalDate today = LocalDate.now();
+        LocalDate twoDaysAgo = today.minusDays(2);
+        LocalDate yesterday = today.minusDays(1);
+
+        // 어제, 그제는 DailyStats로 조회
+        List<DailyStats> dailyStatsList = dailyStatsRepository.findByDateBetweenOrderByDateAsc(twoDaysAgo, yesterday);
+
+        // 오늘은 HourlyStats로 집계
+        LocalDateTime start = today.atStartOfDay();
+        LocalDateTime now = LocalDateTime.now();
+        List<HourlyStats> todayHourlyStats = hourlyStatsRepository.findByStartTimeBetween(start, now);
+
+        long todaySales = todayHourlyStats.stream().mapToLong(HourlyStats::getTotalSales).sum();
+        int todayOrders = todayHourlyStats.stream().mapToInt(HourlyStats::getTotalOrders).sum();
+
+        List<RecentStatsResponse.SalesStats> results = new ArrayList<>();
+        for (DailyStats daily : dailyStatsList) {
+            results.add(new RecentStatsResponse.SalesStats(
+                    daily.getDate(),
+                    daily.getTotalSales(),
+                    daily.getTotalOrders()
+            ));
+        }
+
+        results.add(new RecentStatsResponse.SalesStats(
+                today,
+                todaySales,
+                todayOrders
+        ));
+
+        return new RecentStatsResponse(results);
+    }
+
+
 //
 //    public TopProductsResponse getTopProducts() {
 //        LocalDate today = LocalDate.now();
