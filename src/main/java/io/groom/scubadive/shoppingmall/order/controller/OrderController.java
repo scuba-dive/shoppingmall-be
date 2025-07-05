@@ -3,6 +3,7 @@ package io.groom.scubadive.shoppingmall.order.controller;
 import io.groom.scubadive.shoppingmall.global.dto.ApiResponseDto;
 import io.groom.scubadive.shoppingmall.global.securirty.LoginUser;
 import io.groom.scubadive.shoppingmall.member.domain.User;
+
 import io.groom.scubadive.shoppingmall.order.dto.request.OrderCreateRequest;
 import io.groom.scubadive.shoppingmall.order.dto.response.OrderListResponse;
 import io.groom.scubadive.shoppingmall.order.dto.response.OrderResponse;
@@ -13,7 +14,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -62,4 +62,19 @@ public class OrderController {
         OrderListResponse response = orderService.getUserOrders(userId, page, size);
         return ResponseEntity.ok(ApiResponseDto.of(200, "사용자 주문 목록 조회 성공", response));
     }
+
+    @Operation(summary = "주문 취소", description = "주문 ID로 주문을 취소합니다.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "주문 취소 성공"),
+            @ApiResponse(responseCode = "400", description = "이미 취소된 주문이거나 잘못된 요청"),
+            @ApiResponse(responseCode = "404", description = "주문을 찾을 수 없음")
+    })
+    @PatchMapping("/{id}/cancel")
+    public ResponseEntity<ApiResponseDto<Void>> cancelOrder(
+            @LoginUser Long userId,
+            @PathVariable Long id) {
+        orderService.cancelOrder(userId, id);
+        return ResponseEntity.ok(ApiResponseDto.of(200, "주문 취소 성공", null));
+    }
 }
+
