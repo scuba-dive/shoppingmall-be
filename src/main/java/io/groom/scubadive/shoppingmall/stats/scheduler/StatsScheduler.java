@@ -6,22 +6,45 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+
+@Slf4j
 @Component
 @RequiredArgsConstructor
-@Slf4j
 public class StatsScheduler {
 
     private final StatsCommandService statsCommandService;
 
-    @Scheduled(cron = "0 0 * * * *")
-    public void saveHourlyStats() {
-        statsCommandService.saveHourlyStats();
-        log.info("Hourly stats saved.");
+    // 매 30분마다 (ex: 00:30, 01:00 ...)
+    @Scheduled(cron = "0 0,30 * * * *")
+//    @Scheduled(cron = "*/10 * * * * *")
+    public void saveCurrentHourlyStats() {
+        LocalDateTime now = LocalDateTime.now().withSecond(0).withNano(0);
+        LocalDateTime start = now.minusMinutes(30);
+        LocalDateTime end = now.minusNanos(1);
+
+        try {
+            statsCommandService.saveHourlyStats(start, end);
+            log.info("[스케줄러] ✅ {} ~ {} 매출 저장 성공", start, end);
+        } catch (Exception e) {
+            log.error("[스케줄러] ❌ {} ~ {} 매출 저장 실패", start, end, e);
+        }
     }
 
+    // 자정에 전날 23:30 ~ 23:59 저장
     @Scheduled(cron = "0 0 0 * * *")
-    public void saveDailyStatsAndRanking() {
-        statsCommandService.saveDailyStatsAndRanking();
-        log.info("Daily stats and ranking saved.");
+    public void saveLastHourBeforeMidnight() {
+        LocalDateTime start = LocalDate.now().minusDays(1).atTime(23, 30);
+        LocalDateTime end = start.withMinute(59).withSecond(59).withNano(999_999_999);
+
+        try {
+            statsCommandService.saveHourlyStats(start, end);
+            log.info("[스케줄러] ✅ 전날 마지막 시간대 매출 저장 완료: {} ~ {}", start, end);
+        } catch (Exception e) {
+            log.error("[스케줄러] ❌ 전날 마지막 시간대 매출 저장 실패: {} ~ {}", start, end, e);
+        }
     }
+
+
 }
