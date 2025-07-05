@@ -60,5 +60,15 @@ public class StatsScheduler {
         }
     }
 
-
+    @Scheduled(cron = "0 0,30 * * * *") // 매 시각 00분, 30분마다 실행
+//    @Scheduled(cron = "*/10 * * * * *")
+    public void updateTodayProductRankings() {
+        LocalDate today = LocalDate.now();
+        try {
+            statsCommandService.saveTopProductRankings(today);
+            log.info("[스케줄러] ✅ 오늘의 상품 판매 랭킹 저장 완료: {}", today);
+        } catch (Exception e) {
+            log.error("[스케줄러] ❌ 오늘의 상품 판매 랭킹 저장 실패: {}", today, e);
+        }
+    }
 }
