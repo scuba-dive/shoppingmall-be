@@ -98,6 +98,9 @@ public class OrderService {
     public void changeStatus(Long orderId, OrderStatus status) {
         Order order = orderRepository.findById(orderId).orElseThrow();
         OrderStatus previousStatus = order.getStatus();
+        if (previousStatus == OrderStatus.COMPLETED) {
+            throw new GlobalException(ErrorCode.ALREADY_COMPLETED_ORDER);
+        }
 
         order.changeStatus(status);
 
