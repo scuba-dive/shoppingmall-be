@@ -16,6 +16,7 @@ public class PaymentPending {
     private Long id;
     private String orderId;
     private Long userId;
+    private Long cartId;           // ✅ cartId 필드 추가
     private Long amount;
     private String status;
     private String cartItemIds;

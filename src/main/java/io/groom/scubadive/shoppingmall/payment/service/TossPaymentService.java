@@ -3,6 +3,8 @@ package io.groom.scubadive.shoppingmall.payment.service;
 import io.groom.scubadive.shoppingmall.cart.domain.CartItem;
 import io.groom.scubadive.shoppingmall.cart.repository.CartItemRepository;
 import io.groom.scubadive.shoppingmall.global.config.TossPaymentConfig;
+import io.groom.scubadive.shoppingmall.order.dto.request.OrderCreateRequest;
+import io.groom.scubadive.shoppingmall.order.service.OrderService;
 import io.groom.scubadive.shoppingmall.payment.domain.PaymentPending;
 import io.groom.scubadive.shoppingmall.payment.dto.response.TossApproveResponse;
 import io.groom.scubadive.shoppingmall.payment.dto.response.TossPaymentReadyResponse;
@@ -27,9 +29,10 @@ public class TossPaymentService {
     private final PaymentPendingRepository paymentPendingRepository;
     private final TossPaymentConfig tossProps;
     private final RestTemplate restTemplate = new RestTemplate();
+    private final OrderService orderService;
 
     public TossPaymentReadyResponse createTossPaymentReady(
-            Long cartId, List<Long> cartItemIds, String username) {
+            Long userId, Long cartId, List<Long> cartItemIds, String username) {
 
         List<CartItem> selectedItems = cartItemRepository.findAllById(cartItemIds);
         long amount = selectedItems.stream()
@@ -45,6 +48,8 @@ public class TossPaymentService {
         // ✅ Pending DB에 저장
         PaymentPending pending = PaymentPending.builder()
                 .orderId(orderId)
+                .userId(userId)
+                .cartId(cartId)
                 .amount(amount)
                 .status("PENDING")
                 .cartItemIds(cartItemIds.stream().map(String::valueOf).collect(Collectors.joining(",")))
@@ -90,9 +95,23 @@ public class TossPaymentService {
             pending.setStatus("APPROVED");
             paymentPendingRepository.save(pending);
 
-            // (TODO) 실제 주문/결제 내역 저장, 배송 등 로직 추가
+            /*** 👇 주문 생성 로직 추가 부분 ***/
+            Long userId = pending.getUserId();
+            Long cartId = pending.getCartId(); // cartId가 PaymentPending에 있다면!
+            List<Long> cartItemIds = Arrays.stream(pending.getCartItemIds().split(","))
+                    .map(Long::parseLong)
+                    .toList();
+
+            // OrderCreateRequest 생성자/빌더 필요
+            OrderCreateRequest orderCreateRequest = new OrderCreateRequest(cartId, cartItemIds);
+
+            // OrderService 주입 필요 (예: 필드로 @Autowired 혹은 @RequiredArgsConstructor로)
+            orderService.createOrder(userId, orderCreateRequest);
+
+            /*** 👆 주문 생성 끝 ***/
 
             return TossApproveResponse.of(body);
+
         } catch (RestClientResponseException e) {
             // 결제 실패시 pending → FAILED
             pending.setStatus("FAILED");

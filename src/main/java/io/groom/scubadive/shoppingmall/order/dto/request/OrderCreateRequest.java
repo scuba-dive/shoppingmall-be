@@ -7,5 +7,10 @@ import java.util.List;
 @Getter
 public class OrderCreateRequest {
     private Long cartId;
-    private List<Long> cartItemIds; // 선택된 아이템 ID 리스트 추가
+    private List<Long> cartItemIds;
+
+    public OrderCreateRequest(Long cartId, List<Long> cartItemIds) {
+        this.cartId = cartId;
+        this.cartItemIds = cartItemIds;
+    }
 }

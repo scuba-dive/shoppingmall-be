@@ -36,6 +36,7 @@ public class PaymentController {
         String username = user.getUsername();
 
         TossPaymentReadyResponse response = tossPaymentService.createTossPaymentReady(
+                userId,
                 request.getCartId(),
                 request.getCartItemIds(),
                 username
