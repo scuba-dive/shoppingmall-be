@@ -28,7 +28,7 @@ public class ProductOption extends BaseTimeEntity {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private ProductOptionStatus status = ProductOptionStatus.ACTIVE; // 기본값 ACTIVE
+    private ProductOptionStatus status = ProductOptionStatus.SOLD_OUT; // 기본값은 SOLD_OUT
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_id")
@@ -42,7 +42,7 @@ public class ProductOption extends BaseTimeEntity {
         this.color = color;
         this.sku = sku;
         this.stock = stock;
-        this.status = status != null ? status : ProductOptionStatus.ACTIVE;
+        this.status = status != null ? status : ProductOptionStatus.SOLD_OUT;
         this.product = product;
     }
 

@@ -32,6 +32,10 @@ nohup java \
   -Djwt.refresh-token-expiration="$JWT_REFRESH_TOKEN_EXPIRATION" \
   -Dtoss.testClientKey="$TOSS_TEST_CLIENT_KEY" \
   -Dtoss.testSecretKey="$TOSS_TEST_SECRET_KEY" \
+  -Dcloud.aws.credentials.access-key="$CLOUD_AWS_ACCESS_KEY" \
+  -Dcloud.aws.credentials.secret-key="$CLOUD_AWS_SECRET_KEY" \
+  -Dcloud.aws.region.static="$CLOUD_AWS_REGION" \
+  -Dcloud.aws.s3.bucket="$CLOUD_AWS_S3_BUCKET" \
   -jar "$JAR_PATH" --spring.profiles.active=prod > "$LOG_PATH" 2>&1 &
 
 echo "✅ 배포 스크립트 완료. 로그 확인: tail -f $LOG_PATH"

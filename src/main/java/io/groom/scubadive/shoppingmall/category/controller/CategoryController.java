@@ -11,6 +11,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.*;
 
@@ -50,7 +51,7 @@ public class CategoryController {
             @PathVariable Long id,
 
             @Parameter(hidden = true)
-            @PageableDefault(size = 8) Pageable pageable
+            @PageableDefault(size = 8, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable
     ) {
         return categoryService.getCategoryProductUserPage(id, pageable);
     }
