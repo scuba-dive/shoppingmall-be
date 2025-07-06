@@ -13,8 +13,10 @@ import io.groom.scubadive.shoppingmall.order.domain.*;
 import io.groom.scubadive.shoppingmall.order.dto.request.OrderCreateRequest;
 import io.groom.scubadive.shoppingmall.order.dto.response.*;
 import io.groom.scubadive.shoppingmall.order.repository.OrderRepository;
+import io.groom.scubadive.shoppingmall.product.domain.ProductOption;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.aspectj.ConfigurableObject;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -38,6 +40,7 @@ public class OrderService {
     private final UserRepository userRepository;
     private final UserPaidService userPaidService;
     private final UserService userService;
+    private final ConfigurableObject configurableObject;
 
     @Transactional
     public OrderResponse createOrder(Long userId, OrderCreateRequest request) {
@@ -81,6 +84,16 @@ public class OrderService {
 
         selectedItems.forEach(i -> {
             OrderItem item = new OrderItem(i.getProductOption(), i.getQuantity());
+
+            ProductOption option = i.getProductOption();
+            System.out.println("Option ID: " + option.getId() + ", Stock: " + option.getStock());
+            long remain = option.getStock() - i.getQuantity();
+            System.out.println("Remaining Stock after Order: " + remain);
+            if (remain < 0) {
+                throw new GlobalException(ErrorCode.OUT_OF_STOCK);
+            }
+            option.setStock(remain);
+
             order.addItem(item);
         });
 
