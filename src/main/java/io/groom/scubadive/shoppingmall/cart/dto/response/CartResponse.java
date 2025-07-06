@@ -11,6 +11,9 @@ import java.util.List;
 @Schema(description = "장바구니 응답 DTO")
 public class CartResponse {
 
+    @Schema(description = "장바구니 ID", example = "5")
+    private Long cartId;
+
     @Schema(description = "장바구니에 담긴 상품 목록")
     private List<CartItemResponse> items;
 
