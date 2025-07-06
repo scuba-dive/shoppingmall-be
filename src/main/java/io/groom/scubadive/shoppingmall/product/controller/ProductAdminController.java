@@ -1,22 +1,29 @@
 package io.groom.scubadive.shoppingmall.product.controller;
 
 import io.groom.scubadive.shoppingmall.global.dto.ApiResponseDto;
-import io.groom.scubadive.shoppingmall.product.dto.request.ProductSaveRequest;
+import io.groom.scubadive.shoppingmall.product.domain.Product;
+import io.groom.scubadive.shoppingmall.product.dto.request.ProductCreateRequest;
 import io.groom.scubadive.shoppingmall.product.dto.request.ProductStockUpdateRequest;
 import io.groom.scubadive.shoppingmall.product.dto.request.ProductUpdateRequest;
-import io.groom.scubadive.shoppingmall.product.dto.response.ProductSaveResponse;
+import io.groom.scubadive.shoppingmall.product.dto.response.ProductCreateResponse;
 import io.groom.scubadive.shoppingmall.product.dto.response.ProductUpdateResponse;
 import io.groom.scubadive.shoppingmall.product.dto.response.ProductWithOptionPageResponse;
 import io.groom.scubadive.shoppingmall.product.service.ProductService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 @CrossOrigin(
         origins = {
@@ -42,17 +49,23 @@ public class ProductAdminController {
         return productService.getProductsByPageable(pageable);
     }
 
-    @Operation(summary = "상품 등록", description = "신규 상품과 옵션 정보를 등록합니다.")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "201", description = "상품 등록 성공"),
-            @ApiResponse(responseCode = "400", description = "잘못된 요청")
+    @Operation(summary = "상품 등록", description = "관리자가 상품 정보를 등록한다.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "상품 등록 성공",
+                    content = @Content(schema = @Schema(implementation = ProductCreateResponse.class)))
     })
-    @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
-    @PreAuthorize("hasRole('ADMIN')")
-    public ApiResponseDto<ProductSaveResponse> createProduct(@RequestBody ProductSaveRequest request) {
-        return productService.createProduct(request);
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<ApiResponseDto<ProductCreateResponse>> createProduct(
+            @RequestPart("product") ProductCreateRequest request,
+            @RequestPart("optionImages") List<MultipartFile> optionImages
+    ) {
+        System.out.println("====== 상품 등록 요청 진입! ======");
+        Product product = productService.createProduct(request, optionImages);
+        ProductCreateResponse response = ProductCreateResponse.from(product);
+
+        return ResponseEntity.ok(ApiResponseDto.of(200, "상품 등록 성공", response));
     }
+
 
     @Operation(summary = "상품 수정", description = "기존 상품의 설명 및 가격을 수정합니다.")
     @ApiResponses(value = {

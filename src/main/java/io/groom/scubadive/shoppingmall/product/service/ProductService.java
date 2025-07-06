@@ -7,10 +7,12 @@ import io.groom.scubadive.shoppingmall.global.dto.ApiResponseDto;
 import io.groom.scubadive.shoppingmall.global.exception.ErrorCode;
 import io.groom.scubadive.shoppingmall.global.exception.GlobalException;
 import io.groom.scubadive.shoppingmall.global.util.ProductUtil;
+import io.groom.scubadive.shoppingmall.global.util.S3Uploader;
 import io.groom.scubadive.shoppingmall.product.domain.Product;
 import io.groom.scubadive.shoppingmall.product.domain.ProductOption;
 import io.groom.scubadive.shoppingmall.product.domain.ProductOptionImage;
 import io.groom.scubadive.shoppingmall.product.domain.ProductOptionStatus;
+import io.groom.scubadive.shoppingmall.product.dto.request.ProductCreateRequest;
 import io.groom.scubadive.shoppingmall.product.dto.request.ProductSaveRequest;
 import io.groom.scubadive.shoppingmall.product.dto.request.ProductStockUpdateRequest;
 import io.groom.scubadive.shoppingmall.product.dto.request.ProductUpdateRequest;
@@ -22,9 +24,15 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.Map;
+import java.util.Random;
 
 @Service
 @RequiredArgsConstructor
@@ -34,33 +42,116 @@ public class ProductService {
     private final ProductOptionRepository productOptionRepository;
     private final CategoryRepository categoryRepository;
     private final ProductUtil productUtil;
+    private final S3Uploader s3Uploader;
 
-    public ApiResponseDto<ProductSaveResponse> createProduct(ProductSaveRequest request) {
-        Category category = categoryRepository.findById(request.categoryId()).orElseThrow(
-                () -> new GlobalException(ErrorCode.CATEGORY_NOT_FOUND)
+    @Transactional
+    public Product createProduct(ProductCreateRequest request, List<MultipartFile> optionImages) {
+        // 0. 한글명 → 카테고리 조회
+        Category category = categoryRepository.findByKoreanName(request.getCategoryName())
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 카테고리입니다."));
+
+        if (!isValidCategoryKoreanName(category.getKoreanName())) {
+            throw new IllegalArgumentException("카테고리는 의자, 책상, 침대, 수납장, 소품만 등록할 수 있습니다.");
+        }
+
+        // 1. 옵션 3개(파랑, 빨강, 검정) 필수 검증
+        List<ProductCreateRequest.ProductOptionRequest> optionList = request.getOptions();
+        List<String> requiredColors = List.of("파랑", "빨강", "검정");
+        List<String> optionColors = optionList.stream()
+                .map(ProductCreateRequest.ProductOptionRequest::getColor)
+                .toList();
+
+        for (String required : requiredColors) {
+            if (!optionColors.contains(required)) {
+                throw new IllegalArgumentException("옵션에는 반드시 파랑, 빨강, 검정 3가지 색상이 모두 포함되어야 합니다.");
+            }
+        }
+
+        if (optionList.size() != requiredColors.size() || optionImages.size() != requiredColors.size()) {
+            throw new IllegalArgumentException("옵션 및 이미지 개수는 파랑, 빨강, 검정 3개여야 합니다.");
+        }
+
+        // 2. 상품 생성
+        Product product = Product.createProduct(
+                request.getProductName(),
+                request.getDescription(),
+                request.getPrice(),
+                0L, // 리뷰수
+                BigDecimal.ZERO, // 평점
+                category
         );
 
+        // 3. 옵션 생성 (stock=0, sku 자동, color 변환, imagePath 규칙)
+        for (int i = 0; i < optionList.size(); i++) {
+            ProductCreateRequest.ProductOptionRequest optionDto = optionList.get(i);
+            MultipartFile optionImage = optionImages.get(i);
 
-        Product product = Product.createProduct(request.productName(), request.description(), request.price(), productUtil.getRandomNumber().longValue(), productUtil.generateRandomRating(), category);
-        productRepository.save(product);
+            // 이미지 누락 체크
+            if (optionImage == null || optionImage.isEmpty()) {
+                throw new IllegalArgumentException("모든 옵션에 이미지를 한 장씩 첨부해야 합니다.");
+            }
 
-        // 해당 카테고리 안에 상품이 얼마나 있는지 확인.
-        Long count = productRepository.countOptionsByCategoryId(category.getId());
+            String englishColor = convertKoreanToEnglishColor(optionDto.getColor());
+            String categoryCode = category.getCategoryName();
+            String sku = generateSku(categoryCode, englishColor);
 
-        AtomicInteger skuCount = new AtomicInteger(count.byteValue() + 1);
-        List<ProductOption> options = request.options().stream().map(productOptionRequest -> {
+            // [조건] imagePath: /product/{sku}.webp
+            String imagePath = "/product/" + sku.toLowerCase() + ".webp";
 
-            String sku = productUtil.generateSku(category.getCategoryName(), productOptionRequest.color(), skuCount.getAndIncrement());
+            // S3 업로드 시 지정한 경로와 파일명으로 업로드
+            try {
+                s3Uploader.upload(optionImage, imagePath);
+            } catch (IOException e) {
+                throw new RuntimeException("이미지 업로드 중 오류가 발생했습니다.", e);
+            }
 
-            return ProductOption.createProductOption(productOptionRequest.color(), sku, productOptionRequest.stock().longValue(), ProductOptionStatus.ACTIVE, product);
-        }).toList();
+            ProductOption option = ProductOption.createProductOption(
+                    englishColor,
+                    sku,
+                    0L, // 재고는 무조건 0
+                    ProductOptionStatus.ACTIVE,
+                    product
+            );
 
-        product.addOptions(options);
+            ProductOptionImage optionImageEntity = ProductOptionImage.createProductOptionImage(
+                    option,
+                    imagePath, // /product/{sku}.webp 형식
+                    s3Uploader.getBucketName()
+            );
+            option.addProductOptionImage(optionImageEntity);
+            product.addOption(option);
+        }
 
-        productRepository.flush();
-
-        return ApiResponseDto.of(201, "상품이 성공적으로 등록되었습니다.", ProductSaveResponse.from(product));
+        return productRepository.save(product);
     }
+
+    // 한글→영어 변환 (색상)
+    private static final Map<String, String> KOREAN_TO_ENGLISH_COLOR = Map.of(
+            "파랑", "BLUE",
+            "빨강", "RED",
+            "검정", "BLACK"
+    );
+
+    private String convertKoreanToEnglishColor(String koreanColor) {
+        String english = KOREAN_TO_ENGLISH_COLOR.get(koreanColor);
+        if (english == null) {
+            throw new IllegalArgumentException("색상은 파랑, 빨강, 검정만 입력 가능합니다.");
+        }
+        return english;
+    }
+
+    // 5종 한글 카테고리만 허용
+    private boolean isValidCategoryKoreanName(String koreanName) {
+        return List.of("의자", "책상", "침대", "수납장", "소품").contains(koreanName);
+    }
+
+    // SKU 자동생성 (카테고리-색상-날짜-랜덤)
+    private String generateSku(String categoryCode, String colorCode) {
+        String date = LocalDate.now().format(DateTimeFormatter.BASIC_ISO_DATE);
+        String random = String.format("%04d", new Random().nextInt(10000));
+        return categoryCode + "-" + colorCode + "-" + date + "-" + random;
+    }
+
 
 
     public ApiResponseDto<ProductWithOptionPageResponse> getProductsByPageable(Pageable pageable) {
@@ -149,4 +240,31 @@ public class ProductService {
     }
 
 
+
+//    public ApiResponseDto<ProductSaveResponse> createProduct(ProductSaveRequest request) {
+//        Category category = categoryRepository.findById(request.categoryId()).orElseThrow(
+//                () -> new GlobalException(ErrorCode.CATEGORY_NOT_FOUND)
+//        );
+//
+//
+//        Product product = Product.createProduct(request.productName(), request.description(), request.price(), productUtil.getRandomNumber().longValue(), productUtil.generateRandomRating(), category);
+//        productRepository.save(product);
+//
+//        // 해당 카테고리 안에 상품이 얼마나 있는지 확인.
+//        Long count = productRepository.countOptionsByCategoryId(category.getId());
+//
+//        AtomicInteger skuCount = new AtomicInteger(count.byteValue() + 1);
+//        List<ProductOption> options = request.options().stream().map(productOptionRequest -> {
+//
+//            String sku = productUtil.generateSku(category.getCategoryName(), productOptionRequest.color(), skuCount.getAndIncrement());
+//
+//            return ProductOption.createProductOption(productOptionRequest.color(), sku, productOptionRequest.stock().longValue(), ProductOptionStatus.ACTIVE, product);
+//        }).toList();
+//
+//        product.addOptions(options);
+//
+//        productRepository.flush();
+//
+//        return ApiResponseDto.of(201, "상품이 성공적으로 등록되었습니다.", ProductSaveResponse.from(product));
+//    }
 }
