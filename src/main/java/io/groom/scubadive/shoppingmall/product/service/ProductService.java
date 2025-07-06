@@ -166,29 +166,25 @@ public class ProductService {
     }
 
 
-    public ApiResponseDto<ProductUpdateResponse> updateProductById(Long id, ProductUpdateRequest request) {
-        Product product = findProductById(id);
-
-        product.updateDescription(request.description());
-        product.updatePrice(request.price());
-        productRepository.flush();
-
-        return ApiResponseDto.of(200, "상품이 성공적으로 수정되었습니다.", ProductUpdateResponse.from(product));
-    }
-
-
-    public ApiResponseDto<Void> deleteProductById(Long id) {
-        Product product = findProductById(id);
-        productRepository.deleteById(product.getId());
-        return ApiResponseDto.of(200, "상품이 성공적으로 삭제되었습니다.", null);
-    }
-
     public ApiResponseDto<Void> updateStockByOptionId(Long id, ProductStockUpdateRequest request) {
         ProductOption productOption = findProductOptionById(id);
 
         productOption.updateStock(request.stock());
 
         return ApiResponseDto.of(200, "재고 수량이 변경되었습니다.", null);
+    }
+
+    public ApiResponseDto<ProductImageResponse> getProductOptionImageUrl(Long id) {
+        ProductOption option = productOptionRepository.findById(id)
+                .orElseThrow(() -> new GlobalException(ErrorCode.PRODUCT_NOT_FOUND));
+
+        ProductOptionImage image = option.getProductOptionImages().stream()
+                .findFirst()
+                .orElseThrow(() -> new GlobalException(ErrorCode.PRODUCT_IMAGE_NOT_FOUND));
+        String imageUrl = "https://" + "my-shop-image-bucket" + ".s3.ap-northeast-2.amazonaws.com" + image.getImagePath();
+
+        ProductImageResponse imageResponse = new ProductImageResponse(id, imageUrl);
+        return ApiResponseDto.of(200, "상품 옵션 이미지 URL을 성공적으로 불러왔습니다.", imageResponse);
     }
 
     public ApiResponseDto<Void> toggleStatusByOptionId(Long id) {
@@ -213,6 +209,24 @@ public class ProductService {
         return ApiResponseDto.of(200, "상품 정보를 성공적으로 불러왔습니다.", ProductDetailUserResponse.from(product));
     }
 
+
+    public ApiResponseDto<ProductUpdateResponse> updateProductById(Long id, ProductUpdateRequest request) {
+        Product product = findProductById(id);
+
+        product.updateDescription(request.description());
+        product.updatePrice(request.price());
+        productRepository.flush();
+
+        return ApiResponseDto.of(200, "상품이 성공적으로 수정되었습니다.", ProductUpdateResponse.from(product));
+    }
+
+
+    public ApiResponseDto<Void> deleteProductById(Long id) {
+        Product product = findProductById(id);
+        productRepository.deleteById(product.getId());
+        return ApiResponseDto.of(200, "상품이 성공적으로 삭제되었습니다.", null);
+    }
+
     private Product findProductById(Long id) {
         return productRepository.findById(id).orElseThrow(
                 () -> new GlobalException(ErrorCode.PRODUCT_NOT_FOUND)
@@ -224,21 +238,6 @@ public class ProductService {
                 () -> new GlobalException(ErrorCode.PRODUCT_NOT_FOUND)
         );
     }
-
-    public ApiResponseDto<ProductImageResponse> getProductOptionImageUrl(Long id) {
-        ProductOption option = productOptionRepository.findById(id)
-                .orElseThrow(() -> new GlobalException(ErrorCode.PRODUCT_NOT_FOUND));
-
-        ProductOptionImage image = option.getProductOptionImages().stream()
-                .findFirst()
-                .orElseThrow(() -> new GlobalException(ErrorCode.PRODUCT_IMAGE_NOT_FOUND));
-        String imageUrl = "https://" + "my-shop-image-bucket" + ".s3.ap-northeast-2.amazonaws.com" + image.getImagePath();
-
-        ProductImageResponse imageResponse = new ProductImageResponse(id, imageUrl);
-        return ApiResponseDto.of(200, "상품 옵션 이미지 URL을 성공적으로 불러왔습니다.", imageResponse);
-    }
-
-
 
 //    public ApiResponseDto<ProductSaveResponse> createProduct(ProductSaveRequest request) {
 //        Category category = categoryRepository.findById(request.categoryId()).orElseThrow(

@@ -101,6 +101,22 @@ public class UserController {
     }
 
     @Tag(name = "User API", description = "회원 전용 API")
+    @Operation(summary = "로그아웃", description = "로그인한 사용자를 로그아웃 처리하고 RefreshToken 쿠키를 제거합니다.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "로그아웃 성공")
+    })
+    @PostMapping("/logout")
+    public ResponseEntity<ApiResponseDto<Void>> logout(
+            @LoginUser Long userId,
+            HttpServletResponse response
+    ) {
+        userService.logout(userId, response);
+        return ResponseEntity.ok(
+                ApiResponseDto.of(200, "로그아웃에 성공하였습니다.", null)
+        );
+    }
+
+    @Tag(name = "프론트 미구현 API", description = "회원 전용 API")
     @Operation(summary = "내 정보 수정", description = "로그인한 사용자의 비밀번호, 닉네임, 전화번호를 수정합니다.")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "수정 성공"),
@@ -115,23 +131,6 @@ public class UserController {
         UpdateUserResponseWrapper response = userService.updateMyInfo(userId, request);
         return ResponseEntity.ok(
                 ApiResponseDto.of(200, "내 정보가 성공적으로 수정되었습니다.", response)
-        );
-    }
-
-
-    @Tag(name = "User API", description = "회원 전용 API")
-    @Operation(summary = "로그아웃", description = "로그인한 사용자를 로그아웃 처리하고 RefreshToken 쿠키를 제거합니다.")
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "로그아웃 성공")
-    })
-    @PostMapping("/logout")
-    public ResponseEntity<ApiResponseDto<Void>> logout(
-            @LoginUser Long userId,
-            HttpServletResponse response
-    ) {
-        userService.logout(userId, response);
-        return ResponseEntity.ok(
-                ApiResponseDto.of(200, "로그아웃에 성공하였습니다.", null)
         );
     }
 }
