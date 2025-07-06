@@ -30,6 +30,8 @@ nohup java \
   -Djwt.secret-key="$JWT_SECRET_KEY" \
   -Djwt.access-token-expiration="$JWT_ACCESS_TOKEN_EXPIRATION" \
   -Djwt.refresh-token-expiration="$JWT_REFRESH_TOKEN_EXPIRATION" \
+  -Dtoss.testClientKey="$TOSS_TEST_CLIENT_KEY" \
+  -Dtoss.testSecretKey="$TOSS_TEST_SECRET_KEY" \
   -jar "$JAR_PATH" --spring.profiles.active=prod > "$LOG_PATH" 2>&1 &
 
 echo "✅ 배포 스크립트 완료. 로그 확인: tail -f $LOG_PATH"

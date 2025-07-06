@@ -123,6 +123,7 @@ public class CartService {
         Long totalAmount = items.stream().mapToLong(CartItemResponse::getTotalPricePerItem).sum();
 
         return CartResponse.builder()
+                .cartId(cart.getId())
                 .items(items)
                 .totalQuantity(totalQuantity)
                 .totalAmount(totalAmount)
