@@ -61,4 +61,8 @@ jobs:
             export JWT_REFRESH_TOKEN_EXPIRATION="${{ secrets.JWT_REFRESH_TOKEN_EXPIRATION }}"
             export TOSS_TEST_CLIENT_KEY="${{ secrets.TOSS_TEST_CLIENT_KEY }}"
             export TOSS_TEST_SECRET_KEY="${{ secrets.TOSS_TEST_SECRET_KEY }}"
+            export CLOUD_AWS_ACCESS_KEY="${{ secrets.CLOUD_AWS_ACCESS_KEY }}"
+            export CLOUD_AWS_SECRET_KEY="${{ secrets.CLOUD_AWS_SECRET_KEY }}"
+            export CLOUD_AWS_REGION="${{ secrets.CLOUD_AWS_REGION }}"
+            export CLOUD_AWS_S3_BUCKET="${{ secrets.CLOUD_AWS_S3_BUCKET }}"
             ./deploy.sh
