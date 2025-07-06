@@ -12,7 +12,6 @@ import io.groom.scubadive.shoppingmall.product.domain.ProductOption;
 import io.groom.scubadive.shoppingmall.product.domain.ProductOptionImage;
 import io.groom.scubadive.shoppingmall.product.domain.ProductOptionStatus;
 import io.groom.scubadive.shoppingmall.product.dto.request.ProductSaveRequest;
-import io.groom.scubadive.shoppingmall.product.dto.request.ProductStatusUpdateRequest;
 import io.groom.scubadive.shoppingmall.product.dto.request.ProductStockUpdateRequest;
 import io.groom.scubadive.shoppingmall.product.dto.request.ProductUpdateRequest;
 import io.groom.scubadive.shoppingmall.product.dto.response.*;
@@ -25,7 +24,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @Service
