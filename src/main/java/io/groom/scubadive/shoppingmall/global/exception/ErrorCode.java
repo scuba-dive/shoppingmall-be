@@ -54,6 +54,7 @@ public enum ErrorCode {
 
     // 409 CONFLICT
     OUT_OF_STOCK(HttpStatus.CONFLICT, "재고가 부족합니다."),
+    PRODUCT_SOLD_OUT(HttpStatus.CONFLICT, "품절된 상품입니다."),
 
     // 500 INTERNAL SERVER ERROR
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "서버 내부 오류가 발생했습니다.");

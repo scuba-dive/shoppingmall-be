@@ -14,6 +14,7 @@ import io.groom.scubadive.shoppingmall.order.dto.request.OrderCreateRequest;
 import io.groom.scubadive.shoppingmall.order.dto.response.*;
 import io.groom.scubadive.shoppingmall.order.repository.OrderRepository;
 import io.groom.scubadive.shoppingmall.product.domain.ProductOption;
+import io.groom.scubadive.shoppingmall.product.domain.ProductOptionStatus;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.aspectj.ConfigurableObject;
@@ -83,17 +84,22 @@ public class OrderService {
         Order order = new Order(user, orderNumber, totalQuantity, totalAmount, OrderStatus.PAYMENT_COMPLETED);
 
         selectedItems.forEach(i -> {
-            OrderItem item = new OrderItem(i.getProductOption(), i.getQuantity());
-
             ProductOption option = i.getProductOption();
-            System.out.println("Option ID: " + option.getId() + ", Stock: " + option.getStock());
+            if (option.getStatus() != ProductOptionStatus.ACTIVE) {
+                throw new GlobalException(ErrorCode.PRODUCT_SOLD_OUT); // 상태값을 새로 만드세요!
+            }
+
             long remain = option.getStock() - i.getQuantity();
-            System.out.println("Remaining Stock after Order: " + remain);
+
             if (remain < 0) {
                 throw new GlobalException(ErrorCode.OUT_OF_STOCK);
             }
             option.setStock(remain);
 
+            if (remain == 0) {
+                option.setStatus(ProductOptionStatus.SOLD_OUT);
+            }
+            OrderItem item = new OrderItem(i.getProductOption(), i.getQuantity());
             order.addItem(item);
         });
 
