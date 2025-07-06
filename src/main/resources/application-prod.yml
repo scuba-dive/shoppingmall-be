@@ -23,3 +23,9 @@ jwt:
 
 server:
   port: 8080
+
+toss:
+  testClientKey: ${TOSS_TEST_CLIENT_KEY}
+  testSecretKey: ${TOSS_TEST_SECRET_KEY}
+  successUrl: http://localhost:5173/payment/success
+  failUrl: http://localhost:5173/payment/fail
