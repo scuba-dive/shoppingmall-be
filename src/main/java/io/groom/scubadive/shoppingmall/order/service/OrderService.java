@@ -245,5 +245,15 @@ public class OrderService {
         }
 
         order.changeStatus(OrderStatus.CANCELED);
+
+        order.getItems().forEach(item -> {
+            ProductOption option = item.getProductOption();
+            long recoverStock = option.getStock() + item.getQuantity();
+            option.setStock(recoverStock);
+            // SOLD_OUT 상태였다면 ACTIVE로 변경
+            if (option.getStatus() == ProductOptionStatus.SOLD_OUT && recoverStock > 0) {
+                option.setStatus(ProductOptionStatus.ACTIVE);
+            }
+        });
     }
 }
