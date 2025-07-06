@@ -13,7 +13,6 @@ import io.groom.scubadive.shoppingmall.product.domain.ProductOption;
 import io.groom.scubadive.shoppingmall.product.domain.ProductOptionImage;
 import io.groom.scubadive.shoppingmall.product.domain.ProductOptionStatus;
 import io.groom.scubadive.shoppingmall.product.dto.request.ProductCreateRequest;
-import io.groom.scubadive.shoppingmall.product.dto.request.ProductSaveRequest;
 import io.groom.scubadive.shoppingmall.product.dto.request.ProductStockUpdateRequest;
 import io.groom.scubadive.shoppingmall.product.dto.request.ProductUpdateRequest;
 import io.groom.scubadive.shoppingmall.product.dto.response.*;
@@ -76,8 +75,8 @@ public class ProductService {
                 request.getProductName(),
                 request.getDescription(),
                 request.getPrice(),
-                0L, // 리뷰수
-                BigDecimal.ZERO, // 평점
+                20L, // 리뷰수
+                BigDecimal.valueOf(4.50), // 평점
                 category
         );
 
@@ -109,7 +108,7 @@ public class ProductService {
                     englishColor,
                     sku,
                     0L, // 재고는 무조건 0
-                    ProductOptionStatus.ACTIVE,
+                    ProductOptionStatus.SOLD_OUT,
                     product
             );
 
