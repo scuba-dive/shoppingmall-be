@@ -45,7 +45,7 @@ public class TossPaymentService {
         String orderId = UUID.randomUUID().toString();
         String customerName = (username == null || username.isBlank()) ? "비회원" : username;
 
-        // ✅ Pending DB에 저장
+        // Pending DB에 저장
         PaymentPending pending = PaymentPending.builder()
                 .orderId(orderId)
                 .userId(userId)
@@ -60,7 +60,7 @@ public class TossPaymentService {
     }
 
     public TossApproveResponse approvePayment(String paymentKey, String orderId, Long amount) {
-        // ✅ Pending 검증
+        // Pending 검증
         PaymentPending pending = paymentPendingRepository.findByOrderId(orderId)
                 .orElseThrow(() -> new RuntimeException("결제 세션이 유효하지 않습니다. 다시 시도해주세요."));
 
