@@ -29,6 +29,7 @@ public enum ErrorCode {
     INVALID_ORDER_STATUS_TRANSITION(HttpStatus.BAD_REQUEST, "잘못된 주문 상태 변경 요청입니다."),
     STATS_NOT_FOUND(HttpStatus.BAD_REQUEST, "통계 정보가 존재하지 않습니다."),
     PRODUCT_SALES_RANKING_NOT_FOUND(HttpStatus.BAD_REQUEST, "상품 판매 랭킹 정보가 존재하지 않습니다."),
+    PAYMENT_PENDING_NOT_FOUND(HttpStatus.BAD_REQUEST, "결제 대기 정보가 존재하지 않습니다."),
 
     // 401 UNAUTHORIZED
     UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "인증되지 않았습니다."),

@@ -2,34 +2,102 @@ package io.groom.scubadive.shoppingmall.payment.service;
 
 import io.groom.scubadive.shoppingmall.cart.domain.CartItem;
 import io.groom.scubadive.shoppingmall.cart.repository.CartItemRepository;
+import io.groom.scubadive.shoppingmall.global.config.TossPaymentConfig;
+import io.groom.scubadive.shoppingmall.payment.domain.PaymentPending;
+import io.groom.scubadive.shoppingmall.payment.dto.response.TossApproveResponse;
+import io.groom.scubadive.shoppingmall.payment.dto.response.TossPaymentReadyResponse;
+import io.groom.scubadive.shoppingmall.payment.repository.PaymentPendingRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestClientResponseException;
+import org.springframework.web.client.RestTemplate;
 
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class TossPaymentService {
 
     private final CartItemRepository cartItemRepository;
+    private final PaymentPendingRepository paymentPendingRepository;
+    private final TossPaymentConfig tossProps;
+    private final RestTemplate restTemplate = new RestTemplate();
 
+    public TossPaymentReadyResponse createTossPaymentReady(
+            Long cartId, List<Long> cartItemIds, String username) {
 
-    public String createTossPaymentUrl(Long cartId, List<Long> cartItemIds) {
         List<CartItem> selectedItems = cartItemRepository.findAllById(cartItemIds);
-
         long amount = selectedItems.stream()
                 .mapToLong(item -> item.getProductOption().getProduct().getPrice() * item.getQuantity())
                 .sum();
 
-        // 대표 상품명 구성
         String orderName = selectedItems.get(0).getProductOption().getProduct().getProductName();
-        if (selectedItems.size() > 1) {
-            orderName += " 외 " + (selectedItems.size() - 1) + "건";
+        if (orderName.length() > 100) orderName = orderName.substring(0, 100);
+
+        String orderId = UUID.randomUUID().toString();
+        String customerName = (username == null || username.isBlank()) ? "비회원" : username;
+
+        // ✅ Pending DB에 저장
+        PaymentPending pending = PaymentPending.builder()
+                .orderId(orderId)
+                .amount(amount)
+                .status("PENDING")
+                .cartItemIds(cartItemIds.stream().map(String::valueOf).collect(Collectors.joining(",")))
+                .build();
+        paymentPendingRepository.save(pending);
+
+        return new TossPaymentReadyResponse(orderId, amount, orderName, customerName);
+    }
+
+    public TossApproveResponse approvePayment(String paymentKey, String orderId, Long amount) {
+        // ✅ Pending 검증
+        PaymentPending pending = paymentPendingRepository.findByOrderId(orderId)
+                .orElseThrow(() -> new RuntimeException("결제 세션이 유효하지 않습니다. 다시 시도해주세요."));
+
+        if (!pending.getAmount().equals(amount)) {
+            throw new RuntimeException("결제 금액이 일치하지 않습니다.");
+        }
+        if (!"PENDING".equals(pending.getStatus())) {
+            throw new RuntimeException("이미 승인/실패 처리된 주문입니다.");
         }
 
-        // 모의 결제 URL 생성
-        return "https://mock.tosspayments.com/pay/tx-" + UUID.randomUUID()
-                + "?amount=" + amount + "&orderName=" + orderName;
+        // Toss 결제 승인 요청
+        HttpHeaders headers = new HttpHeaders();
+        headers.setBasicAuth(tossProps.getTestSecretKey(), "");
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
+        Map<String, Object> payload = new HashMap<>();
+        payload.put("paymentKey", paymentKey);
+        payload.put("orderId", orderId);
+        payload.put("amount", amount);
+
+        HttpEntity<Map<String, Object>> request = new HttpEntity<>(payload, headers);
+
+        try {
+            ResponseEntity<Map> response = restTemplate.postForEntity(
+                    "https://api.tosspayments.com/v1/payments/confirm",
+                    request,
+                    Map.class
+            );
+            Map<String, Object> body = Objects.requireNonNull(response.getBody());
+
+            // 결제 성공시 pending → APPROVED
+            pending.setStatus("APPROVED");
+            paymentPendingRepository.save(pending);
+
+            // (TODO) 실제 주문/결제 내역 저장, 배송 등 로직 추가
+
+            return TossApproveResponse.of(body);
+        } catch (RestClientResponseException e) {
+            // 결제 실패시 pending → FAILED
+            pending.setStatus("FAILED");
+            paymentPendingRepository.save(pending);
+            throw new RuntimeException("결제 승인 실패: " + e.getResponseBodyAsString());
+        }
     }
 }
