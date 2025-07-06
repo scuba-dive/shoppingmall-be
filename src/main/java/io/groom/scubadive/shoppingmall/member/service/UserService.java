@@ -179,6 +179,7 @@ public class UserService {
                                 .map(UserPaid::getAmount)
                                 .orElse(0L)
                 )
+                .address(user.getAddress())
                 .lastLoginAt(user.getLastLoginAt())
                 .createdAt(user.getCreatedAt())
                 .updatedAt(user.getUpdatedAt())

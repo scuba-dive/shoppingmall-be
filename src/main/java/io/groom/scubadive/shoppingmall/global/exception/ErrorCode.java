@@ -49,6 +49,7 @@ public enum ErrorCode {
     USER_PAID_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 사용자의 촘 사용 금액을 찾을 수 없습니다."),
     CART_NOT_FOUND(HttpStatus.NOT_FOUND, "장바구니를 찾을 수 없습니다."),
     ORDER_NOT_FOUND(HttpStatus.NOT_FOUND, "주문을 찾을 수 없습니다."),
+    PRODUCT_IMAGE_NOT_FOUND(HttpStatus.NOT_FOUND, "상품 이미지가 존재하지 않습니다."),
 
     // 409 CONFLICT
 

@@ -2,6 +2,7 @@ package io.groom.scubadive.shoppingmall.product.controller;
 
 import io.groom.scubadive.shoppingmall.global.dto.ApiResponseDto;
 import io.groom.scubadive.shoppingmall.product.dto.response.ProductDetailUserResponse;
+import io.groom.scubadive.shoppingmall.product.dto.response.ProductImageResponse;
 import io.groom.scubadive.shoppingmall.product.dto.response.ProductUserPageResponse;
 import io.groom.scubadive.shoppingmall.product.service.ProductService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -46,5 +47,15 @@ public class ProductController {
     @GetMapping("/{id}")
     public ApiResponseDto<ProductDetailUserResponse> getProduct(@PathVariable Long id) {
         return productService.findProductDetailUserById(id);
+    }
+
+    @Operation(summary = "상품 옵션 이미지 조회", description = "상품 옵션 ID를 통해 해당 옵션의 이미지 URL을 조회합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "상품 옵션 이미지 조회 성공"),
+            @ApiResponse(responseCode = "404", description = "상품 옵션을 찾을 수 없음")
+    })
+    @GetMapping("/option/image/{id}")
+    public ApiResponseDto<ProductImageResponse> getProductOptionImage(@PathVariable Long id) {
+        return productService.getProductOptionImageUrl(id);
     }
 }
