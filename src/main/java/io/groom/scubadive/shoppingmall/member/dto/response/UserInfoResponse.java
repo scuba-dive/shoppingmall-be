@@ -41,6 +41,9 @@ public class UserInfoResponse {
     @Schema(description = "총 결제 금액", example = "150000")
     private Long totalPaid;
 
+    @Schema(description = "주소", example = "서울특별시 강남구 테헤란로 123")
+    private String address;
+
     @Schema(description = "마지막 로그인 시각", example = "2024-07-01T15:30:00")
     private LocalDateTime lastLoginAt;
 

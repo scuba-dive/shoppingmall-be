@@ -10,6 +10,7 @@ import java.util.List;
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
+@Setter
 public class ProductOption extends BaseTimeEntity {
 
     @Id

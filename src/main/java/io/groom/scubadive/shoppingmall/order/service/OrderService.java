@@ -13,8 +13,11 @@ import io.groom.scubadive.shoppingmall.order.domain.*;
 import io.groom.scubadive.shoppingmall.order.dto.request.OrderCreateRequest;
 import io.groom.scubadive.shoppingmall.order.dto.response.*;
 import io.groom.scubadive.shoppingmall.order.repository.OrderRepository;
+import io.groom.scubadive.shoppingmall.product.domain.ProductOption;
+import io.groom.scubadive.shoppingmall.product.domain.ProductOptionStatus;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.aspectj.ConfigurableObject;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -38,6 +41,7 @@ public class OrderService {
     private final UserRepository userRepository;
     private final UserPaidService userPaidService;
     private final UserService userService;
+    private final ConfigurableObject configurableObject;
 
     @Transactional
     public OrderResponse createOrder(Long userId, OrderCreateRequest request) {
@@ -80,6 +84,21 @@ public class OrderService {
         Order order = new Order(user, orderNumber, totalQuantity, totalAmount, OrderStatus.PAYMENT_COMPLETED);
 
         selectedItems.forEach(i -> {
+            ProductOption option = i.getProductOption();
+            if (option.getStatus() != ProductOptionStatus.ACTIVE) {
+                throw new GlobalException(ErrorCode.PRODUCT_SOLD_OUT); // 상태값을 새로 만드세요!
+            }
+
+            long remain = option.getStock() - i.getQuantity();
+
+            if (remain < 0) {
+                throw new GlobalException(ErrorCode.OUT_OF_STOCK);
+            }
+            option.setStock(remain);
+
+            if (remain == 0) {
+                option.setStatus(ProductOptionStatus.SOLD_OUT);
+            }
             OrderItem item = new OrderItem(i.getProductOption(), i.getQuantity());
             order.addItem(item);
         });
@@ -226,5 +245,15 @@ public class OrderService {
         }
 
         order.changeStatus(OrderStatus.CANCELED);
+
+        order.getItems().forEach(item -> {
+            ProductOption option = item.getProductOption();
+            long recoverStock = option.getStock() + item.getQuantity();
+            option.setStock(recoverStock);
+            // SOLD_OUT 상태였다면 ACTIVE로 변경
+            if (option.getStatus() == ProductOptionStatus.SOLD_OUT && recoverStock > 0) {
+                option.setStatus(ProductOptionStatus.ACTIVE);
+            }
+        });
     }
 }

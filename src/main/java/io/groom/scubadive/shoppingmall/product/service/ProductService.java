@@ -9,9 +9,9 @@ import io.groom.scubadive.shoppingmall.global.exception.GlobalException;
 import io.groom.scubadive.shoppingmall.global.util.ProductUtil;
 import io.groom.scubadive.shoppingmall.product.domain.Product;
 import io.groom.scubadive.shoppingmall.product.domain.ProductOption;
+import io.groom.scubadive.shoppingmall.product.domain.ProductOptionImage;
 import io.groom.scubadive.shoppingmall.product.domain.ProductOptionStatus;
 import io.groom.scubadive.shoppingmall.product.dto.request.ProductSaveRequest;
-import io.groom.scubadive.shoppingmall.product.dto.request.ProductStatusUpdateRequest;
 import io.groom.scubadive.shoppingmall.product.dto.request.ProductStockUpdateRequest;
 import io.groom.scubadive.shoppingmall.product.dto.request.ProductUpdateRequest;
 import io.groom.scubadive.shoppingmall.product.dto.response.*;
@@ -134,4 +134,19 @@ public class ProductService {
                 () -> new GlobalException(ErrorCode.PRODUCT_NOT_FOUND)
         );
     }
+
+    public ApiResponseDto<ProductImageResponse> getProductOptionImageUrl(Long id) {
+        ProductOption option = productOptionRepository.findById(id)
+                .orElseThrow(() -> new GlobalException(ErrorCode.PRODUCT_NOT_FOUND));
+
+        ProductOptionImage image = option.getProductOptionImages().stream()
+                .findFirst()
+                .orElseThrow(() -> new GlobalException(ErrorCode.PRODUCT_IMAGE_NOT_FOUND));
+        String imageUrl = "https://" + "my-shop-image-bucket" + ".s3.ap-northeast-2.amazonaws.com" + image.getImagePath();
+
+        ProductImageResponse imageResponse = new ProductImageResponse(id, imageUrl);
+        return ApiResponseDto.of(200, "상품 옵션 이미지 URL을 성공적으로 불러왔습니다.", imageResponse);
+    }
+
+
 }
