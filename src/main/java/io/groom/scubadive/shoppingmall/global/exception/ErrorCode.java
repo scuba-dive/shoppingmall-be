@@ -31,6 +31,8 @@ public enum ErrorCode {
     PRODUCT_SALES_RANKING_NOT_FOUND(HttpStatus.BAD_REQUEST, "상품 판매 랭킹 정보가 존재하지 않습니다."),
     PAYMENT_PENDING_NOT_FOUND(HttpStatus.BAD_REQUEST, "결제 대기 정보가 존재하지 않습니다."),
 
+    INVALID_CART_QUANTITY(HttpStatus.BAD_REQUEST, "장바구니 수량은 1 이상이어야 합니다."),
+
     // 401 UNAUTHORIZED
     UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "인증되지 않았습니다."),
     WRONG_PASSWORD(HttpStatus.UNAUTHORIZED, "아이디 혹은 비밀번호가 일치하지 않습니다."),

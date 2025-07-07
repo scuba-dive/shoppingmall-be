@@ -88,6 +88,13 @@ public class User extends BaseTimeEntity {
         this.lastLoginAt = LocalDateTime.now(); // 최초 가입 시 현재 시각 설정
     }
 
+    public void setUserImage(UserImage userImage) {
+        this.userImage = userImage;
+        if (userImage.getUser() != this) {
+            userImage.setUser(this);
+        }
+    }
+
 
     // 마지막 로그인 시간 업데이트
     public void updateLastLoginAt() {
