@@ -7,7 +7,6 @@ import io.groom.scubadive.shoppingmall.member.domain.enums.UserStatus;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 
-import java.net.URL;
 import java.time.LocalDateTime;
 
 /**
