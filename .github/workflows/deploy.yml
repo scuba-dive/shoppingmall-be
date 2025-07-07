@@ -67,4 +67,7 @@ jobs:
             export CLOUD_AWS_S3_BUCKET="${{ secrets.CLOUD_AWS_S3_BUCKET }}"
             export MAIL_USERNAME="${{ secrets.MAIL_USERNAME }}"
             export MAIL_PASSWORD="${{ secrets.MAIL_PASSWORD }}"
+            export COOLSMS_API_KEY="${{ secrets.COOLSMS_API_KEY }}"
+            export COOLSMS_API_SECRET="${{ secrets.COOLSMS_API_SECRET }}"
+            export COOLSMS_API_NUMBER="${{ secrets.COOLSMS_API_NUMBER }}"
             ./deploy.sh
