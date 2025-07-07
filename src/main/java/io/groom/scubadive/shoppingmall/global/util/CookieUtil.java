@@ -1,6 +1,10 @@
 package io.groom.scubadive.shoppingmall.global.util;
 
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseCookie;
 
 import java.time.Duration;
@@ -18,6 +22,21 @@ public class CookieUtil {
 
         response.setHeader("Set-Cookie", cookie.toString());
     }
+
+    public static String getRefreshTokenFromRequest(HttpServletRequest request) {
+        if (request.getCookies() == null) {
+            return null;
+        }
+
+        for (Cookie cookie : request.getCookies()) {
+            if ("refreshToken".equals(cookie.getName())) {
+                return cookie.getValue();
+            }
+        }
+        return null;
+    }
+
+
 
     public static void deleteRefreshTokenCookie(HttpServletResponse response) {
         ResponseCookie expiredCookie = ResponseCookie.from("refreshToken", "")

@@ -1,5 +1,6 @@
 package io.groom.scubadive.shoppingmall.global.securirty;
 
+import io.groom.scubadive.shoppingmall.member.domain.enums.Role;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
@@ -22,7 +23,7 @@ public class JwtTokenProvider {
         this.key = Keys.hmacShaKeyFor(jwtProperties.getSecretKey().getBytes());
     }
 
-    public String createAccessToken(Long userId, Enum<?> role) {
+    public String createAccessToken(Long userId, Role role) {
         return createToken(userId, role, jwtProperties.getAccessTokenExpiration());
     }
 

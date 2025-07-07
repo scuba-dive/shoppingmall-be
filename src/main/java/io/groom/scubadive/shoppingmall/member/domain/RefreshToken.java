@@ -1,9 +1,7 @@
 package io.groom.scubadive.shoppingmall.member.domain;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import io.groom.scubadive.shoppingmall.member.domain.enums.Role;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
