@@ -39,6 +39,8 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider jwtTokenProvider;
     private final RefreshTokenRepository refreshTokenRepository;
+    private final EmailVerificationService emailVerificationService;
+    private final EmailService emailService;
 
     /**
      * 회원가입 처리 메서드
@@ -93,10 +95,14 @@ public class UserService {
                 encodedPassword, dto.getPhoneNumber(), dto.getAddress(), null
         );
 
+        String code = emailVerificationService.createVerificationEntry(user);
+        emailService.sendVerificationEmail(user.getEmail(), code);
+
         String imageUrl = "https://api.dicebear.com/9.x/notionists-neutral/svg?seed=" + nickname;
         UserImage userImage = new UserImage(user, imageUrl);
 
         user.setUserImage(userImage);
+        user.setEmailVerified(false);
 
         Cart cart = new Cart(user);       // Cart 객체 생성
         user.assignCart(cart);        // 양방향 연관관계 설정 (setUser도 내부에서 호출됨)
@@ -125,6 +131,11 @@ public class UserService {
                 });
 
         validateLoginUser(user, request.getPassword());
+
+        if (!user.isEmailVerified()) {
+            log.warn("[LOGIN_FAIL] 이메일 인증 미완료 - userId: {}", user.getId());
+            throw new GlobalException(ErrorCode.EMAIL_NOT_VERIFIED);
+        }
 
         String accessToken = jwtTokenProvider.createAccessToken(user.getId(), user.getRole());
         String refreshToken = jwtTokenProvider.createRefreshToken(user.getId());

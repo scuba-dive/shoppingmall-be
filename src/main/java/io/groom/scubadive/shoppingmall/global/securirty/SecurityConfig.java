@@ -50,7 +50,8 @@ public class SecurityConfig {
                                 "/v3/api-docs/**",
                                 "/swagger-ui/**",
                                 "/swagger-ui.html",
-                                "/api/token/refresh"
+                                "/api/token/refresh",
+                                "/api/users/email/verify"
 
                         ).permitAll()
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")

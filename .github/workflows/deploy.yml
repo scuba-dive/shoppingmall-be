@@ -65,4 +65,6 @@ jobs:
             export CLOUD_AWS_SECRET_KEY="${{ secrets.CLOUD_AWS_SECRET_KEY }}"
             export CLOUD_AWS_REGION="${{ secrets.CLOUD_AWS_REGION }}"
             export CLOUD_AWS_S3_BUCKET="${{ secrets.CLOUD_AWS_S3_BUCKET }}"
+            export MAIL_USERNAME="${{ secrets.MAIL_USERNAME }}"
+            export MAIL_PASSWORD="${{ secrets.MAIL_PASSWORD }}"
             ./deploy.sh
