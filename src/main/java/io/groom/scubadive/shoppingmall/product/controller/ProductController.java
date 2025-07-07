@@ -18,10 +18,10 @@ import org.springframework.web.bind.annotation.*;
 @CrossOrigin(
         origins = {
                 "http://localhost:5173",
+                "https://shoppingmall-fe-iota.vercel.app/"
         },
         allowCredentials = "true"
 )
-@Tag(name = "Public API", description = "비회원 공개 API")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/users/products")

@@ -30,6 +30,7 @@ import java.util.List;
 @CrossOrigin(
         origins = {
                 "http://localhost:5173",
+                "https://shoppingmall-fe-iota.vercel.app"
         },
         allowCredentials = "true"
 )
