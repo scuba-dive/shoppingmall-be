@@ -1,7 +1,5 @@
 package io.groom.scubadive.shoppingmall.member.service;
 
-import io.groom.scubadive.shoppingmall.global.exception.ErrorCode;
-import io.groom.scubadive.shoppingmall.global.exception.GlobalException;
 import io.groom.scubadive.shoppingmall.member.domain.EmailVerification;
 import io.groom.scubadive.shoppingmall.member.domain.User;
 import io.groom.scubadive.shoppingmall.member.repository.EmailVerificationRepository;
@@ -36,22 +34,31 @@ public class EmailVerificationService {
     }
 
     // 이메일 인증 링크 클릭 시 인증 코드를 검증하는 메서드
-    public void verifyEmailCode(String code) {
+    public boolean verifyEmailCode(String code) {
         EmailVerification verification = emailVerificationRepository.findByCode(code)
-                .orElseThrow(() -> new GlobalException(ErrorCode.VERIFICATION_CODE_INVALID));
+                .orElse(null);
+
+        if (verification == null) {
+            return false; // 인증 코드 없음
+        }
 
         if (verification.getExpiresAt().isBefore(LocalDateTime.now())) {
-            throw new GlobalException(ErrorCode.VERIFICATION_CODE_EXPIRED);
+            return false; // 인증 코드 만료
         }
 
         User user = userRepository.findByEmail(verification.getEmail())
-                .orElseThrow(() -> new GlobalException(ErrorCode.EMAIL_NOT_FOUND));
+                .orElse(null);
+
+        if (user == null) {
+            return false; // 유저 없음
+        }
 
         if (user.isEmailVerified()) {
-            throw new GlobalException(ErrorCode.EMAIL_ALREADY_VERIFIED);
+            return false; // 이미 인증됨
         }
 
         user.setEmailVerified(true);
         userRepository.save(user);
+        return true; // 성공!
     }
 }
