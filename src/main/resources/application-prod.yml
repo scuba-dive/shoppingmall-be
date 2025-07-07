@@ -54,3 +54,9 @@ cloud:
       static: ${CLOUD_AWS_REGION}
     s3:
       bucket: ${CLOUD_AWS_S3_BUCKET}
+
+coolsms:
+  api:
+    key: ${COOLSMS_API_KEY}
+    secret: ${COOLSMS_API_SECRET}
+    number: ${COOLSMS_API_NUMBER}

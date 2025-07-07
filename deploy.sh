@@ -38,6 +38,9 @@ nohup java \
   -Dcloud.aws.s3.bucket="$CLOUD_AWS_S3_BUCKET" \
   -Dspring.mail.username="$MAIL_USERNAME" \
   -Dspring.mail.password="$MAIL_PASSWORD" \
+  -Dcoolsms.api.key="$COOLSMS_API_KEY" \
+  -Dcoolsms.api.secret="$COOLSMS_API_SECRET" \
+  -Dcoolsms.api.number="$COOLSMS_API_NUMBER" \
   -jar "$JAR_PATH" --spring.profiles.active=prod > "$LOG_PATH" 2>&1 &
 
 echo "✅ 배포 스크립트 완료. 로그 확인: tail -f $LOG_PATH"
