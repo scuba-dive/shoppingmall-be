@@ -4,8 +4,10 @@ import io.groom.scubadive.shoppingmall.global.exception.ErrorCode;
 import io.groom.scubadive.shoppingmall.global.exception.GlobalException;
 import io.groom.scubadive.shoppingmall.global.securirty.JwtTokenProvider;
 import io.groom.scubadive.shoppingmall.member.domain.RefreshToken;
+import io.groom.scubadive.shoppingmall.member.domain.User;
 import io.groom.scubadive.shoppingmall.member.domain.enums.Role;
 import io.groom.scubadive.shoppingmall.member.repository.RefreshTokenRepository;
+import io.groom.scubadive.shoppingmall.member.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,6 +20,7 @@ public class TokenService {
     private static final Logger log = LoggerFactory.getLogger(TokenService.class);
     private final RefreshTokenRepository refreshTokenRepository;
     private final JwtTokenProvider jwtTokenProvider;
+    private final UserRepository userRepository;
 
     public String reissueAccessToken(String refreshToken) {
         log.info("[TOKEN SERVICE] 요청받은 refreshToken: {}", refreshToken);
@@ -41,8 +44,13 @@ public class TokenService {
         }
         log.info("[TOKEN SERVICE] refreshToken 일치 확인 - accessToken 재발급 시작");
 
-        String roleStr = jwtTokenProvider.getRoleFromToken(refreshToken);
+//        String roleStr = jwtTokenProvider.getRoleFromToken(refreshToken);
+//        Role role = Role.valueOf(roleStr);
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new GlobalException(ErrorCode.USER_NOT_FOUND));
+        String roleStr = user.getRole().name();
         Role role = Role.valueOf(roleStr);
+
 
         log.info("[TOKEN SERVICE] 재발급된 accessToken: {}", role);
 
