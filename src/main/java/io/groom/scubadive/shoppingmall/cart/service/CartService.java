@@ -31,6 +31,11 @@ public class CartService {
 
     @Transactional
     public CartItemResponse addItem(Long userId, CartItemRequest request) {
+
+        if (request.getQuantity() <= 0) {
+            throw new GlobalException(ErrorCode.INVALID_CART_QUANTITY);
+        }
+
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new GlobalException(ErrorCode.MEMBER_DELETED));
 
@@ -38,7 +43,7 @@ public class CartService {
                 .orElseGet(() -> cartRepository.save(new Cart(user)));
 
         ProductOption option = productOptionRepository.findById(request.getProductOptionId())
-                .orElseThrow(() -> new IllegalArgumentException("상품 옵션을 찾을 수 없습니다."));
+                .orElseThrow(() -> new GlobalException(ErrorCode.PRODUCT_NOT_FOUND));
 
         // 기존에 같은 productOptionId가 있는지 확인
         Optional<CartItem> existingItemOpt = cartItemRepository.findByCartIdAndProductOptionId(cart.getId(), option.getId());
@@ -73,6 +78,10 @@ public class CartService {
 
     @Transactional
     public CartItemResponse updateItem(Long cartItemId, CartUpdateRequest request) {
+        if (request.getQuantity() <= 0) {
+            throw new GlobalException(ErrorCode.INVALID_CART_QUANTITY);
+        }
+
         CartItem item = cartItemRepository.findById(cartItemId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 장바구니 항목을 찾을 수 없습니다."));
 
