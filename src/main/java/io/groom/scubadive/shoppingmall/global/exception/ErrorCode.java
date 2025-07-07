@@ -34,6 +34,9 @@ public enum ErrorCode {
     INVALID_CART_QUANTITY(HttpStatus.BAD_REQUEST, "장바구니 수량은 1 이상이어야 합니다."),
     EXCEEDS_PRODUCT_STOCK(HttpStatus.BAD_REQUEST, "장바구니 수량이 상품 재고를 초과합니다."),
 
+    VERIFICATION_CODE_INVALID(HttpStatus.BAD_REQUEST, "인증번호가 올바르지 않습니다."),
+    VERIFICATION_CODE_EXPIRED(HttpStatus.BAD_REQUEST, "인증번호가 만료되었습니다."),
+
     // 401 UNAUTHORIZED
     UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "인증되지 않았습니다."),
     WRONG_PASSWORD(HttpStatus.UNAUTHORIZED, "아이디 혹은 비밀번호가 일치하지 않습니다."),
@@ -58,6 +61,7 @@ public enum ErrorCode {
     // 409 CONFLICT
     OUT_OF_STOCK(HttpStatus.CONFLICT, "재고가 부족합니다."),
     PRODUCT_SOLD_OUT(HttpStatus.CONFLICT, "품절된 상품입니다."),
+    EMAIL_ALREADY_VERIFIED(HttpStatus.CONFLICT, "이미 인증이 완료된 계정입니다."),
 
     // 500 INTERNAL SERVER ERROR
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "서버 내부 오류가 발생했습니다.");
