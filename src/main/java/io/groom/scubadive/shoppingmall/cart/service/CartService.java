@@ -78,6 +78,10 @@ public class CartService {
 
     @Transactional
     public CartItemResponse updateItem(Long cartItemId, CartUpdateRequest request) {
+        if (request.getQuantity() <= 0) {
+            throw new GlobalException(ErrorCode.INVALID_CART_QUANTITY);
+        }
+
         CartItem item = cartItemRepository.findById(cartItemId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 장바구니 항목을 찾을 수 없습니다."));
 
