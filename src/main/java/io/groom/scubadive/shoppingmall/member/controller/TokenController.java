@@ -14,10 +14,19 @@ import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+
+@CrossOrigin(
+        origins = {
+                "http://localhost:5173",
+                "https://shoppingmall-fe-iota.vercel.app"
+        },
+        allowCredentials = "true"
+)
 @Tag(name = "Token API", description = "JWT 토큰 관련 API")
 @RestController
 @RequiredArgsConstructor

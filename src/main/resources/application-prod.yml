@@ -42,8 +42,8 @@ server:
 toss:
   testClientKey: ${TOSS_TEST_CLIENT_KEY}
   testSecretKey: ${TOSS_TEST_SECRET_KEY}
-  successUrl: http://localhost:5173/payment/success
-  failUrl: http://localhost:5173/payment/fail
+  successUrl: https://shoppingmall-fe-iota.vercel.app/payment/success
+  failUrl: https://shoppingmall-fe-iota.vercel.app/payment/fail
 
 cloud:
   aws:

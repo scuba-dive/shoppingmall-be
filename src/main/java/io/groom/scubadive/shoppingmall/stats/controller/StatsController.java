@@ -20,6 +20,7 @@ import java.time.LocalDateTime;
 @CrossOrigin(
         origins = {
                 "http://localhost:5173",
+                "https://shoppingmall-fe-iota.vercel.app"
         },
         allowCredentials = "true"
 )

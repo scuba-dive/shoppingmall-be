@@ -7,13 +7,15 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 
 @CrossOrigin(
-        origins = { "http://localhost:5173" },
+        origins = {
+                "http://localhost:5173",
+                "https://shoppingmall-fe-iota.vercel.app"
+        },
         allowCredentials = "true"
 )
 @RestController
@@ -39,9 +41,9 @@ public class EmailVerificationController {
         // 프론트엔드 인증 완료/실패 페이지로 리다이렉트
         String redirectUri;
         if (success) {
-            redirectUri = "http://localhost:5173/auth/signin";
+            redirectUri = "https://shoppingmall-fe-iota.vercel.app/auth/signin";
         } else {
-            redirectUri = "http://localhost:5173/auth/signup";
+            redirectUri = "https://shoppingmall-fe-iota.vercel.app/auth/signup";
         }
         response.sendRedirect(redirectUri);
     }
