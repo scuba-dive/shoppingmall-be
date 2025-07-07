@@ -85,9 +85,14 @@ public class CartService {
         CartItem item = cartItemRepository.findById(cartItemId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 장바구니 항목을 찾을 수 없습니다."));
 
+        Long stock = item.getProductOption().getStock();
+        if (request.getQuantity() > stock) {
+            throw new GlobalException(ErrorCode.EXCEEDS_PRODUCT_STOCK);
+        }
+
         item.changeQuantity(request.getQuantity());
 
-        Long price = item.getProductOption().getProduct().getPrice();
+        long price = item.getProductOption().getProduct().getPrice();
         int quantity = item.getQuantity();
 
         return CartItemResponse.builder()
