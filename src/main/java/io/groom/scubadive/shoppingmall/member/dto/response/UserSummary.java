@@ -62,7 +62,7 @@ public class UserSummary {
         this.phoneNumber = user.getPhoneNumber();
         this.role = user.getRole();
         this.status = user.getStatus();
-        this.imagePath = user.getUserImage() != null ? user.getUserImage().getFullImageUrl() : "https://my-shop-image-bucket.s3.ap-northeast-2.amazonaws.com/profile/default_profile.webp";
+        this.imagePath = user.getUserImage().getImageUrl();
         this.grade = user.getGrade();
         this.lastLoginAt = user.getLastLoginAt();
         this.createdAt = user.getCreatedAt();

@@ -5,9 +5,11 @@ import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Getter
+@Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "user_image")
 public class UserImage extends BaseTimeEntity {
@@ -23,46 +25,53 @@ public class UserImage extends BaseTimeEntity {
     @JoinColumn(name = "user_id", nullable = false, unique = true)
     private User user;
 
-    /**
-     * S3에 저장된 이미지 경로
-     */
-    @Column(columnDefinition = "TEXT", nullable = false)
-    private String imagePath;
+    private String imageUrl;
 
-    /**
-     * S3 버킷 이름
-     */
-    @Column(nullable = false)
-    private String bucket;
-
-    /**
-     * 생성자 - 필수 필드 초기화
-     */
-    public UserImage(User user, String imagePath, String bucket) {
+    public UserImage(User user, String imageUrl) {
         this.user = user;
-        this.imagePath = imagePath;
-        this.bucket = bucket;
+        this.imageUrl = imageUrl;
     }
 
-    /**
-     * 이미지 정보 업데이트
-     */
-    public void updateImage(String imagePath, String bucket) {
-        this.imagePath = imagePath;
-        this.bucket = bucket;
-    }
-
-    /**
-     * 전체 이미지 URL 생성 (S3 형식)
-     * 예: https://{bucket}.s3.amazonaws.com/{imagePath}
-     */
-    public String getFullImageUrl() {
-        if (bucket == null || imagePath == null) {
-            return null;
-        }
-
-        String cleanedPath = imagePath.startsWith("/") ? imagePath.substring(1) : imagePath;
-        return "https://" + bucket + ".s3.amazonaws.com/" + cleanedPath;
-    }
+//    /**
+//     * S3에 저장된 이미지 경로
+//     */
+//    @Column(columnDefinition = "TEXT", nullable = false)
+//    private String imagePath;
+//
+//    /**
+//     * S3 버킷 이름
+//     */
+//    @Column(nullable = false)
+//    private String bucket;
+//
+//    /**
+//     * 생성자 - 필수 필드 초기화
+//     */
+//    public UserImage(User user, String imagePath, String bucket) {
+//        this.user = user;
+//        this.imagePath = imagePath;
+//        this.bucket = bucket;
+//    }
+//
+//    /**
+//     * 이미지 정보 업데이트
+//     */
+//    public void updateImage(String imagePath, String bucket) {
+//        this.imagePath = imagePath;
+//        this.bucket = bucket;
+//    }
+//
+//    /**
+//     * 전체 이미지 URL 생성 (S3 형식)
+//     * 예: https://{bucket}.s3.amazonaws.com/{imagePath}
+//     */
+//    public String getFullImageUrl() {
+//        if (bucket == null || imagePath == null) {
+//            return null;
+//        }
+//
+//        String cleanedPath = imagePath.startsWith("/") ? imagePath.substring(1) : imagePath;
+//        return "https://api.dicebear.com/9.x/notionists-neutral/svg?seed=" + cleanedPath;
+//    }
 
 }

@@ -7,6 +7,7 @@ import io.groom.scubadive.shoppingmall.global.securirty.JwtTokenProvider;
 import io.groom.scubadive.shoppingmall.global.util.CookieUtil;
 import io.groom.scubadive.shoppingmall.member.domain.RefreshToken;
 import io.groom.scubadive.shoppingmall.member.domain.User;
+import io.groom.scubadive.shoppingmall.member.domain.UserImage;
 import io.groom.scubadive.shoppingmall.member.domain.UserPaid;
 import io.groom.scubadive.shoppingmall.member.domain.enums.Grade;
 import io.groom.scubadive.shoppingmall.member.domain.enums.UserStatus;
@@ -71,7 +72,6 @@ public class UserService {
 
         // 초기 UserPaid 엔티티 생성
         userPaidRepository.save(new UserPaid(user));
-
         return new UserResponse(user.getId(), user.getEmail(), user.getNickname());
     }
 
@@ -87,10 +87,16 @@ public class UserService {
 
     // 요청으로부터 사용자 엔티티 생성
     private User createUserFromRequest(SignUpRequest dto, String nickname, String encodedPassword) {
+
         User user = new User(
                 dto.getUsername(), nickname, dto.getEmail(),
                 encodedPassword, dto.getPhoneNumber(), dto.getAddress(), null
         );
+
+        String imageUrl = "https://api.dicebear.com/9.x/notionists-neutral/svg?seed=" + nickname;
+        UserImage userImage = new UserImage(user, imageUrl);
+
+        user.setUserImage(userImage);
 
         Cart cart = new Cart(user);       // Cart 객체 생성
         user.assignCart(cart);        // 양방향 연관관계 설정 (setUser도 내부에서 호출됨)
@@ -173,7 +179,7 @@ public class UserService {
                 .role(user.getRole().name())
                 .status(user.getStatus().name().toLowerCase())
                 .grade(user.getGrade().name())
-                .imagePath(user.getUserImage() != null ? user.getUserImage().getFullImageUrl() : "https://my-shop-image-bucket.s3.ap-northeast-2.amazonaws.com/profile/default_profile.webp")
+                .imagePath(user.getUserImage() != null ? user.getUserImage().getImageUrl() : "https://my-shop-image-bucket.s3.ap-northeast-2.amazonaws.com/profile/default_profile.webp")
                 .totalPaid(
                         userPaidRepository.findByUserId(userId)
                                 .map(UserPaid::getAmount)
@@ -288,7 +294,7 @@ public class UserService {
                 .role(user.getRole().name())
                 .status(user.getStatus().name().toLowerCase())
                 .grade(user.getGrade().name())
-                .imagePath(user.getUserImage() != null ? user.getUserImage().getFullImageUrl() : null)
+                .imagePath(user.getUserImage() != null ? user.getUserImage().getImageUrl() : null)
                 .totalPaid(
                         userPaidRepository.findByUserId(user.getId())
                                 .map(UserPaid::getAmount)
