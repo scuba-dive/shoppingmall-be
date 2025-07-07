@@ -28,15 +28,22 @@ public class StatsQueryService {
     private final ProductSalesRankingRepository productSalesRankingRepository;
 
     public TodayStatsResponse getTodayStats() {
-        LocalDateTime start = LocalDate.now().atStartOfDay();         // 오늘 00:00
-        LocalDateTime end = LocalDateTime.now();                      // 지금 시각
+        LocalDate today = LocalDate.now();
+        // 1. 오늘 날짜에 해당하는 HourlyStats 중 가장 최근 것 찾기
+        List<HourlyStats> todayHourlyStats = hourlyStatsRepository.findByStartTimeBetween(
+                today.atStartOfDay(),
+                today.atTime(23, 59, 59, 999_999_999)
+        );
+        // 2. 마지막 집계 시각
+        LocalDateTime lastEndTime = todayHourlyStats.stream()
+                .map(HourlyStats::getEndTime)
+                .max(LocalDateTime::compareTo)
+                .orElse(null);
 
-        List<HourlyStats> stats = hourlyStatsRepository.findByStartTimeBetween(start, end);
+        long totalSales = todayHourlyStats.stream().mapToLong(HourlyStats::getTotalSales).sum();
+        int totalOrders = todayHourlyStats.stream().mapToInt(HourlyStats::getTotalOrders).sum();
 
-        long totalSales = stats.stream().mapToLong(HourlyStats::getTotalSales).sum();
-        int totalOrders = stats.stream().mapToInt(HourlyStats::getTotalOrders).sum();
-
-        return new TodayStatsResponse(totalSales, totalOrders, end);
+        return new TodayStatsResponse(totalSales, totalOrders, lastEndTime);
     }
 
 
