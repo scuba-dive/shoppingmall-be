@@ -1,6 +1,7 @@
 package io.groom.scubadive.shoppingmall.member.controller;
 
 import io.groom.scubadive.shoppingmall.global.dto.ApiResponseDto;
+import io.groom.scubadive.shoppingmall.member.service.EmailVerificationService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;

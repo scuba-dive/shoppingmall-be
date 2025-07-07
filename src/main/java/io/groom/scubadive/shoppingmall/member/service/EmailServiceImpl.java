@@ -11,7 +11,7 @@ public class EmailServiceImpl implements EmailService {
 
     private final JavaMailSender mailSender;
 
-    private static final String VERIFY_LINK_BASE_URL = "http://localhost:8080/api/auth/email/verify?code=";
+    private static final String VERIFY_LINK_BASE_URL = "http://localhost:8080/api/users/email/verify?code=";
 
     @Override
     public void sendVerificationEmail(String toEmail, String code) {
