@@ -32,6 +32,7 @@ public enum ErrorCode {
     PAYMENT_PENDING_NOT_FOUND(HttpStatus.BAD_REQUEST, "결제 대기 정보가 존재하지 않습니다."),
 
     INVALID_CART_QUANTITY(HttpStatus.BAD_REQUEST, "장바구니 수량은 1 이상이어야 합니다."),
+    EXCEEDS_PRODUCT_STOCK(HttpStatus.BAD_REQUEST, "장바구니 수량이 상품 재고를 초과합니다."),
 
     // 401 UNAUTHORIZED
     UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "인증되지 않았습니다."),
