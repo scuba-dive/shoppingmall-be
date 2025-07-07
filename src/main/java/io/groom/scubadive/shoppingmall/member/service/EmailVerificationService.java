@@ -1,7 +1,5 @@
 package io.groom.scubadive.shoppingmall.member.service;
 
-import io.groom.scubadive.shoppingmall.global.exception.ErrorCode;
-import io.groom.scubadive.shoppingmall.global.exception.GlobalException;
 import io.groom.scubadive.shoppingmall.member.domain.EmailVerification;
 import io.groom.scubadive.shoppingmall.member.domain.User;
 import io.groom.scubadive.shoppingmall.member.repository.EmailVerificationRepository;
